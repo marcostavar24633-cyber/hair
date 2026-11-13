@@ -83,3 +83,41 @@ body{background:#f3e9df;color:#2b1a16}
  .hero-photo.photo-main{inset:0 3% 22px 8%;background-position:48% 32%}
  .hero-bottom{color:#c5a58f}
 }
+
+
+/* Final responsive and interaction polish */
+.button,.header-cta,.service-bottom a,.filter{transition:background-color .22s ease,color .22s ease,border-color .22s ease,transform .22s ease,box-shadow .22s ease}
+.button-dark:hover,.button-light:hover,.header-cta:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(30,12,24,.24)}
+.button:active,.header-cta:active{transform:translateY(0)}
+.filter{border:1px solid transparent;border-radius:999px;padding:10px 15px;color:#765f59}
+.works .filter.active{background:#642849;border-color:#642849;color:#fff7f2}
+.filter:hover:not(.active){border-color:#b995a7;color:#642849}
+.service-bottom a{transition:background-color .2s ease,color .2s ease,transform .2s ease}
+.service-bottom a:hover{background:#642849;color:#fff7f2;transform:translateY(-2px)}
+.hero-photo.photo-main{background-color:#4a2a22}
+.hero-actions .button{box-shadow:0 9px 24px rgba(22,9,17,.2)}
+.booking-form input,.booking-form select{transition:border-color .2s ease}
+@media(max-width:640px){
+ .header{gap:10px}
+ .logo{font-size:12px;gap:7px;letter-spacing:.1em}
+ .logo-mark{width:30px;height:30px}
+ .header-cta{padding:10px 13px;font-size:8px;white-space:nowrap}
+ .header-cta span{margin-left:5px}
+ .hero h1{font-size:clamp(48px,13vw,62px)}
+ .hero-actions{align-items:stretch;flex-direction:column}
+ .hero-actions .button{width:100%;max-width:290px}
+ .hero-actions .text-link{align-self:flex-start}
+ .hero-meta{justify-content:space-between;gap:8px}
+ .hero-meta div{gap:6px}
+ .hero-meta strong{font-size:18px}
+ .hero-meta span{font-size:7px}
+ .filters{gap:8px;padding-bottom:5px}
+ .filter{padding:9px 12px}
+}
+@media(max-width:370px){
+ .header{padding:0 4%}
+ .logo{font-size:10px}
+ .header-cta{padding:9px 10px;font-size:7px}
+ .hero{padding-left:5%;padding-right:5%}
+ .hero-meta span{font-size:6px}
+}
