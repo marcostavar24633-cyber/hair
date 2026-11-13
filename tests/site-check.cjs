@@ -80,12 +80,12 @@ assert.doesNotMatch(readme, /\\n-/);
 
 
 // Structural and privacy regression checks.
-const allIds = [...html.matchAll(/\\bid="([^"]+)"/g)].map(match => match[1]);
+const allIds = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
 assert.equal(new Set(allIds).size, allIds.length, 'HTML IDs must be unique');
-assert.equal([...html.matchAll(/<h1\\b/g)].length, 1, 'The page must have exactly one H1');
+assert.equal([...html.matchAll(/<h1\b/g)].length, 1, 'The page must have exactly one H1');
 assert.match(html, /name="twitter:card" content="summary_large_image"/);
 assert.match(html, /name="twitter:image:alt"/);
-assert.doesNotMatch(js, /\\bfetch\\s*\\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document\\.cookie/, 'Demo form must not send or persist form data');
+assert.doesNotMatch(js, /\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document\.cookie/, 'Demo form must not send or persist form data');
 
 // WCAG AA normal-text contrast checks for the revised light-section palette.
 function relativeLuminance(hex) {
@@ -108,10 +108,10 @@ const contrastPairs = [
 ];
 for (const [foreground, background] of contrastPairs) {
   assert.ok(contrastRatio(foreground, background) >= 4.5,
-    `Insufficient WCAG AA contrast: ${foreground} on ${background}`);
+    'Insufficient WCAG AA contrast: ' + foreground + ' on ' + background);
 }
-assert.match(css, /\.eyebrow\\{color:#65574e\\}/);
-assert.match(css, /\.service-card p\\{color:#62584f\\}/);
-assert.match(css, /\.form-message\\{color:#48613f\\}/);
+assert.match(css, /\.eyebrow\{color:#65574e\}/);
+assert.match(css, /\.service-card p\{color:#62584f\}/);
+assert.match(css, /\.form-message\{color:#48613f\}/);
 
 console.log('Structure, privacy, social metadata, and WCAG AA contrast checks passed.');
