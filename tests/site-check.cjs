@@ -27,6 +27,7 @@ for (const selector of ['.menu-toggle', '.nav', '.filter', '.work-item', 'bookin
 }
 assert.match(js, /event\.key === 'Escape'/);
 assert.match(js, /aria-pressed/);
+assert.ok(js.includes(String.raw`phone.replace(/\D/g, '')`), 'Phone validation must strip non-digits correctly');
 assert.match(css, /prefers-reduced-motion/);
 assert.match(css, /:focus-visible/);
 assert.match(css, /#2b1914/);
