@@ -27,6 +27,14 @@ for (const selector of ['.menu-toggle', '.nav', '.filter', '.work-item', 'bookin
 }
 assert.match(js, /event\.key === 'Escape'/);
 assert.match(js, /aria-pressed/);
+assert.match(js, /role', 'dialog'/);
+assert.match(js, /aria-modal', 'true'/);
+assert.match(js, /ArrowLeft/);
+assert.match(js, /ArrowRight/);
+assert.match(js, /lightbox-close/);
+assert.match(css, /\.lightbox\[hidden\]/);
+assert.match(css, /\.lightbox-image/);
+assert.match(css, /body\.lightbox-open/);
 assert.ok(js.includes(String.raw`phone.replace(/\D/g, '')`), 'Phone validation must strip non-digits correctly');
 assert.match(css, /prefers-reduced-motion/);
 assert.match(css, /:focus-visible/);
