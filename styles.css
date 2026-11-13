@@ -44,3 +44,39 @@ body::before{content:"";position:fixed;z-index:1000;top:0;left:0;width:100%;heig
 .booking-summary strong{font:26px var(--serif);color:#392532}
 .booking-summary p{margin:0;font-size:11px;line-height:1.6;color:#796c72}
 .booking-form select:focus-visible,.booking-form input:focus-visible{outline:2px solid #a77b67;outline-offset:3px}
+
+/* Mobile refinement: compact phones, touch targets and form ergonomics */
+@media(max-width:720px){
+.menu-button{width:44px;height:44px;min-width:44px;align-items:center;justify-content:center;flex-shrink:0}
+.header-book{white-space:nowrap;flex-shrink:0;min-height:40px;display:inline-flex;align-items:center}
+.booking-form input,.booking-form select,.calculator-panel select{font-size:16px;min-height:46px}
+.filter-button{min-height:40px}.booking-form .button{min-height:48px}
+.portfolio-card,.team-grid article{min-width:0}
+}
+@media(max-width:360px){
+.site-header{padding-inline:4%;gap:7px}
+.brand{font-size:10px;gap:6px;letter-spacing:.12em}
+.brand-symbol{width:28px;height:28px;font-size:19px}
+.header-book{padding:8px 9px;font-size:8px}.header-book span{margin-left:6px}
+.hero{padding-inline:5%}.hero h1{font-size:clamp(54px,17vw,62px)}
+.hero-lead{font-size:11px;line-height:1.75}.hero-actions{gap:14px}
+.hero-actions .button{padding:15px 18px}.hero-art{min-height:330px}
+.section-wrap{padding:64px 5%}
+.statement h2,.section-title h2,.calculator h2,.reviews h2,.faq h2,.booking-section h2{font-size:clamp(40px,12vw,52px)}
+.service-row{grid-template-columns:22px minmax(0,1fr) 28px;gap:8px}
+.service-row h3{font-size:18px}.service-row p{font-size:9px}.service-row strong{font-size:13px}
+.portfolio-grid{gap:8px}.portfolio-card img{height:180px}.portfolio-card.card-large img{height:240px}
+.team-grid{gap:18px 9px}.team-grid article img{height:190px}
+.team-grid h3{font-size:21px}.team-grid p{font-size:9px}
+.process-grid{column-gap:12px}.calculator-panel{padding:22px 15px}
+.faq-list summary{font-size:16px}.footer{padding-inline:5%}
+.footer-main{gap:14px}.footer-main p{font-size:14px}
+}
+@media(max-width:330px){
+.concept-bar{letter-spacing:.12em;gap:5px}.concept-bar span{font-size:5px;letter-spacing:.1em}
+.brand{font-size:9px}.header-book{font-size:7px;padding-inline:7px}
+.hero h1{font-size:54px}.hero-art{min-height:300px}
+.hero-actions .button{width:100%}.hero-actions .quiet-link{font-size:9px}
+.service-row h3{font-size:17px}.service-row>a{width:28px;height:28px}
+.portfolio-card span{font-size:7px;padding:10px}.team-grid article img{height:165px}
+}
