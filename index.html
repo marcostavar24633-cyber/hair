@@ -16,17 +16,19 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Перейти к содержимому</a>
   <div class="demo-note">ДЕМОНСТРАЦИОННЫЙ ПРОЕКТ · КОНЦЕПТ ДЛЯ ПОРТФОЛИО</div>
   <header class="header">
     <a class="logo" href="#top" aria-label="HAIR STUDIO — на главную"><span class="logo-mark">H</span><span>HAIR<span class="logo-light">STUDIO</span></span></a>
-    <button class="menu-toggle" aria-label="Открыть меню" aria-expanded="false"><span></span><span></span></button>
-    <nav class="nav" aria-label="Главная навигация">
+    <button class="menu-toggle" aria-label="Открыть меню" aria-expanded="false" aria-controls="primaryNav"><span></span><span></span></button>
+    <nav class="nav" id="primaryNav" aria-label="Главная навигация">
       <a href="#services">Услуги</a><a href="#about">О студии</a><a href="#works">Работы</a><a href="#reviews">Отзывы</a><a href="#contacts">Контакты</a>
     </nav>
     <a class="header-cta" href="#booking">Записаться <span>↗</span></a>
   </header>
 
   <main id="top">
+    <span id="main-content" class="main-content-anchor" tabindex="-1"></span>
     <section class="hero">
       <div class="hero-copy">
         <p class="eyebrow"><span class="eyebrow-line"></span> САЛОН КРАСОТЫ И СТИЛЯ</p>
