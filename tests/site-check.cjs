@@ -10,5 +10,5 @@ assert.match(js,/formatPhone/);assert.match(js,/form\.elements\.date/);assert.ma
 assert.match(js,/IntersectionObserver/);assert.match(js,/prefers-reduced-motion/);assert.match(js,/requestAnimationFrame/);assert.match(js,/--scroll-progress/);
 assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document\.cookie/,'Form must not send or persist data');
 assert.match(css,/@media\(max-width:720px\)/);assert.match(css,/@media\(max-width:390px\)/);assert.match(css,/prefers-reduced-motion/);assert.match(css,/:focus-visible/);assert.match(css,/hero-image-enter/);assert.match(css,/js-reveal/);
-assert.match(readme,/демонстрационный проект/i);assert.match(readme,/не отправляет, не хранит и не передаёт/);assert.match(readme,/анимац/i);
+assert.match(readme,/демонстрационный проект/i);assert.match(readme,/данные не отправляются, не хранятся и не передаются/);assert.match(readme,/полностью вымышленные демонстрационные данные/);assert.match(readme,/анимац/i);
 console.log('HAIR STUDIO quality checks passed.');
