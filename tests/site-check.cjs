@@ -13,7 +13,7 @@ assert.match(html, /id="bookingForm"/);
 assert.match(html, /Демонстрационная форма/);
 assert.match(html, /Изображения — визуальные референсы/);
 assert.match(html, /Девушка с длинными распущенными каштановыми волосами/);
-assert.match(html, /images\\.pexels\\.com\\/photos\\/33015399/);
+assert.ok(html.includes('images.pexels.com/photos/33015399'), 'Expected hero photo source');
 assert.match(html, /href="styles\.css"/);
 assert.match(html, /src="script\.js"/);
 assert.match(html, /href="favicon\.svg"/);
@@ -32,7 +32,7 @@ assert.match(css, /:focus-visible/);
 assert.match(css, /#2b1914/);
 assert.match(css, /#642849/);
 assert.match(css, /border-radius:999px/);
-assert.match(css, /@media\\(max-width:370px\\)/);
+assert.ok(css.includes('@media(max-width:370px)'), 'Expected small-screen breakpoint');
 
 console.log('Visual theme, hero image reference, and small-screen layout checks passed.');
 
