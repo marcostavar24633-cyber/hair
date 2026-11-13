@@ -13,3 +13,73 @@
 :focus-visible{outline:2px solid #9a8066;outline-offset:4px}
 .main-content-anchor{display:block;position:relative;top:-8px}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+
+/* HAIR STUDIO — chocolate & aubergine visual refresh */
+body{background:#f3e9df;color:#2b1a16}
+.demo-note{background:#21130f;color:#e9d8c9}
+.header{background:#2b1914;color:#f5e9df;border-color:#5a4035}
+.logo-mark{border-color:#b38b70;color:#f2dfcf}
+.logo-light{color:#c6a990}
+.nav{color:#e0cbb9}
+.nav a:hover,.text-link:hover,.under-link:hover{color:#bd8b9f}
+.header-cta{color:#f7e9e0;border:1px solid #7b3b5c;border-radius:999px;padding:12px 20px;background:#54233f}
+.header-cta:hover{background:#6b2e50}
+.hero{background:#2b1914;color:#f4e8dc}
+.hero .eyebrow{color:#c5a58f}
+.hero .eyebrow-line{background:#b88e72}
+.hero h1 em{color:#d3ad9a}
+.hero-text{color:#d4c1b2}
+.hero-meta strong{color:#d5a98e}
+.hero-meta span{color:#d4c1b2}
+.hero-bottom{color:#c5a58f}
+.hero-photo.photo-main{inset:0 2% 22px 12%;border-radius:48% 48% 8px 8px;background-image:linear-gradient(180deg,rgba(35,18,15,.03),rgba(35,18,15,.18)),url("https://images.pexels.com/photos/33015399/pexels-photo-33015399.jpeg?auto=compress&cs=tinysrgb&w=1200");background-position:48% 36%;box-shadow:0 24px 70px rgba(0,0,0,.28)}
+.hero-photo.photo-detail{display:none}
+.round-stamp{background:#f3e9df;border-color:#b88e72;color:#54233f}
+.photo-caption{color:#f4e8dc;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.button{border-radius:999px}
+.button-dark{background:#642849;color:#fff7f2;box-shadow:0 8px 24px rgba(67,25,52,.18)}
+.button-dark:hover{background:#7a345b}
+.button-light{background:#642849;color:#fff7f2;border-radius:999px}
+.button-light:hover{background:#7a345b}
+.text-link{color:#ead9cc;border-color:#a98c7b}
+.intro,.works,.booking{background:#eaded2}
+.services,.reviews{background:#f3e9df}
+.section-heading>p,.intro-content>div p{color:#746057}
+.service-grid,.service-card{border-color:#d5c3b5}
+.service-num,.service-icon{color:#8b5a6c}
+.service-bottom a{border-color:#a98a82;color:#642849}
+.price-disclaimer,.gallery-disclaimer{color:#8c766b}
+.quote-band,.footer{background:#241510;color:#f2e5d9}
+.quote-band em{color:#c79b9c}
+.works .filter.active{border-color:#7b3b5c;color:#4b2534}
+.filter{color:#806c62}
+.work-image{border-radius:5px}
+.why{background:#38221c;color:#f4e8dc}
+.why .eyebrow{color:#c5a58f}
+.why h2 em{color:#d3ad9a}
+.why-list>div{border-color:#6b5145}
+.why-list b{color:#d5a98e}
+.why-list small{color:#d4c1b2}
+.why-image{border-radius:3px}
+.reviews-empty{border-color:#d5c3b5}
+.reviews-empty-mark{border-color:#b58d91;color:#7b3b5c}
+.reviews-empty p{color:#5e3d39}
+.booking-copy>p:not(.eyebrow),.booking-form label{color:#746057}
+.booking-contact span,.booking-form small{color:#8c766b}
+.booking-form input,.booking-form select{border-color:#c6afa0;color:#35211c}
+.booking-form input:focus,.booking-form select:focus{border-color:#7b3b5c}
+.form-message{color:#54704c}
+.footer-logo .logo-light{color:#c6a990}
+.footer-top{border-color:#5a4035}
+.footer-top p{color:#d7bba8}
+.footer-bottom{color:#c4a998}
+:focus-visible{outline-color:#9b5c7c}
+@media(max-width:640px){
+ .nav{background:#2b1914;color:#f2e5d9;border-color:#5a4035}
+ .menu-toggle span{background:#f2e5d9}
+ .hero{padding-top:42px}
+ .hero-visual{min-height:430px}
+ .hero-photo.photo-main{inset:0 3% 22px 8%;background-position:48% 32%}
+ .hero-bottom{color:#c5a58f}
+}
