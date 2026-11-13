@@ -44,7 +44,7 @@ form?.addEventListener('submit', event => {
   const phone = String(data.get('phone') || '').trim();
   const service = String(data.get('service') || '').trim();
   const message = form.querySelector('.form-message');
-  if (name.length < 2 || phone.replace(/\\D/g, '').length < 10 || !service) {
+  if (name.length < 2 || phone.replace(/\D/g, '').length < 10 || !service) {
     message.textContent = 'Проверьте имя, телефон и выбранную услугу.';
     message.style.color = '#9a5146';
     return;
