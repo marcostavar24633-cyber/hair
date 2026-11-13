@@ -6,8 +6,9 @@ const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);assert.equal(new Se
 const anchors=[...html.matchAll(/href="#([^"]+)"/g)].map(x=>x[1]);for(const id of anchors)assert.ok(ids.includes(id),'Broken anchor '+id);
 assert.match(html,/type="application\/ld\+json"/);assert.match(html,/twitter:card/);assert.match(html,/rel="canonical"/);
 assert.match(html,/Демо-режим/);assert.match(html,/модельный ориентир/);assert.match(html,/не отправляет данные/);
-assert.match(js,/formatPhone/);assert.match(js,/setSelectionRange/);assert.match(js,/aria-invalid/);assert.match(js,/prefers-reduced-motion|Escape/);assert.match(js,/updateCalculator/);assert.match(js,/compareRange/);assert.match(js,/closeLightbox/);
+assert.match(js,/formatPhone/);assert.match(js,/setSelectionRange/);assert.match(js,/aria-invalid/);assert.match(js,/updateCalculator/);assert.match(js,/compareRange/);assert.match(js,/closeLightbox/);
+assert.match(js,/IntersectionObserver/);assert.match(js,/prefers-reduced-motion/);assert.match(js,/requestAnimationFrame/);assert.match(js,/--scroll-progress/);
 assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document\.cookie/,'Form must not send or persist data');
-assert.match(css,/@media\(max-width:720px\)/);assert.match(css,/@media\(max-width:390px\)/);assert.match(css,/prefers-reduced-motion/);assert.match(css,/:focus-visible/);
-assert.match(readme,/демонстрационный проект/i);assert.match(readme,/не отправляет, не хранит и не передаёт/);
+assert.match(css,/@media\(max-width:720px\)/);assert.match(css,/@media\(max-width:390px\)/);assert.match(css,/prefers-reduced-motion/);assert.match(css,/:focus-visible/);assert.match(css,/hero-image-enter/);assert.match(css,/js-reveal/);
+assert.match(readme,/демонстрационный проект/i);assert.match(readme,/не отправляет, не хранит и не передаёт/);assert.match(readme,/анимац/i);
 console.log('HAIR STUDIO quality checks passed.');
