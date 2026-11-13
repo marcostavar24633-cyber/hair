@@ -121,3 +121,28 @@ body{background:#f3e9df;color:#2b1a16}
  .hero{padding-left:5%;padding-right:5%}
  .hero-meta span{font-size:6px}
 }
+
+
+/* Accessible gallery lightbox */
+.work-image{width:100%;display:block;border:0;padding:0;cursor:zoom-in;text-align:left;position:relative}
+.work-image:focus-visible{outline:3px solid #9b5c7c;outline-offset:4px}
+.lightbox[hidden]{display:none}
+.lightbox{position:fixed;inset:0;z-index:1000;background:rgba(24,12,17,.94);display:flex;align-items:center;justify-content:center;padding:72px 76px 58px;color:#fff7f2}
+.lightbox-figure{margin:0;max-width:min(100%,1100px);max-height:100%;display:flex;flex-direction:column;align-items:center;gap:14px}
+.lightbox-image{display:block;max-width:100%;max-height:calc(100vh - 170px);object-fit:contain;border-radius:5px;box-shadow:0 20px 70px rgba(0,0,0,.35)}
+.lightbox-caption{font-family:"Playfair Display",serif;font-size:19px;color:#f1dfd5;text-align:center}
+.lightbox-close,.lightbox-prev,.lightbox-next{position:absolute;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.08);color:#fff;border-radius:50%;display:grid;place-items:center;cursor:pointer;transition:background .2s ease}
+.lightbox-close:hover,.lightbox-prev:hover,.lightbox-next:hover{background:#642849}
+.lightbox-close{top:22px;right:26px;width:44px;height:44px;font-size:30px;line-height:1}
+.lightbox-prev,.lightbox-next{top:50%;transform:translateY(-50%);width:48px;height:48px;font-size:32px}
+.lightbox-prev{left:20px}.lightbox-next{right:20px}
+.lightbox-counter{position:absolute;bottom:18px;left:0;right:0;text-align:center;font-size:11px;letter-spacing:.12em;color:#d8c3c8}
+body.lightbox-open{overflow:hidden}
+@media(max-width:640px){
+ .lightbox{padding:66px 18px 62px}
+ .lightbox-image{max-height:calc(100vh - 190px)}
+ .lightbox-prev,.lightbox-next{top:auto;bottom:13px;width:40px;height:40px}
+ .lightbox-prev{left:calc(50% - 58px)}.lightbox-next{right:calc(50% - 58px)}
+ .lightbox-counter{bottom:25px;font-size:9px}
+ .lightbox-close{top:13px;right:13px;width:40px;height:40px}
+}
