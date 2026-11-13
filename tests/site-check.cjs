@@ -11,4 +11,11 @@ assert.match(js,/IntersectionObserver/);assert.match(js,/prefers-reduced-motion/
 assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document\.cookie/,'Form must not send or persist data');
 assert.match(css,/@media\(max-width:720px\)/);assert.match(css,/@media\(max-width:390px\)/);assert.match(css,/prefers-reduced-motion/);assert.match(css,/:focus-visible/);assert.ok(css.includes('@media(max-width:360px)'));assert.ok(css.includes('@media(max-width:330px)'));assert.ok(css.includes('min-height:46px'));assert.match(css,/hero-image-enter/);assert.match(css,/js-reveal/);
 assert.match(readme,/демонстрационный проект/i);assert.match(readme,/данные не отправляются, не хранятся и не передаются/);assert.match(readme,/полностью вымышленные демонстрационные данные/);assert.match(readme,/анимац/i);
+
+const imageTags=[...html.matchAll(/<img\\b[^>]*>/g)].map(match=>match[0]);
+assert.ok(imageTags.length>=10,'Expected image-rich layout');
+for(const tag of imageTags){assert.match(tag,/\\balt="/,'Every image needs alt text');assert.match(tag,/\\bdecoding="async"/,'Images should decode asynchronously')}
+assert.equal((html.match(/fetchpriority="high"/g)||[]).length,1,'Only hero image should be high priority');
+assert.match(js,/lightbox\?\.addEventListener\('keydown'/);assert.match(js,/event\.shiftKey/);
+assert.doesNotMatch(readme,/\\\\n/,'README should use actual line breaks');
 console.log('HAIR STUDIO quality checks passed.');
