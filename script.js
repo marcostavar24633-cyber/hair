@@ -1,7 +1,7 @@
 (() => {
 const menuButton=document.querySelector('.menu-button');
 const mobileMenu=document.getElementById('mobile-menu');
-function closeMenu(){if(!mobileMenu||!menuButton)return;mobileMenu.hidden=true;menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Открыть меню');document.body.classList.remove('menu-open')}
+function closeMenu(){if(!mobileMenu||!menuButton)return;const restoreFocus=mobileMenu.contains(document.activeElement);mobileMenu.hidden=true;menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Открыть меню');document.body.classList.remove('menu-open');if(restoreFocus)menuButton.focus()}
 menuButton?.addEventListener('click',()=>{const open=menuButton.getAttribute('aria-expanded')!=='true';menuButton.setAttribute('aria-expanded',String(open));menuButton.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');mobileMenu.hidden=!open;document.body.classList.toggle('menu-open',open);if(open)mobileMenu.querySelector('a')?.focus()});
 mobileMenu?.querySelectorAll('a').forEach(link=>link.addEventListener('click',closeMenu));
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeMenu();closeLightbox()}});
