@@ -80,3 +80,7 @@ body::before{content:"";position:fixed;z-index:1000;top:0;left:0;width:100%;heig
 .service-row h3{font-size:17px}.service-row>a{width:28px;height:28px}
 .portfolio-card span{font-size:7px;padding:10px}.team-grid article img{height:165px}
 }
+
+/* Contrast refinement: small labels on light surfaces meet WCAG AA */
+.demo-contact-note b,.booking-summary>span,.review-stars{color:#765044}
+.booking-summary p{color:#6e6065}
