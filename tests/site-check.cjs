@@ -18,6 +18,6 @@ const imageTags=html.split('<img').slice(1).map(part=>part.split('>')[0]);
 assert.ok(imageTags.length>=10,'Expected image-rich layout');
 for(const tag of imageTags){assert.ok(tag.includes('alt="'),'Every image needs alt text');assert.ok(tag.includes('decoding="async"'),'Images should decode asynchronously')}
 assert.equal((html.match(/fetchpriority="high"/g)||[]).length,1,'Only hero image should be high priority');
-assert.ok(js.includes("lightbox?.addEventListener('keydown'"));assert.ok(js.includes('event.shiftKey'));
+assert.match(html,/id="portfolio-status" role="status" aria-live="polite"/);assert.match(js,/const portfolioStatus=document\.getElementById\('portfolio-status'\)/);assert.match(js,/Показано изображений: '\+visible/);assert.ok(js.includes("lightbox?.addEventListener('keydown'"));assert.ok(js.includes('event.shiftKey'));
 assert.ok(!readme.includes(String.fromCharCode(92)+'n'),'README should use actual line breaks');
 console.log('HAIR STUDIO quality checks passed.');
