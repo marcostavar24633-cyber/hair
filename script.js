@@ -4,6 +4,14 @@ const mobileMenu=document.getElementById('mobile-menu');
 function closeMenu(){if(!mobileMenu||!menuButton)return;const restoreFocus=mobileMenu.contains(document.activeElement);mobileMenu.hidden=true;menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Открыть меню');document.body.classList.remove('menu-open');if(restoreFocus&&menuButton.getClientRects().length)menuButton.focus()}
 menuButton?.addEventListener('click',()=>{const open=menuButton.getAttribute('aria-expanded')!=='true';menuButton.setAttribute('aria-expanded',String(open));menuButton.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');mobileMenu.hidden=!open;document.body.classList.toggle('menu-open',open);if(open)mobileMenu.querySelector('a')?.focus()});
 mobileMenu?.querySelectorAll('a').forEach(link=>link.addEventListener('click',closeMenu));
+mobileMenu?.addEventListener('keydown',event=>{
+if(event.key!=='Tab'||mobileMenu.hidden)return;
+const items=[...mobileMenu.querySelectorAll('a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter(item=>item.getClientRects().length);
+if(!items.length)return;
+const first=items[0],last=items[items.length-1];
+if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
+else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
+});
 window.addEventListener('resize',()=>{if(window.innerWidth>720)closeMenu()},{passive:true});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeMenu();closeLightbox()}});
 document.addEventListener('click',event=>{if(mobileMenu&&!mobileMenu.hidden&&!mobileMenu.contains(event.target)&&!menuButton?.contains(event.target))closeMenu()});
