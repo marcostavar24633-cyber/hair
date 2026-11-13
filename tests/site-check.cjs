@@ -59,3 +59,10 @@ assert.match(js, /setSelectionRange/);
 assert.match(js, /aria-invalid/);
 assert.match(css, /top:calc\(100% \+ 1px\)/);
 assert.match(css, /booking-form input\[aria-invalid="true"\]/);
+
+
+assert.match(html, /концепт сайта парикмахерской/);
+assert.match(html, /демонстрационный макет показывает структуру сайта/i);
+assert.match(html, /Изображения — визуальные референсы/);
+assert.match(html, /Проверить демо-форму/);
+assert.match(html, /Стоимость уточняется/);
