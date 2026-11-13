@@ -77,3 +77,41 @@ assert.match(js, /Введите имя не короче двух символ�
 assert.match(js, /Выберите интересующую услугу/);
 assert.match(js, /failed\.field\?\.focus\(\)/);
 assert.doesNotMatch(readme, /\\n-/);
+
+
+// Structural and privacy regression checks.
+const allIds = [...html.matchAll(/\\bid="([^"]+)"/g)].map(match => match[1]);
+assert.equal(new Set(allIds).size, allIds.length, 'HTML IDs must be unique');
+assert.equal([...html.matchAll(/<h1\\b/g)].length, 1, 'The page must have exactly one H1');
+assert.match(html, /name="twitter:card" content="summary_large_image"/);
+assert.match(html, /name="twitter:image:alt"/);
+assert.doesNotMatch(js, /\\bfetch\\s*\\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document\\.cookie/, 'Demo form must not send or persist form data');
+
+// WCAG AA normal-text contrast checks for the revised light-section palette.
+function relativeLuminance(hex) {
+  const channels = hex.replace('#', '').match(/.{2}/g).map(value => parseInt(value, 16) / 255);
+  const linear = channels.map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+  return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
+}
+function contrastRatio(foreground, background) {
+  const values = [relativeLuminance(foreground), relativeLuminance(background)].sort((a, b) => b - a);
+  return (values[0] + 0.05) / (values[1] + 0.05);
+}
+const contrastPairs = [
+  ['#65574e', '#f3e9df'],
+  ['#6e594f', '#eaded2'],
+  ['#62584f', '#f3e9df'],
+  ['#70584d', '#eaded2'],
+  ['#6f5a50', '#eaded2'],
+  ['#48613f', '#eaded2'],
+  ['#8d4037', '#eaded2']
+];
+for (const [foreground, background] of contrastPairs) {
+  assert.ok(contrastRatio(foreground, background) >= 4.5,
+    `Insufficient WCAG AA contrast: ${foreground} on ${background}`);
+}
+assert.match(css, /\.eyebrow\\{color:#65574e\\}/);
+assert.match(css, /\.service-card p\\{color:#62584f\\}/);
+assert.match(css, /\.form-message\\{color:#48613f\\}/);
+
+console.log('Structure, privacy, social metadata, and WCAG AA contrast checks passed.');
