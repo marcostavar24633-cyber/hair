@@ -10,6 +10,7 @@ assert.match(js,/const restoreFocus=mobileMenu\.contains\(document\.activeElemen
 assert.match(js,/formatPhone/);assert.match(js,/form\.elements\.date/);assert.match(js,/form\.elements\.time/);assert.match(js,/время не забронировано/);assert.match(js,/updateBookingSummary/);assert.match(js,/demoPrices/);assert.match(js,/setSelectionRange/);assert.match(js,/aria-invalid/);assert.match(js,/updateCalculator/);assert.match(js,/compareRange/);assert.match(js,/closeLightbox/);
 assert.match(js,/IntersectionObserver/);assert.match(js,/prefers-reduced-motion/);assert.match(js,/requestAnimationFrame/);assert.match(js,/--scroll-progress/);
 assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document\.cookie/,'Form must not send or persist data');
+assert.match(css,/body\.menu-open\{overflow:hidden\}/);
 assert.match(css,/@media\(max-width:720px\)/);assert.match(css,/@media\(max-width:390px\)/);assert.match(css,/prefers-reduced-motion/);assert.match(css,/:focus-visible/);assert.ok(css.includes('@media(max-width:360px)'));assert.ok(css.includes('@media(max-width:330px)'));assert.ok(css.includes('min-height:46px'));assert.match(css,/hero-image-enter/);assert.match(css,/js-reveal/);
 assert.match(readme,/демонстрационный проект/i);assert.match(readme,/данные не отправляются, не хранятся и не передаются/);assert.match(readme,/полностью вымышленные демонстрационные данные/);assert.match(readme,/анимац/i);
 
