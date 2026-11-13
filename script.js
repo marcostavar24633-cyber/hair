@@ -167,7 +167,7 @@ const formMessage = form?.querySelector('.form-message');
 const validatedFields = [nameInput, phoneInput, serviceInput].filter(Boolean);
 
 function formatRussianPhone(value) {
-  let digits = value.replace(/\\D/g, '');
+  let digits = value.replace(/\D/g, '');
   if (!digits) return '';
   if (digits[0] === '8') digits = '7' + digits.slice(1);
   else if (digits[0] !== '7') digits = '7' + digits;
@@ -184,7 +184,7 @@ function formatRussianPhone(value) {
 }
 
 function isValidRussianPhone(value) {
-  const digits = value.replace(/\\D/g, '');
+  const digits = value.replace(/\D/g, '');
   return digits.length === 11 && digits.startsWith('7');
 }
 
@@ -207,8 +207,8 @@ nameInput?.addEventListener('input', () => {
 phoneInput?.addEventListener('input', () => {
   const oldValue = phoneInput.value;
   const selectionStart = phoneInput.selectionStart ?? oldValue.length;
-  const digitsBeforeCaret = oldValue.slice(0, selectionStart).replace(/\\D/g, '').length;
-  const oldDigits = oldValue.replace(/\\D/g, '');
+  const digitsBeforeCaret = oldValue.slice(0, selectionStart).replace(/\D/g, '').length;
+  const oldDigits = oldValue.replace(/\D/g, '');
   const addedCountryPrefix = oldDigits.length > 0 && oldDigits[0] !== '7' && oldDigits[0] !== '8' ? 1 : 0;
   const targetDigitCount = digitsBeforeCaret + (digitsBeforeCaret > 0 ? addedCountryPrefix : 0);
   const formatted = formatRussianPhone(oldValue);
@@ -217,7 +217,7 @@ phoneInput?.addEventListener('input', () => {
   let caret = 0;
   let digitCount = 0;
   while (caret < formatted.length && digitCount < targetDigitCount) {
-    if (/\\d/.test(formatted[caret])) digitCount += 1;
+    if (/\d/.test(formatted[caret])) digitCount += 1;
     caret += 1;
   }
   phoneInput.setSelectionRange(caret, caret);
