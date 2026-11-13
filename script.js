@@ -160,11 +160,14 @@ document.addEventListener('keydown', event => {
 
 // Russian +7 phone formatting. No form data is sent anywhere.
 const form = document.getElementById('bookingForm');
+const nameInput = form?.querySelector('[name="name"]');
 const phoneInput = form?.querySelector('[name="phone"]');
+const serviceInput = form?.querySelector('[name="service"]');
 const formMessage = form?.querySelector('.form-message');
+const validatedFields = [nameInput, phoneInput, serviceInput].filter(Boolean);
 
 function formatRussianPhone(value) {
-  let digits = value.replace(/\D/g, '');
+  let digits = value.replace(/\\D/g, '');
   if (!digits) return '';
   if (digits[0] === '8') digits = '7' + digits.slice(1);
   else if (digits[0] !== '7') digits = '7' + digits;
@@ -181,41 +184,75 @@ function formatRussianPhone(value) {
 }
 
 function isValidRussianPhone(value) {
-  const digits = value.replace(/\D/g, '');
+  const digits = value.replace(/\\D/g, '');
   return digits.length === 11 && digits.startsWith('7');
 }
 
-phoneInput?.addEventListener('input', () => {
-  phoneInput.value = formatRussianPhone(phoneInput.value);
-  phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
-  if (phoneInput.getAttribute('aria-invalid') === 'true' && isValidRussianPhone(phoneInput.value)) {
-    phoneInput.removeAttribute('aria-invalid');
-    if (formMessage) {
-      formMessage.textContent = '';
-      delete formMessage.dataset.state;
-    }
+function clearFormMessageWhenValid() {
+  if (validatedFields.every(field => field.getAttribute('aria-invalid') !== 'true') && formMessage) {
+    formMessage.textContent = '';
+    delete formMessage.dataset.state;
   }
+}
+
+function clearFieldError(field) {
+  field?.removeAttribute('aria-invalid');
+  clearFormMessageWhenValid();
+}
+
+nameInput?.addEventListener('input', () => {
+  if (nameInput.value.trim().length >= 2) clearFieldError(nameInput);
+});
+
+phoneInput?.addEventListener('input', () => {
+  const oldValue = phoneInput.value;
+  const selectionStart = phoneInput.selectionStart ?? oldValue.length;
+  const digitsBeforeCaret = oldValue.slice(0, selectionStart).replace(/\\D/g, '').length;
+  const oldDigits = oldValue.replace(/\\D/g, '');
+  const addedCountryPrefix = oldDigits.length > 0 && oldDigits[0] !== '7' && oldDigits[0] !== '8' ? 1 : 0;
+  const targetDigitCount = digitsBeforeCaret + (digitsBeforeCaret > 0 ? addedCountryPrefix : 0);
+  const formatted = formatRussianPhone(oldValue);
+  phoneInput.value = formatted;
+
+  let caret = 0;
+  let digitCount = 0;
+  while (caret < formatted.length && digitCount < targetDigitCount) {
+    if (/\\d/.test(formatted[caret])) digitCount += 1;
+    caret += 1;
+  }
+  phoneInput.setSelectionRange(caret, caret);
+
+  if (isValidRussianPhone(formatted)) clearFieldError(phoneInput);
+});
+
+serviceInput?.addEventListener('change', () => {
+  if (serviceInput.value) clearFieldError(serviceInput);
 });
 
 form?.addEventListener('submit', event => {
   event.preventDefault();
-  const data = new FormData(form);
-  const name = String(data.get('name') || '').trim();
-  const phone = String(data.get('phone') || '').trim();
-  const service = String(data.get('service') || '').trim();
-  const digits = phone.replace(/\D/g, '');
+  const name = String(nameInput?.value || '').trim();
+  const phone = String(phoneInput?.value || '').trim();
+  const service = String(serviceInput?.value || '').trim();
 
-  if (name.length < 2 || digits.length !== 11 || !digits.startsWith('7') || !service) {
-    phoneInput?.setAttribute('aria-invalid', 'true');
+  const validations = [
+    { field: nameInput, valid: name.length >= 2, message: 'Введите имя не короче двух символов.' },
+    { field: phoneInput, valid: isValidRussianPhone(phone), message: 'Проверьте номер: введите 10 цифр российского номера.' },
+    { field: serviceInput, valid: Boolean(service), message: 'Выберите интересующую услугу.' }
+  ];
+
+  validatedFields.forEach(field => field.removeAttribute('aria-invalid'));
+  const failed = validations.find(item => !item.valid);
+  if (failed) {
+    failed.field?.setAttribute('aria-invalid', 'true');
     if (formMessage) {
       formMessage.dataset.state = 'error';
-      formMessage.textContent = 'Проверьте номер: нужен российский номер из 10 цифр после +7.';
+      formMessage.textContent = failed.message;
     }
-    phoneInput?.focus();
+    failed.field?.focus();
     return;
   }
 
-  phoneInput?.removeAttribute('aria-invalid');
   form.reset();
   if (formMessage) {
     formMessage.dataset.state = 'success';
@@ -224,5 +261,5 @@ form?.addEventListener('submit', event => {
 });
 
 form?.addEventListener('reset', () => {
-  phoneInput?.removeAttribute('aria-invalid');
+  validatedFields.forEach(field => field.removeAttribute('aria-invalid'));
 });

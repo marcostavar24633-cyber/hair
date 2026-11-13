@@ -92,11 +92,11 @@
 
     <section class="booking section-pad" id="booking">
       <div class="booking-copy"><p class="eyebrow">06 / ВАШ СЛЕДУЮЩИЙ ШАГ</p><h2>Время для<br><em>себя.</em></h2><p>Оставьте тестовую заявку, чтобы посмотреть, как выглядит форма записи. Отправка пока не подключена.</p><div class="booking-contact"><span>КОНТАКТЫ</span><p>Телефон и адрес будут добавлены после подтверждения данных салона.</p></div></div>
-      <form class="booking-form" id="bookingForm">
-        <label>Ваше имя<input name="name" type="text" placeholder="Как к вам обращаться?" required minlength="2" autocomplete="name"></label>
+      <form class="booking-form" id="bookingForm" novalidate>
+        <label>Ваше имя<input id="nameInput" name="name" type="text" placeholder="Как к вам обращаться?" required minlength="2" autocomplete="name"></label>
         <label>Номер телефона<input name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="18" aria-describedby="phoneHelp" placeholder="+7 (___) ___-__-__" required></label>
         <small class="field-hint" id="phoneHelp">Введите 10 цифр номера — формат +7 добавится автоматически.</small>
-        <label>Какая услуга интересует?<select name="service" required><option value="">Выберите услугу</option><option>Стрижка</option><option>Окрашивание</option><option>Укладка</option><option>Уход за волосами</option><option>Нужна консультация</option></select></label>
+        <label>Какая услуга интересует?<select id="serviceInput" name="service" required><option value="">Выберите услугу</option><option>Стрижка</option><option>Окрашивание</option><option>Укладка</option><option>Уход за волосами</option><option>Нужна консультация</option></select></label>
         <button class="button button-dark submit-button" type="submit">Проверить демо-форму <span>↗</span></button>
         <small>Демонстрационная форма: данные никуда не отправляются. Перед запуском подключите CRM или сервис записи и добавьте политику обработки персональных данных.</small>
         <p class="form-message" role="status" aria-live="polite"></p>

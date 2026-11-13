@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const html = fs.readFileSync('index.html', 'utf8');
 const js = fs.readFileSync('script.js', 'utf8');
 const css = fs.readFileSync('styles.css', 'utf8');
+const readme = fs.readFileSync('README.md', 'utf8');
 
 assert.match(html, /<html lang="ru">/);
 assert.match(html, /<title>HAIR STUDIO/);
@@ -66,3 +67,13 @@ assert.match(html, /демонстрационный макет показыва
 assert.match(html, /Изображения — визуальные референсы/);
 assert.match(html, /Проверить демо-форму/);
 assert.match(html, /Стоимость уточняется/);
+
+assert.match(html, /id="bookingForm" novalidate/);
+assert.match(html, /id="nameInput"/);
+assert.match(html, /id="serviceInput"/);
+assert.match(js, /digitsBeforeCaret/);
+assert.match(js, /targetDigitCount/);
+assert.match(js, /Введите имя не короче двух символов/);
+assert.match(js, /Выберите интересующую услугу/);
+assert.match(js, /failed\.field\?\.focus\(\)/);
+assert.doesNotMatch(readme, /\\\\n-/);
