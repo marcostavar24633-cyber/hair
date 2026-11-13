@@ -23,3 +23,46 @@ phone?.addEventListener('input',()=>{const before=phone.value;const pos=phone.se
 form?.addEventListener('submit',event=>{event.preventDefault();const name=form.elements.name.value.trim();const digits=phone.value.replace(/\D/g,'');const service=form.elements.service.value;const invalid=[{field:form.elements.name,ok:name.length>=2,message:'Введите имя — не менее двух символов.'},{field:phone,ok:digits.length===11&&digits.startsWith('7'),message:'Введите корректный российский номер.'},{field:form.elements.service,ok:Boolean(service),message:'Выберите направление.'}].find(item=>!item.ok);form.querySelectorAll('[aria-invalid=true]').forEach(field=>field.removeAttribute('aria-invalid'));if(invalid){invalid.field.setAttribute('aria-invalid','true');status.dataset.state='error';status.textContent=invalid.message;invalid.field.focus();return}status.dataset.state='info';status.textContent='Проверка пройдена. Это демонстрация: заявка не отправлена и данные не сохранены.';});
 form?.querySelectorAll('input,select').forEach(field=>field.addEventListener('input',()=>{if(field.getAttribute('aria-invalid')==='true')field.removeAttribute('aria-invalid')}));
 })();
+
+/* Scroll reveals and reading progress: native browser APIs only */
+(() => {
+  const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const revealTargets=[
+    '.statement-grid > *','.section-title','.service-row','.visual-break-caption',
+    '.portfolio-card','.comparison','.process-grid article','.calculator-copy',
+    '.calculator-panel','.team-grid article','.reviews-row > *','.review-placeholder',
+    '.faq-list details','.final-cta > *','.booking-section > *'
+  ].flatMap(selector=>Array.from(document.querySelectorAll(selector)));
+  const uniqueTargets=[...new Set(revealTargets)];
+  if(reducedMotion||!('IntersectionObserver' in window)){
+    uniqueTargets.forEach(element=>element.classList.add('is-visible'));
+  }else{
+    const observer=new IntersectionObserver((entries,instance)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){entry.target.classList.add('is-visible');instance.unobserve(entry.target)}
+      });
+    },{threshold:.12,rootMargin:'0px 0px -36px 0px'});
+    uniqueTargets.forEach((element,index)=>{
+      element.classList.add('js-reveal');
+      const group=element.parentElement;
+      const siblings=group?Array.from(group.children).filter(child=>child.matches(selectorForReveal(child))):[];
+      const position=Math.max(0,siblings.indexOf(element));
+      element.style.setProperty('--reveal-delay',Math.min(position*75,300)+'ms');
+      observer.observe(element);
+    });
+  }
+  let ticking=false;
+  const updateProgress=()=>{
+    const scrollable=document.documentElement.scrollHeight-window.innerHeight;
+    const progress=scrollable>0?Math.min(1,Math.max(0,window.scrollY/scrollable)):0;
+    document.body.style.setProperty('--scroll-progress',String(progress));
+    ticking=false;
+  };
+  const onScroll=()=>{if(!ticking){window.requestAnimationFrame(updateProgress);ticking=true}};
+  window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('resize',updateProgress,{passive:true});
+  updateProgress();
+  function selectorForReveal(element){
+    return ['.service-row','.portfolio-card','.process-grid article','.team-grid article','.faq-list details'].find(selector=>element.matches(selector))||'*';
+  }
+})();

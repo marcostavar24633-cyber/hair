@@ -4,3 +4,22 @@
 @media(max-width:390px){.brand{font-size:11px;gap:7px}.brand-symbol{width:30px;height:30px}.header-book{padding:9px 11px;font-size:8px}.hero h1{font-size:62px}.hero-actions .button{width:100%;justify-content:center}.hero-art{min-height:380px}.service-row h3{font-size:20px}.team-grid article img{height:220px}.footer-main p{font-size:16px}}
 @media(hover:none),(pointer:coarse){.portfolio-card:hover img{transform:none}.team-grid article:hover img{transform:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+
+/* Editorial motion layer — lightweight, dependency-free */
+body::before{content:"";position:fixed;z-index:1000;top:0;left:0;width:100%;height:2px;background:#d2a48f;transform:scaleX(var(--scroll-progress,0));transform-origin:left center;pointer-events:none}
+.hero-copy>.eyebrow,.hero-copy>h1,.hero-copy>.hero-lead,.hero-copy>.hero-actions,.hero-copy>.hero-foot{animation:hero-enter .85s both;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+.hero-copy>h1{animation-delay:.08s}.hero-copy>.hero-lead{animation-delay:.16s}.hero-copy>.hero-actions{animation-delay:.24s}.hero-copy>.hero-foot{animation-delay:.32s}
+.hero-image{animation:hero-image-enter 1.25s .12s both cubic-bezier(.2,.7,.2,1)}
+@keyframes hero-enter{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes hero-image-enter{from{opacity:0;transform:scale(1.035);clip-path:inset(8% 5% 0 5%)}to{opacity:1;transform:scale(1);clip-path:inset(0)}}
+.js-reveal{opacity:0;transform:translateY(24px);transition:opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1);transition-delay:var(--reveal-delay,0ms);will-change:opacity,transform}
+.js-reveal.is-visible{opacity:1;transform:translateY(0);will-change:auto}
+.service-row,.portfolio-card,.team-grid article,.process-grid article,.faq-list details{transition-property:opacity,transform,background-color;transition-duration:.65s}
+.service-row{transition:padding .25s,background-color .25s}
+.service-row:hover{background:rgba(113,54,80,.035)}
+.portfolio-card:focus-visible{outline-offset:5px}
+.button:active,.header-book:active{transform:translateY(1px) scale(.985)}
+.marquee:hover .marquee-track{animation-play-state:paused}
+@media(max-width:720px){.js-reveal{transform:translateY(16px)}.hero-copy>.hero-foot{display:none}.hero-art{overflow:hidden}.hero-image{animation-duration:1s}}
+@media(prefers-reduced-motion:reduce){.js-reveal,.hero-copy>.eyebrow,.hero-copy>h1,.hero-copy>.hero-lead,.hero-copy>.hero-actions,.hero-copy>.hero-foot,.hero-image{animation:none!important;transition:none!important;opacity:1!important;transform:none!important;clip-path:none!important}.js-reveal{will-change:auto}}
