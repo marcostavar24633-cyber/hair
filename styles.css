@@ -153,3 +153,15 @@ body.lightbox-open{overflow:hidden}
 .booking-form input[aria-invalid="true"]{border-color:#9a5146}
 .form-message[data-state="error"]{color:#9a5146}
 .form-message[data-state="success"]{color:#54704c}
+
+
+/* WCAG AA text contrast improvements for light sections */
+.eyebrow{color:#65574e}
+.section-heading>p,.intro-content>div p,.booking-copy>p:not(.eyebrow){color:#6e594f}
+.service-card p{color:#62584f}
+.price-disclaimer,.gallery-disclaimer,.booking-contact span,.booking-form small,.booking-form .field-hint{color:#70584d}
+.filter{color:#6f5a50}
+.work-label span,.reviews-head>span{color:#62584f}
+.booking-form label{color:#6e594f}
+.form-message{color:#48613f}
+.form-message[data-state="error"]{color:#8d4037}
