@@ -84,3 +84,7 @@ body::before{content:"";position:fixed;z-index:1000;top:0;left:0;width:100%;heig
 /* Contrast refinement: small labels on light surfaces meet WCAG AA */
 .demo-contact-note b,.booking-summary>span,.review-stars{color:#765044}
 .booking-summary p{color:#6e6065}
+
+/* WCAG AA contrast pass for secondary text on light surfaces */
+.signature,.disclaimer,.team-grid article>span,.review-placeholder span,.booking-form small,.form-status{color:#6b5951}
+.booking-summary p{color:#65565b}
