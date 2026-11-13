@@ -36,31 +36,42 @@ document.querySelectorAll('.filter').forEach(button => {
   });
 });
 
-// Accessible gallery lightbox. The existing gallery photos remain the source of truth.
+// Accessible gallery lightbox with focus management.
 const galleryItems = [...document.querySelectorAll('.work-item')];
 const lightbox = document.createElement('div');
 lightbox.className = 'lightbox';
+lightbox.id = 'galleryLightbox';
 lightbox.hidden = true;
 lightbox.setAttribute('role', 'dialog');
 lightbox.setAttribute('aria-modal', 'true');
-lightbox.setAttribute('aria-label', 'Просмотр работы');
-lightbox.innerHTML = `
-  <button class="lightbox-close" type="button" aria-label="Закрыть просмотр">×</button>
-  <button class="lightbox-prev" type="button" aria-label="Предыдущее фото">‹</button>
-  <figure class="lightbox-figure">
-    <img class="lightbox-image" alt="">
-    <figcaption class="lightbox-caption"></figcaption>
-  </figure>
-  <button class="lightbox-next" type="button" aria-label="Следующее фото">›</button>
-  <p class="lightbox-counter" aria-live="polite"></p>
-`;
+lightbox.setAttribute('aria-labelledby', 'lightboxCaption');
+lightbox.innerHTML = '<button class="lightbox-close" type="button" aria-label="Закрыть просмотр">×</button>' +
+  '<button class="lightbox-prev" type="button" aria-label="Предыдущее фото">‹</button>' +
+  '<figure class="lightbox-figure"><img class="lightbox-image" alt="">' +
+  '<figcaption class="lightbox-caption" id="lightboxCaption"></figcaption></figure>' +
+  '<button class="lightbox-next" type="button" aria-label="Следующее фото">›</button>' +
+  '<p class="lightbox-counter" aria-live="polite"></p>';
 document.body.append(lightbox);
 
+const pageElements = [...document.body.children].filter(element => element !== lightbox);
+const previousInertStates = new Map();
 let activeGalleryIndex = 0;
 let previousFocus = null;
 
 function visibleGalleryItems() {
   return galleryItems.filter(item => !item.hidden);
+}
+
+function setPageInert(isInert) {
+  pageElements.forEach(element => {
+    if (isInert) {
+      previousInertStates.set(element, element.inert);
+      element.inert = true;
+    } else {
+      element.inert = previousInertStates.get(element) || false;
+    }
+  });
+  if (!isInert) previousInertStates.clear();
 }
 
 function showGalleryItem(index) {
@@ -72,16 +83,19 @@ function showGalleryItem(index) {
   const imageStyle = getComputedStyle(image).backgroundImage;
   const imageUrl = imageStyle.match(/url\(["']?(.*?)["']?\)/)?.[1];
   const img = lightbox.querySelector('.lightbox-image');
-  img.src = imageUrl || '';
+  if (imageUrl) img.src = imageUrl;
+  else img.removeAttribute('src');
   img.alt = item.querySelector('.work-label b')?.textContent || 'Пример причёски';
-  lightbox.querySelector('.lightbox-caption').textContent =
-    item.querySelector('.work-label b')?.textContent || '';
-  lightbox.querySelector('.lightbox-counter').textContent =
-    `${activeGalleryIndex + 1} / ${items.length}`;
+  lightbox.querySelector('.lightbox-caption').textContent = item.querySelector('.work-label b')?.textContent || '';
+  lightbox.querySelector('.lightbox-counter').textContent = String(activeGalleryIndex + 1) + ' / ' + String(items.length);
 }
 
-function openLightbox(index) {
+function openLightbox(item) {
+  const items = visibleGalleryItems();
+  const index = items.indexOf(item);
+  if (index < 0) return;
   previousFocus = document.activeElement;
+  setPageInert(true);
   lightbox.hidden = false;
   document.body.classList.add('lightbox-open');
   showGalleryItem(index);
@@ -89,21 +103,25 @@ function openLightbox(index) {
 }
 
 function closeLightbox() {
+  if (lightbox.hidden) return;
   lightbox.hidden = true;
   document.body.classList.remove('lightbox-open');
+  setPageInert(false);
   previousFocus?.focus();
 }
 
-galleryItems.forEach((item, index) => {
+galleryItems.forEach(item => {
   const image = item.querySelector('.work-image');
   image?.setAttribute('role', 'button');
   image?.setAttribute('tabindex', '0');
-  image?.setAttribute('aria-label', `Увеличить фото: ${item.querySelector('.work-label b')?.textContent || 'работа'}`);
-  image?.addEventListener('click', () => openLightbox(index));
+  image?.setAttribute('aria-haspopup', 'dialog');
+  image?.setAttribute('aria-controls', 'galleryLightbox');
+  image?.setAttribute('aria-label', 'Увеличить фото: ' + (item.querySelector('.work-label b')?.textContent || 'работа'));
+  image?.addEventListener('click', () => openLightbox(item));
   image?.addEventListener('keydown', event => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      openLightbox(index);
+      openLightbox(item);
     }
   });
 });
@@ -114,27 +132,97 @@ lightbox.querySelector('.lightbox-next').addEventListener('click', () => showGal
 lightbox.addEventListener('click', event => {
   if (event.target === lightbox) closeLightbox();
 });
+
 document.addEventListener('keydown', event => {
   if (lightbox.hidden) return;
-  if (event.key === 'Escape') closeLightbox();
-  if (event.key === 'ArrowLeft') showGalleryItem(activeGalleryIndex - 1);
-  if (event.key === 'ArrowRight') showGalleryItem(activeGalleryIndex + 1);
+  if (event.key === 'Escape') {
+    closeLightbox();
+    return;
+  }
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    event.preventDefault();
+    showGalleryItem(activeGalleryIndex + (event.key === 'ArrowRight' ? 1 : -1));
+    return;
+  }
+  if (event.key === 'Tab') {
+    const focusables = [...lightbox.querySelectorAll('button:not([disabled])')];
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
 });
 
+// Russian +7 phone formatting. No form data is sent anywhere.
 const form = document.getElementById('bookingForm');
+const phoneInput = form?.querySelector('[name="phone"]');
+const formMessage = form?.querySelector('.form-message');
+
+function formatRussianPhone(value) {
+  let digits = value.replace(/\D/g, '');
+  if (!digits) return '';
+  if (digits[0] === '8') digits = '7' + digits.slice(1);
+  else if (digits[0] !== '7') digits = '7' + digits;
+  digits = digits.slice(0, 11);
+
+  const local = digits.slice(1);
+  let formatted = '+7';
+  if (local.length) formatted += ' (' + local.slice(0, 3);
+  if (local.length >= 3) formatted += ')';
+  if (local.length > 3) formatted += ' ' + local.slice(3, 6);
+  if (local.length > 6) formatted += '-' + local.slice(6, 8);
+  if (local.length > 8) formatted += '-' + local.slice(8, 10);
+  return formatted;
+}
+
+function isValidRussianPhone(value) {
+  const digits = value.replace(/\D/g, '');
+  return digits.length === 11 && digits.startsWith('7');
+}
+
+phoneInput?.addEventListener('input', () => {
+  phoneInput.value = formatRussianPhone(phoneInput.value);
+  phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
+  if (phoneInput.getAttribute('aria-invalid') === 'true' && isValidRussianPhone(phoneInput.value)) {
+    phoneInput.removeAttribute('aria-invalid');
+    if (formMessage) {
+      formMessage.textContent = '';
+      delete formMessage.dataset.state;
+    }
+  }
+});
+
 form?.addEventListener('submit', event => {
   event.preventDefault();
   const data = new FormData(form);
   const name = String(data.get('name') || '').trim();
   const phone = String(data.get('phone') || '').trim();
   const service = String(data.get('service') || '').trim();
-  const message = form.querySelector('.form-message');
-  if (name.length < 2 || phone.replace(/\D/g, '').length < 10 || !service) {
-    message.textContent = 'Проверьте имя, телефон и выбранную услугу.';
-    message.style.color = '#9a5146';
+  const digits = phone.replace(/\D/g, '');
+
+  if (name.length < 2 || digits.length !== 11 || !digits.startsWith('7') || !service) {
+    phoneInput?.setAttribute('aria-invalid', 'true');
+    if (formMessage) {
+      formMessage.dataset.state = 'error';
+      formMessage.textContent = 'Проверьте номер: нужен российский номер из 10 цифр после +7.';
+    }
+    phoneInput?.focus();
     return;
   }
-  message.textContent = 'Спасибо! Это демо-форма: подключите сервис записи для приёма заявок.';
-  message.style.color = '#54704c';
+
+  phoneInput?.removeAttribute('aria-invalid');
   form.reset();
+  if (formMessage) {
+    formMessage.dataset.state = 'success';
+    formMessage.textContent = 'Это демонстрация: данные не отправлены. Для приёма заявок подключите сервис записи.';
+  }
+});
+
+form?.addEventListener('reset', () => {
+  phoneInput?.removeAttribute('aria-invalid');
 });

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#2a1712">
+  <meta name="theme-color" content="#2b1914">
   <meta name="description" content="HAIR STUDIO — демонстрационный концепт сайта парикмахерской: стрижки, окрашивание, укладки, уход и форма записи.">
   <link rel="canonical" href="https://marcostavar24633-cyber.github.io/hair/">
   <title>HAIR STUDIO — салон красоты и стиля</title>
@@ -11,10 +11,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
   <meta property="og:title" content="HAIR STUDIO — салон красоты и стиля">
   <meta property="og:description" content="Демонстрационный сайт современной парикмахерской: услуги, работы и онлайн-запись.">
   <meta property="og:url" content="https://marcostavar24633-cyber.github.io/hair/">
   <meta property="og:image" content="https://images.pexels.com/photos/33015399/pexels-photo-33015399.jpeg?auto=compress&cs=tinysrgb&w=1200">
+  <meta property="og:image:alt" content="Визуальный референс HAIR STUDIO — волосы и образ">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -92,7 +94,8 @@
       <div class="booking-copy"><p class="eyebrow">06 / ВАШ СЛЕДУЮЩИЙ ШАГ</p><h2>Время для<br><em>себя.</em></h2><p>Оставьте тестовую заявку, чтобы посмотреть, как выглядит форма записи. Отправка пока не подключена.</p><div class="booking-contact"><span>КОНТАКТЫ</span><p>Телефон и адрес будут добавлены после подтверждения данных салона.</p></div></div>
       <form class="booking-form" id="bookingForm">
         <label>Ваше имя<input name="name" type="text" placeholder="Как к вам обращаться?" required minlength="2" autocomplete="name"></label>
-        <label>Номер телефона<input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" required></label>
+        <label>Номер телефона<input name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="18" aria-describedby="phoneHelp" placeholder="+7 (___) ___-__-__" required></label>
+        <small class="field-hint" id="phoneHelp">Введите 10 цифр номера — формат +7 добавится автоматически.</small>
         <label>Какая услуга интересует?<select name="service" required><option value="">Выберите услугу</option><option>Стрижка</option><option>Окрашивание</option><option>Укладка</option><option>Уход за волосами</option><option>Нужна консультация</option></select></label>
         <button class="button button-dark submit-button" type="submit">Отправить заявку <span>↗</span></button>
         <small>Демонстрационная форма: данные никуда не отправляются. Перед запуском подключите CRM или сервис записи и добавьте политику обработки персональных данных.</small>

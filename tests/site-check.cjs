@@ -46,3 +46,16 @@ assert.ok(css.includes('@media(max-width:370px)'), 'Expected small-screen breakp
 console.log('Visual theme, hero image reference, and small-screen layout checks passed.');
 
 console.log('HAIR STUDIO quality checks passed.');
+
+
+assert.match(html, /maxlength="18"/);
+assert.match(html, /id="phoneHelp"/);
+assert.match(html, /og:locale/);
+assert.match(js, /focusables/);
+assert.match(js, /setPageInert/);
+assert.match(js, /aria-haspopup/);
+assert.match(js, /formatRussianPhone/);
+assert.match(js, /setSelectionRange/);
+assert.match(js, /aria-invalid/);
+assert.match(css, /top:calc\(100% \+ 1px\)/);
+assert.match(css, /booking-form input\[aria-invalid="true"\]/);
