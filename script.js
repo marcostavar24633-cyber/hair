@@ -36,6 +36,91 @@ document.querySelectorAll('.filter').forEach(button => {
   });
 });
 
+// Accessible gallery lightbox. The existing gallery photos remain the source of truth.
+const galleryItems = [...document.querySelectorAll('.work-item')];
+const lightbox = document.createElement('div');
+lightbox.className = 'lightbox';
+lightbox.hidden = true;
+lightbox.setAttribute('role', 'dialog');
+lightbox.setAttribute('aria-modal', 'true');
+lightbox.setAttribute('aria-label', 'Просмотр работы');
+lightbox.innerHTML = `
+  <button class="lightbox-close" type="button" aria-label="Закрыть просмотр">×</button>
+  <button class="lightbox-prev" type="button" aria-label="Предыдущее фото">‹</button>
+  <figure class="lightbox-figure">
+    <img class="lightbox-image" alt="">
+    <figcaption class="lightbox-caption"></figcaption>
+  </figure>
+  <button class="lightbox-next" type="button" aria-label="Следующее фото">›</button>
+  <p class="lightbox-counter" aria-live="polite"></p>
+`;
+document.body.append(lightbox);
+
+let activeGalleryIndex = 0;
+let previousFocus = null;
+
+function visibleGalleryItems() {
+  return galleryItems.filter(item => !item.hidden);
+}
+
+function showGalleryItem(index) {
+  const items = visibleGalleryItems();
+  if (!items.length) return;
+  activeGalleryIndex = (index + items.length) % items.length;
+  const item = items[activeGalleryIndex];
+  const image = item.querySelector('.work-image');
+  const imageStyle = getComputedStyle(image).backgroundImage;
+  const imageUrl = imageStyle.match(/url\(["']?(.*?)["']?\)/)?.[1];
+  const img = lightbox.querySelector('.lightbox-image');
+  img.src = imageUrl || '';
+  img.alt = item.querySelector('.work-label b')?.textContent || 'Пример причёски';
+  lightbox.querySelector('.lightbox-caption').textContent =
+    item.querySelector('.work-label b')?.textContent || '';
+  lightbox.querySelector('.lightbox-counter').textContent =
+    `${activeGalleryIndex + 1} / ${items.length}`;
+}
+
+function openLightbox(index) {
+  previousFocus = document.activeElement;
+  lightbox.hidden = false;
+  document.body.classList.add('lightbox-open');
+  showGalleryItem(index);
+  lightbox.querySelector('.lightbox-close').focus();
+}
+
+function closeLightbox() {
+  lightbox.hidden = true;
+  document.body.classList.remove('lightbox-open');
+  previousFocus?.focus();
+}
+
+galleryItems.forEach((item, index) => {
+  const image = item.querySelector('.work-image');
+  image?.setAttribute('role', 'button');
+  image?.setAttribute('tabindex', '0');
+  image?.setAttribute('aria-label', `Увеличить фото: ${item.querySelector('.work-label b')?.textContent || 'работа'}`);
+  image?.addEventListener('click', () => openLightbox(index));
+  image?.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openLightbox(index);
+    }
+  });
+});
+
+lightbox.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+lightbox.querySelector('.lightbox-prev').addEventListener('click', () => showGalleryItem(activeGalleryIndex - 1));
+lightbox.querySelector('.lightbox-next').addEventListener('click', () => showGalleryItem(activeGalleryIndex + 1));
+lightbox.addEventListener('click', event => {
+  if (event.target === lightbox) closeLightbox();
+});
+document.addEventListener('keydown', event => {
+  if (lightbox.hidden) return;
+  if (event.key === 'Escape') closeLightbox();
+  if (event.key === 'ArrowLeft') showGalleryItem(activeGalleryIndex - 1);
+  if (event.key === 'ArrowRight') showGalleryItem(activeGalleryIndex + 1);
+});
+
 const form = document.getElementById('bookingForm');
 form?.addEventListener('submit', event => {
   event.preventDefault();
