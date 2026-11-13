@@ -20,7 +20,7 @@ const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1])
 const anchors = [...html.matchAll(/href="#([^"]+)"/g)].map(match => match[1]);
 for (const anchor of anchors) assert.ok(ids.has(anchor), `Missing anchor target: #${anchor}`);
 
-for (const selector of ['.menu-toggle', '.nav', '.filter', '.work-item', '.booking-form']) {
+for (const selector of ['.menu-toggle', '.nav', '.filter', '.work-item', 'bookingForm']) {
   assert.ok(js.includes(selector), `Expected interaction for ${selector}`);
 }
 assert.match(js, /event\.key === 'Escape'/);
