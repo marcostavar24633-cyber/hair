@@ -27,12 +27,13 @@
     void menu.offsetWidth;
     menu.setAttribute('aria-hidden', 'false');
     menu.inert = false;
+    menu.removeAttribute('inert');
     menuBackdrop.hidden = false;
     menuButton.setAttribute('aria-expanded', 'true');
     menuButton.setAttribute('aria-label', 'Закрыть меню');
     document.body.classList.add('menu-open');
     window.requestAnimationFrame(() => {
-      menu.querySelector('a,button')?.focus({ preventScroll: true });
+      menu.focus({ preventScroll: true });
     });
   }
 
