@@ -31,7 +31,9 @@
     menuButton.setAttribute('aria-expanded', 'true');
     menuButton.setAttribute('aria-label', 'Закрыть меню');
     document.body.classList.add('menu-open');
-    menu.querySelector('a,button')?.focus();
+    window.requestAnimationFrame(() => {
+      menu.querySelector('a,button')?.focus({ preventScroll: true });
+    });
   }
 
   function closeMenu(restoreFocus = true) {
