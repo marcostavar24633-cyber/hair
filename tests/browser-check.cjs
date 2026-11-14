@@ -157,6 +157,9 @@ async function main() {
           let parent = element.parentElement;
           while (parent && parent !== document.body) {
             const parentStyle = getComputedStyle(parent);
+            if (parent.hasAttribute('hidden') || parent.inert) return false;
+            if (parent.tagName === 'DETAILS' && !parent.open) return false;
+            if (parentStyle.position === 'fixed' || parentStyle.position === 'absolute') return false;
             if (['hidden', 'clip'].includes(parentStyle.overflowX)) return false;
             parent = parent.parentElement;
           }
