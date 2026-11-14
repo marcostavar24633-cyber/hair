@@ -197,3 +197,20 @@ const ariaReferences=[...html.matchAll(/\b(?:aria-labelledby|aria-describedby|ar
 for(const reference of ariaReferences){
   assert.ok(ids.includes(reference),'ARIA reference must resolve to an existing ID: '+reference);
 }
+
+
+// Security and privacy regression checks.
+const unsafeDomPatterns=[/\\binnerHTML\\b/,/\\bouterHTML\\b/,/insertAdjacentHTML/,/document\\.write/,/\\beval\\s*\\(/,/new\\s+Function/];
+for(const pattern of unsafeDomPatterns)assert.doesNotMatch(js,pattern,'Avoid executable HTML or dynamic-code sinks: '+pattern);
+const browserDataAndNetworkPatterns=[/\\blocalStorage\\b/,/\\bsessionStorage\\b/,/document\\.cookie/,/\\bfetch\\s*\\(/,/XMLHttpRequest/,/sendBeacon/];
+for(const pattern of browserDataAndNetworkPatterns)assert.doesNotMatch(js,pattern,'The demo must not store or transmit visitor data: '+pattern);
+assert.doesNotMatch(html,/javascript\\s*:/i,'HTML must not contain javascript: URLs');
+assert.doesNotMatch(html,/\\b(?:href|src)\\s*=\\s*["']http:\\/\\//i,'External HTML resources must use HTTPS');
+const externalTargetLinks=[...html.matchAll(/<a\\b([^>]*)>/gi)].filter(match=>/\\btarget=["']_blank["']/i.test(match[1]));
+for(const link of externalTargetLinks)assert.match(link[1],/\\brel=["'][^"']*noopener[^"']*noreferrer[^"']*["']/i,'New-tab links must use noopener noreferrer');
+const demoImageUrls=[...html.matchAll(/data-image="([^"]+)"/g)].map(match=>match[1]);
+assert.ok(demoImageUrls.length>0,'Portfolio lightbox images must remain explicitly declared in HTML');
+for(const url of demoImageUrls)assert.match(url,/^https:\\/\\/images\\.unsplash\\.com\\//,'Lightbox image URLs must use the trusted HTTPS image host');
+assert.match(formMarkup,/<button\\b[^>]*type="submit"[^>]*\\bdisabled(?:\\s|>)/,'Demo form submit control must be disabled until its JavaScript handler is ready');
+assert.ok(js.includes("form?.querySelector('button[type=\\"submit\\"]')?.removeAttribute('disabled')"),'Enable demo submission only after the client-side handler is registered');
+assert.doesNotMatch(formMarkup,/\\baction=/i,'Demo form must not declare a network submission destination');
