@@ -40,6 +40,7 @@ assert.ok(css.includes(':focus-visible'));assert.ok(css.includes(':focus-visible
 
 
 assert.match(html,/og:site_name/);assert.match(html,/twitter:image:alt/);
+assert.match(html,/<link rel="preload" as="image" fetchpriority="high" imagesrcset="[^"]+480w[^"]+800w[^"]+1200w" imagesizes="\(max-width: 720px\) 90vw, 45vw">/,"Hero image should have a responsive high-priority preload matching its rendered sizes");
 
 const responsiveImages=imageTags.filter(tag=>/src="https:\/\/images\.(?:unsplash|pexels)\.com\//.test(tag));
 assert.ok(responsiveImages.length>=10,'Expected all remote content images to use responsive image candidates');
