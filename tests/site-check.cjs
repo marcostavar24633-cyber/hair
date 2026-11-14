@@ -62,7 +62,7 @@ assert.match(html,/rel="icon"[^>]+href="favicon\.svg"/,'A favicon must be availa
 assert.equal(countMatches(html,/<h1\b/g),1,'The page must have exactly one primary heading');
 assert.ok(sitemap.includes(canonicalUrl),'Sitemap must contain the canonical page URL');
 
-const headingLevels=[...html.matchAll(/<h([1-6])\\b/gi)].map(match=>Number(match[1]));
+const headingLevels=[...html.matchAll(/<h([1-6])\b/gi)].map(match=>Number(match[1]));
 assert.equal(headingLevels.filter(level=>level===1).length,1,'Use exactly one H1');
 for(let index=1;index<headingLevels.length;index++){
   assert.ok(headingLevels[index]<=headingLevels[index-1]+1,'Heading levels must not skip a level');
