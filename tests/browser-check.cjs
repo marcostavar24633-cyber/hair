@@ -436,6 +436,23 @@ async function main() {
     if (!answerShown) console.error('FAQ diagnostics: ' + JSON.stringify(await page.evaluate(() => { const a = document.getElementById('faq-a1'); const d = a.firstElementChild; return { rows: getComputedStyle(a).gridTemplateRows, h: a.getBoundingClientRect().height, vis: getComputedStyle(d).visibility, cls: a.parentElement.className }; })));
     assert.equal(answerShown, true, 'FAQ answer is visible when open');
 
+    /* ---------- Theme toggle: dark by default, light on request ---------- */
+    await page.evaluate(() => new Promise(resolve => { window.scrollTo(0, 0); requestAnimationFrame(() => requestAnimationFrame(resolve)); }));
+    const toggle = page.locator('.theme-toggle');
+    const mode = () => page.evaluate(() => document.documentElement.dataset.mode);
+    const pageBg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    assert.equal(await mode(), 'dark', 'Dark is the main theme');
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
+    const darkBg = await pageBg();
+    await toggle.click();
+    assert.equal(await mode(), 'light', 'Toggle switches to the light theme');
+    assert.equal(await toggle.getAttribute('aria-pressed'), 'true', 'Toggle reports its state');
+    assert.notEqual(await pageBg(), darkBg, 'Page background follows the theme');
+    await auditAccessibilityState('light theme');
+    await toggle.click();
+    assert.equal(await mode(), 'dark', 'Toggle switches back to dark');
+    assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.btn')).borderTopLeftRadius), '999px', 'Buttons have rounded ends');
+
     /* ---------- One photo, one place ---------- */
     const sources = await page.locator('main img').evaluateAll(items => items.map(item => (item.getAttribute('src') || '').split('?')[0]).filter(src => !src.startsWith('data:')));
     assert.equal(new Set(sources).size, sources.length, 'No photo repeats on the page');
@@ -450,7 +467,7 @@ async function main() {
     await noJs.close();
 
     assert.deepEqual(pageErrors, [], 'The page must not produce uncaught JavaScript errors');
-    console.log('Browser checks passed: 10 viewport widths, page length, off-canvas menu, submenus, header, atlas, step-by-step booking panel, references, lightbox, reviews, FAQ, no-JS mode, no uncaught JS errors.');
+    console.log('Browser checks passed: 10 viewport widths, page length, off-canvas menu, submenus, header, atlas, step-by-step booking panel, references, lightbox, reviews, FAQ, theme toggle, no-JS mode, no uncaught JS errors.');
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));

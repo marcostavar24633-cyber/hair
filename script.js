@@ -17,6 +17,21 @@
     .replace(/(\d) (ч|мин|недел)/g, '$1\u00a0$2');
   const setText = (id, value) => { const element = document.getElementById(id); if (element) element.textContent = typo(value); };
 
+  /* ---------- Theme: dark is the main mode, light on request (not stored) ---------- */
+  const themeToggle = $('.theme-toggle');
+  const themeColor = $('meta[name="theme-color"]');
+  function setMode(mode, { animate = false } = {}) {
+    if (animate && !reducedMotion) {
+      root.classList.add('mode-fade');
+      window.setTimeout(() => root.classList.remove('mode-fade'), 900);
+    }
+    root.dataset.mode = mode;
+    themeToggle?.setAttribute('aria-pressed', String(mode === 'light'));
+    themeColor?.setAttribute('content', mode === 'light' ? '#f4efe7' : '#0d0b09');
+  }
+  themeToggle?.addEventListener('click', () => setMode(root.dataset.mode === 'light' ? 'dark' : 'light', { animate: true }));
+  setMode(root.dataset.mode === 'light' ? 'light' : 'dark');
+
   /* ---------- Self-contained fallback for remote images that fail to load ---------- */
   const fallbackSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1500"><rect width="1200" height="1500" fill="#211a15"/><path d="M420 1500V640a180 180 0 0 1 360 0v860" fill="none" stroke="#c9bcae" stroke-opacity=".5" stroke-width="2"/><text x="600" y="1160" text-anchor="middle" fill="#efe7dc" font-family="Georgia,serif" font-size="44" letter-spacing="8">HAIR STUDIO</text><text x="600" y="1220" text-anchor="middle" fill="#c9bcae" font-family="Arial,sans-serif" font-size="22" letter-spacing="3">ИЗОБРАЖЕНИЕ НЕДОСТУПНО</text></svg>';
   const fallbackImage = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(fallbackSvg);
@@ -491,6 +506,7 @@
       header.classList.toggle('is-dark', dark);
       root.classList.toggle('header-dark', dark);
     }
+    if (!reducedMotion) root.style.setProperty('--ambient-shift', (Math.sin(y / 1400) * 70).toFixed(1) + 'px');
     if (!reducedMotion && heroImage && y < window.innerHeight * 1.2) heroImage.style.setProperty('--parallax', (y * 0.06).toFixed(1) + 'px');
     if (!reducedMotion && words.length && manifesto) {
       const rect = manifesto.getBoundingClientRect();

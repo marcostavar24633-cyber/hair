@@ -38,9 +38,13 @@ for (const bg of dark) {
 const wordDim = Number(rootBlock.match(/--word-dim:([\d.]+)/)?.[1]);
 assert.ok(wordDim > 0 && contrast(blend(token('ink'), token('ivory'), wordDim), token('ivory')) >= 4.5, 'Dimmed manifesto words must stay readable (4.5:1) in every animation state');
 assert.ok(contrast(token('ink'), token('light-text')) >= 4.5, 'Ink text on light buttons must be readable');
+/* Dark luxury mode (default): espresso black + champagne gold */
+for (const bg of ['night', 'ink', 'ink-2', 'ink-3']) for (const fg of ['light-text', 'light-muted', 'gold']) assert.ok(contrast(token(fg), token(bg)) >= 4.5, `--${fg} must reach 4.5:1 on --${bg} in dark mode`);
+assert.ok(contrast(token('night'), token('gold')) >= 4.5, 'Text on gold buttons must be readable');
+assert.ok(contrast(blend(token('light-text'), token('night'), wordDim), token('night')) >= 4.5, 'Dimmed manifesto words stay readable in dark mode');
 
 /* ---------- Document basics and SEO ---------- */
-assert.match(html, /^<!doctype html>\s*<html lang="ru">/i, 'Document must declare HTML5 and Russian language');
+assert.match(html, /^<!doctype html>\s*<html lang="ru" data-mode="dark">/i, 'Document must declare HTML5, Russian and the dark main theme');
 assert.match(html, /<meta name="viewport" content="width=device-width,initial-scale=1">/, 'Viewport must not block zoom');
 assert.equal(count(html, /<title>/g), 1);
 assert.equal(count(html, /<meta name="description"/g), 1);
@@ -189,13 +193,18 @@ assert.match(css, /grid-template-rows:0fr/, 'FAQ opens with a grid-rows height t
 const cssBody = css.replace(rootBlock, '').replace(/\[data-tone="[a-z]+"\]\{[^}]*\}/g, '');
 assert.doesNotMatch(cssBody, /#[0-9a-fA-F]{3,8}\b/, 'Colours only through tokens in :root');
 assert.doesNotMatch(cssBody, /rgba?\(/, 'Transparent colours only through tokens in :root');
-for (const [, value] of css.matchAll(/border-radius:([^;}]+)/g)) assert.match(value.trim(), /^var\(--r(?:-arch|-round)?\)$/, 'Radius only via tokens: ' + value);
+for (const [, value] of css.matchAll(/border-radius:([^;}]+)/g)) assert.match(value.trim(), /^var\(--r(?:-arch|-round|-pill|-soft)?\)$/, 'Radius only via tokens: ' + value);
 assert.equal(count(css, /cubic-bezier\(/g), 1, 'One easing curve for the whole site, defined once');
 for (const [, value] of cssBody.matchAll(/transition:([^;}]+)/g)) for (const part of value.split(/,(?![^(]*\))/)) {
   if (/\b(?:width|height|top|left)\b/.test(part.split(' ')[0])) assert.fail('Do not animate layout properties: ' + part);
 }
-const copperUses = count(cssBody, /var\(--copper(?:-bright)?\)/g);
-assert.ok(copperUses >= 1 && copperUses <= 4, 'Copper is an accent: at most 4 uses, found ' + copperUses);
+const modeBlocks = cssBody.match(/html\{--surface[\s\S]*?color-scheme:dark\}|html\[data-mode="light"\]\{[\s\S]*?color-scheme:light\}/g) || [];
+assert.equal(modeBlocks.length, 2, 'Dark and light mode token blocks');
+const accentUses = count(cssBody, /:var\(--accent\)/g) - count(cssBody, /--[a-z-]+:var\(--accent\)/g);
+assert.ok(accentUses >= 1 && accentUses <= 5, 'Accent (copper / gold) stays rare: at most 4 places plus the ambient glow, found ' + accentUses);
+assert.match(css, /\.btn\{[^}]*border-radius:var\(--r-pill\)/, 'Buttons have rounded ends');
+assert.match(css, /@keyframes drift-a/, 'Ambient background drifts slowly');
+assert.match(css, /prefers-reduced-motion:reduce\)\{\n  \.ambient span\{animation:none/, 'Ambient motion stops for reduced motion');
 const symbolPattern = /[←↑→↓↔↕↖↗↘↙⟵⟶⟷⇐⇒✳✦✧★☆✓✔✕✖×]|\p{Extended_Pictographic}/u;
 const visibleHtml = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<head>[\s\S]*?<\/head>/, '').replace(/<[^>]+>/g, ' ');
 assert.doesNotMatch(visibleHtml, symbolPattern, 'No Unicode arrows, symbol glyphs or emoji as icons in the markup');
@@ -227,7 +236,7 @@ for (const needle of [
   'function setTone(', 'tab.tabIndex = active ? 0 : -1', "atlasPanel?.setAttribute('aria-labelledby', tab.id)", 'ArrowRight', "'Home'", "'End'",
   "swatch.setAttribute('aria-pressed'", 'function renderSteps(', 'function goToFirstIncomplete()', "setAttribute('aria-current', 'step')",
   'реальная запись не создана', "removeAttribute('disabled')", 'IntersectionObserver', 'prefers-reduced-motion', 'requestAnimationFrame', '--scroll-progress',
-  "'pointerleave'", 'closeDelay', "classList.add('is-hidden')", "classList.toggle('is-dark'"
+  "'pointerleave'", 'closeDelay', 'function setMode(', "themeToggle?.setAttribute('aria-pressed'", "classList.add('is-hidden')", "classList.toggle('is-dark'"
 ]) assert.ok(js.includes(needle), 'script.js must keep: ' + needle);
 assert.equal(count(js, /addEventListener\('scroll'/g), 1, 'All scroll effects run in one rAF loop');
 
