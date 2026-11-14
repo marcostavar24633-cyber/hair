@@ -147,11 +147,11 @@ assert.match(heroTag,/fetchpriority="high"/,'Hero image should have high fetch p
 assert.doesNotMatch(heroTag,/loading="lazy"/,'Hero image must not be lazy-loaded');
 
 assert.equal(imageTags.filter(tag=>/fetchpriority="high"/.test(tag)).length,1,'Only the primary hero image element should receive high fetch priority');
-assert.match(css,/\\.hero-art\\{[^}]*min-height:[^;}]+/,'Hero image container must reserve vertical space before image load');
-assert.match(css,/\\.visual-break\\{[^}]*min-height:[^;}]+/,'Editorial image section must reserve vertical space before image load');
-assert.match(css,/\\.portfolio-card img\\{[^}]*height:[^;}]+/,'Portfolio image cards must reserve image height');
-assert.match(css,/\\.team-grid article img\\{[^}]*height:[^;}]+/,'Team portraits must reserve image height');
-assert.match(css,/\\.comparison\\{[^}]*height:[^;}]+/,'Comparison component must reserve image height');
+assert.ok(css.includes('.hero-art{position:relative;min-height:560px'),'Hero image container must reserve vertical space before image load');
+assert.ok(css.includes('.visual-break{height:min(680px,75vw);min-height:420px'),'Editorial image section must reserve vertical space before image load');
+assert.ok(css.includes('.portfolio-card img{display:block;width:100%;height:340px'),'Portfolio image cards must reserve image height');
+assert.ok(css.includes('.team-grid article img{width:100%;height:360px'),'Team portraits must reserve image height');
+assert.ok(css.includes('.comparison{position:relative;height:clamp(300px,48vw,570px)'),'Comparison component must reserve image height');
 
 for(const tag of imageTags.filter(item=>!item.includes('class="hero-image"')&&/\bsrc="[^"]+"/.test(item))){
   assert.match(tag,/loading="lazy"/,'Below-the-fold images should be lazy-loaded');
