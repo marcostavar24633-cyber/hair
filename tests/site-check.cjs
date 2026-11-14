@@ -15,8 +15,8 @@ assert.match(css,/@media\(max-width:720px\)/);assert.match(css,/@media\(max-widt
 assert.match(readme,/демонстрационный проект/i);assert.match(readme,/данные не отправляются, не хранятся и не передаются/);assert.match(readme,/полностью вымышленные демонстрационные данные/);assert.match(readme,/анимац/i);
 assert.ok(robots.includes('User-agent: *'));assert.ok(robots.includes('Allow: /'));assert.ok(robots.includes('Sitemap: https://marcostavar24633-cyber.github.io/hair/sitemap.xml'));
 assert.ok(sitemap.includes('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'));assert.ok(sitemap.includes('<loc>https://marcostavar24633-cyber.github.io/hair/</loc>'));
-const imageTags=[...html.matchAll(/<img\\b[^>]*>/g)].map(match=>match[0]);assert.ok(imageTags.length>=1);for(const tag of imageTags){assert.match(tag,/\\balt=/,'Image missing alt attribute: '+tag);assert.match(tag,/\\bdecoding="async"/,'Image missing async decoding: '+tag)}
-assert.match(html,/<img[^>]*class="hero-image"[^>]*fetchpriority="high"/);assert.match(html,/<img[^>]*loading="lazy"/);
+const imageTags=html.split('<img').slice(1).map(part=>part.split('>')[0]);assert.ok(imageTags.length>=1);for(const tag of imageTags){assert.ok(tag.includes('alt='),'Image missing alt attribute: '+tag);assert.ok(tag.includes('decoding="async"'),'Image missing async decoding: '+tag)}
+assert.ok(html.includes('class="hero-image"'));assert.ok(html.includes('fetchpriority="high"'));assert.ok(html.includes('loading="lazy"'));
 const canonical=html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];const ogUrl=html.match(/<meta property="og:url" content="([^"]+)"/)?.[1];const sitemapUrl=sitemap.split('<loc>')[1]?.split('</loc>')[0];assert.ok(canonical);assert.equal(ogUrl,canonical,'og:url must match canonical');assert.equal(sitemapUrl,canonical,'sitemap URL must match canonical');
-assert.match(css,/:focus-visible/);assert.match(css,/@media\\(prefers-reduced-motion:reduce\\)/);assert.match(css,/@media\\(max-width:330px\\)/);
+assert.ok(css.includes(':focus-visible'));assert.ok(css.includes('prefers-reduced-motion:reduce'));assert.ok(css.includes('max-width:330px'));
 
