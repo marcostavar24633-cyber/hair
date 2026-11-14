@@ -432,8 +432,9 @@ async function main() {
     const faq = page.locator('.faq-q').first();
     await faq.click();
     assert.equal(await faq.getAttribute('aria-expanded'), 'true', 'FAQ question expands');
-    await page.waitForTimeout(100);
-    assert.equal(await page.locator('#faq-a1 p').isVisible(), true, 'FAQ answer is visible when open');
+    const answerShown = await page.locator('#faq-a1 p').waitFor({ state: 'visible', timeout: 3000 }).then(() => true, () => false);
+    if (!answerShown) console.error('FAQ diagnostics: ' + JSON.stringify(await page.evaluate(() => { const a = document.getElementById('faq-a1'); const d = a.firstElementChild; return { rows: getComputedStyle(a).gridTemplateRows, h: a.getBoundingClientRect().height, vis: getComputedStyle(d).visibility, cls: a.parentElement.className }; })));
+    assert.equal(answerShown, true, 'FAQ answer is visible when open');
 
     /* ---------- One photo, one place ---------- */
     const sources = await page.locator('main img').evaluateAll(items => items.map(item => (item.getAttribute('src') || '').split('?')[0]).filter(src => !src.startsWith('data:')));

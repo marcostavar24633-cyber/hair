@@ -425,7 +425,7 @@ html:not(.js) .wizard-nav,html:not(.js) .wizard-submit,html:not(.js) .wizard-ste
 .faq-q .icon{transition:transform var(--d-fast) var(--ease)}
 .faq-q[aria-expanded="true"] .icon{transform:rotate(45deg)}
 .faq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--d-base) var(--ease)}
-.faq-a>div{overflow:hidden}
+.faq-a>div{overflow:hidden;min-height:0}
 .faq-a p{padding-bottom:var(--sp-3);color:var(--muted);max-width:var(--measure)}
 .faq-item.is-open .faq-a,html:not(.js) .faq-a{grid-template-rows:1fr}
 .js .faq-item:not(.is-open) .faq-a>div{visibility:hidden;transition:visibility 0s linear var(--d-base)}
