@@ -53,7 +53,12 @@
     <nav class="menu-main" aria-label="Разделы сайта">
       <a href="#philosophy"><span>Философия</span><b>01</b></a>
       <button class="menu-branch" type="button" aria-expanded="false" aria-controls="menu-services"><span>Услуги</span><b>02</b><i>＋</i></button>
-      <div class="menu-submenu" id="menu-services" hidden><a href="#services">Все направления</a><a href="#rituals">Ритуалы и уход</a><a href="#estimate">Расчёт стоимости</a></div>
+      <div class="menu-submenu" id="menu-services" hidden>
+        <a href="#services">Все направления</a>
+        <button class="menu-subbranch" type="button" aria-expanded="false" aria-controls="menu-colour"><span>Цвет и глубина</span><i>＋</i></button>
+        <div class="menu-submenu menu-submenu-deep" id="menu-colour" hidden><a href="#services">Окрашивание и тонирование</a><a href="#lookbook">Цветовые референсы</a></div>
+        <a href="#rituals">Ритуалы и уход</a><a href="#estimate">Персональный подбор</a>
+      </div>
       <a href="#lookbook"><span>Lookbook</span><b>03</b></a>
       <a href="#approach"><span>Наш подход</span><b>04</b></a>
       <a href="#faq"><span>Вопросы</span><b>05</b></a>
