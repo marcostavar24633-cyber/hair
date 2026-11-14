@@ -73,7 +73,7 @@ assert.match(css, /\.consultation-backdrop/);
 assert.match(css, /\.lightbox/);
 assert.match(css, /body:after/);
 assert.match(readme, /демонстрационн/i);
-assert.match(readme, /не собирает|не collect/i);
+assert.match(readme, /не собирает|does not collect/i);
 assert.match(robots, /User-agent: \*/);
 assert.match(robots, /Allow: \//);
 assert.match(sitemap, /<urlset/);
