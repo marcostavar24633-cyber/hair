@@ -247,6 +247,8 @@ async function main() {
     assert.equal(await menuButton.getAttribute('aria-expanded'), 'false', 'Escape must close the slide-out menu');
     assert.equal(await menuButton.evaluate(element => element === document.activeElement), true, 'Closing the menu must restore focus');
     await menuButton.click();
+    assert.equal(await page.locator('#menu-services').isVisible(), false, 'Reopened menu must reset expanded services');
+    assert.equal(await page.locator('#menu-colour').isVisible(), false, 'Reopened menu must reset nested colour links');
     await page.locator('.menu-aside [data-open-consultation]').click();
     assert.equal(await page.locator('#consultation').isVisible(), true, 'Menu CTA must open the guided selector');
     await page.keyboard.press('Escape');
