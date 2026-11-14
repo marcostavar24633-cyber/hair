@@ -76,7 +76,7 @@ async function main() {
     await page.waitForFunction(() => {
       const stylesheetLink = [...document.querySelectorAll('link[rel="stylesheet"]')]
         .some(link => new URL(link.href).pathname.endsWith('/styles.css'));
-      return stylesheetLink && getComputedStyle(document.body).margin === '0px';
+      return stylesheetLink && getComputedStyle(document.body).marginTop === '0px';
     }, null, { timeout: 15000 });
 
     const runAxe = browserName !== 'webkit';
