@@ -252,7 +252,7 @@ async function main() {
     assert.equal(await menuButton.evaluate(element => element === document.activeElement), true,
       'Closing a selector opened from the menu must restore focus to the visible menu trigger');
 
-    const consultationTrigger = page.locator('[data-open-consultation]:visible').first();
+    const consultationTrigger = page.locator('.hero-actions [data-open-consultation]');
     await consultationTrigger.click();
     const consultation = page.locator('#consultation');
     assert.equal(await consultation.isVisible(), true, 'Guided selector must open');
