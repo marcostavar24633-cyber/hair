@@ -39,6 +39,13 @@
 
   function closeMenu(restoreFocus = true) {
     if (!menu || !menuButton || !menu.classList.contains('is-open')) return;
+    menu.querySelectorAll('.menu-branch, .menu-subbranch').forEach(button => {
+      button.setAttribute('aria-expanded', 'false');
+      const icon = button.querySelector('i');
+      if (icon) icon.textContent = '＋';
+      const panel = document.getElementById(button.getAttribute('aria-controls'));
+      if (panel) panel.hidden = true;
+    });
     menu.classList.remove('is-open');
     menu.setAttribute('aria-hidden', 'true');
     menu.inert = true;
