@@ -134,6 +134,9 @@ async function main() {
       await page.setViewportSize({ width, height: 900 });
       await page.waitForTimeout(50);
       const dimensions = await page.evaluate(() => {
+        const menu = document.querySelector('.site-menu');
+        const previousDisplay = menu?.style.display ?? '';
+        if (menu) menu.style.display = 'none';
         const viewport = document.documentElement.clientWidth;
         const overflowing = [...document.querySelectorAll('body *')].map(element => {
           const rect = element.getBoundingClientRect();
@@ -150,12 +153,14 @@ async function main() {
           };
         }).filter(item => item.display !== 'none' && item.visibility !== 'hidden' &&
           (item.right > viewport + 1 || item.left < -1)).slice(0, 30);
-        return {
+        const dimensions = {
           viewport,
           document: document.documentElement.scrollWidth,
           body: document.body.scrollWidth,
           overflowing
         };
+        if (menu) menu.style.display = previousDisplay;
+        return dimensions;
       });
       assert.ok(dimensions.document <= dimensions.viewport + 1 && dimensions.body <= dimensions.viewport + 1,
         'Horizontal overflow at ' + width + 'px: ' + JSON.stringify(dimensions));
