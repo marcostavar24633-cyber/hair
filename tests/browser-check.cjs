@@ -86,7 +86,7 @@ async function main() {
       assert.ok(
         dimensions.document <= dimensions.viewport + 1,
         'Horizontal overflow at ' + width + 'px: document ' +
-          'px, viewport ' + dimensions.viewport + 'px; elements: ' + JSON.stringify(dimensions.overflow)
+          dimensions.document + 'px, viewport ' + dimensions.viewport + 'px; elements: ' + JSON.stringify(dimensions.overflow)
       );
       if (width === 1365) {
         await page.screenshot({ path: path.join(screenshotsDir, 'desktop.png'), fullPage: true });
