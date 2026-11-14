@@ -68,3 +68,23 @@ assert.doesNotMatch(heroTag,/loading="lazy"/,'Hero image must not be lazy-loaded
 for(const tag of imageTags.filter(item=>!item.includes('class="hero-image"')&&/\bsrc="[^"]+"/.test(item))){
   assert.match(tag,/loading="lazy"/,'Below-the-fold images should be lazy-loaded');
 }
+
+// Accessibility structure regression checks.
+const labelBlocks=[...html.matchAll(/<label\\b[^>]*>[\\s\\S]*?<\\/(?:label)>/gi)].map(match=>match[0]);
+const formControls=[...form.matchAll(/<(input|select|textarea)\\b[^>]*>/gi)];
+for(const control of formControls){
+  assert.ok(labelBlocks.some(label=>label.includes(control[0])),'Every form control must be contained by a label: '+control[0]);
+}
+const buttonTags=[...html.matchAll(/<button\\b([^>]*)>([\\s\\S]*?)<\\/button>/gi)];
+for(const button of buttonTags){
+  const hasLabel=/\\baria-label="[^"]+"/.test(button[1]);
+  const textContent=button[2].replace(/<[^>]+>/g,' ').replace(/\\s+/g,' ').trim();
+  assert.ok(hasLabel||textContent.length>0,'Every button must have an accessible name: '+button[1]);
+}
+for(const nav of html.matchAll(/<nav\\b([^>]*)>/gi)){
+  assert.match(nav[1],/\\baria-label="[^"]+"/,'Every navigation landmark must have an accessible label');
+}
+const ariaReferences=[...html.matchAll(/\\b(?:aria-labelledby|aria-describedby|aria-controls)="([^"]+)"/g)].flatMap(match=>match[1].split(/\\s+/));
+for(const reference of ariaReferences){
+  assert.ok(ids.includes(reference),'ARIA reference must resolve to an existing ID: '+reference);
+}
