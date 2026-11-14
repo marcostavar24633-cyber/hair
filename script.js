@@ -1,4 +1,4 @@
-(() => {
+(() => {\ndocument.documentElement.classList.add('js');
 const fallbackSvg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#25131f"/><stop offset="1" stop-color="#76505d"/></linearGradient></defs><rect width="1200" height="800" fill="url(#g)"/><circle cx="600" cy="330" r="170" fill="none" stroke="#d8b7a4" stroke-opacity=".35" stroke-width="2"/><text x="600" y="355" text-anchor="middle" fill="#f5efe7" font-family="Georgia,serif" font-size="62" letter-spacing="8">HAIR STUDIO</text><text x="600" y="430" text-anchor="middle" fill="#e6d6c9" font-family="Arial,sans-serif" font-size="22" letter-spacing="3">ИЗОБРАЖЕНИЕ ВРЕМЕННО НЕДОСТУПНО</text></svg>';
 const fallbackImage='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(fallbackSvg);
 document.addEventListener('error',event=>{
