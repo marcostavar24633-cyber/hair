@@ -32,3 +32,6 @@ assert.match(html,/og:site_name/);assert.match(html,/twitter:image:alt/);
 const responsiveImages=imageTags.filter(tag=>/src="https:\/\/images\.(?:unsplash|pexels)\.com\//.test(tag));
 assert.ok(responsiveImages.length>=10,'Expected all remote content images to use responsive image candidates');
 for(const tag of responsiveImages){assert.match(tag,/\bsrcset="[^"]+480w[^"]+800w[^"]+1200w/,'Responsive image candidates missing');assert.match(tag,/\bsizes="/,'Responsive image sizes missing');}
+
+assert.doesNotMatch(html,/>\s+srcset=/,'Duplicate responsive attributes must not appear outside img tags');
+assert.equal((html.match(/\bsrcset=/g)||[]).length,10,'Exactly ten responsive image srcsets expected');
