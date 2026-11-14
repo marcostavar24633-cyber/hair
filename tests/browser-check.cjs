@@ -54,7 +54,7 @@ async function main() {
     await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded' });
     await page.locator('h1').waitFor();
 
-    await page.addScriptTag({ content: require('axe-core').source });
+    await page.addScriptTag({ url: 'http://127.0.0.1:4173/node_modules/axe-core/axe.min.js' });
     const accessibilityResults = await page.evaluate(async () => {
       const result = await axe.run(document, {
         runOnly: {
