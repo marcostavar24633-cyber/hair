@@ -18,5 +18,5 @@ assert.ok(sitemap.includes('<urlset xmlns="http://www.sitemaps.org/schemas/sitem
 const imageTags=html.split('<img').slice(1).map(part=>part.split('>')[0]);assert.ok(imageTags.length>=1);for(const tag of imageTags){assert.ok(tag.includes('alt='),'Image missing alt attribute: '+tag);assert.ok(tag.includes('decoding="async"'),'Image missing async decoding: '+tag)}
 assert.ok(html.includes('class="hero-image"'));assert.ok(html.includes('fetchpriority="high"'));assert.ok(html.includes('loading="lazy"'));
 const canonical=html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];const ogUrl=html.match(/<meta property="og:url" content="([^"]+)"/)?.[1];const sitemapUrl=sitemap.split('<loc>')[1]?.split('</loc>')[0];assert.ok(canonical);assert.equal(ogUrl,canonical,'og:url must match canonical');assert.equal(sitemapUrl,canonical,'sitemap URL must match canonical');
-assert.ok(css.includes(':focus-visible'));assert.ok(css.includes('prefers-reduced-motion:reduce'));assert.ok(css.includes('max-width:330px'));assert.match(css,/@media\\(max-width:720px\\)\\{[\\s\\S]*?\\.filter-button\\{min-height:44px\\}/);
+assert.ok(css.includes(':focus-visible'));assert.ok(css.includes('prefers-reduced-motion:reduce'));assert.ok(css.includes('max-width:330px'));assert.match(css,/@media\(max-width:720px\)\{[\s\S]*?\.filter-button\{min-height:44px\}/);
 
