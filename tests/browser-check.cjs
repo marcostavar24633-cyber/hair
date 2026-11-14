@@ -113,6 +113,17 @@ async function main() {
     } else {
       console.log('Accessibility audit skipped in WebKit; automated axe checks run in Chromium and Firefox.');
     }
+    const auditState = async state => {
+      if (!runAxe) return;
+      const violations = await page.evaluate(async () => {
+        const result = await axe.run(document, {
+          runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] }
+        });
+        return result.violations.map(item => ({ id: item.id, impact: item.impact, targets: item.nodes.map(node => node.target) }));
+      });
+      console.log('Accessibility state ' + state + ': ' + JSON.stringify(violations));
+      assert.equal(violations.length, 0, 'Accessibility violations in state: ' + state);
+    };
 
     assert.equal(await page.locator('h1').count(), 1, 'The page must have exactly one H1');
     assert.equal(await page.locator('.service-card').count(), 4, 'All four signature service directions must render');
@@ -140,6 +151,7 @@ async function main() {
     await menuButton.click();
     assert.equal(await menuButton.getAttribute('aria-expanded'), 'true', 'Slide-out menu must open');
     assert.equal(await menu.getAttribute('aria-hidden'), 'false', 'Open menu must be exposed to assistive technology');
+    await auditState('slide-out menu open');
     assert.equal(await menu.evaluate(element => element.contains(document.activeElement)), true, 'Opening the menu must move focus inside');
     const submenuButton = page.locator('.menu-branch');
     await submenuButton.click();
@@ -153,6 +165,7 @@ async function main() {
     await consultationTrigger.click();
     const consultation = page.locator('#consultation');
     assert.equal(await consultation.isVisible(), true, 'Guided selector must open');
+    await auditState('guided selector open');
     await page.locator('[data-step="0"] [data-answer="shape"]').click();
     await page.locator('.dialog-next').click();
     await page.locator('[data-step="1"] [data-answer="low"]').click();
@@ -180,6 +193,7 @@ async function main() {
     await firstImage.click();
     const lightbox = page.locator('#lightbox');
     assert.equal(await lightbox.isVisible(), true, 'Lookbook image must open in a lightbox');
+    await auditState('lookbook lightbox open');
     assert.equal(await lightbox.locator('button').evaluate(element => element === document.activeElement), true,
       'Opening lightbox must move focus to close control');
     await page.keyboard.press('Escape');
