@@ -97,6 +97,9 @@ assert.match(html, /id="portfolio-status" role="status" aria-live="polite"/);
 assert.match(html, /class="menu-button" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobile-menu"/);
 assert.match(html, /class="reviews-track" role="region" aria-label="[^"]+" tabindex="0"/, 'Scrollable reviews must be keyboard reachable');
 
+assert.doesNotMatch(html, /<a class="brand[^"]*" href="#top" aria-label=/, 'Brand link name must come from its visible text (label-content-name-mismatch)');
+assert.match(html.slice(html.indexOf('<footer')), /class="mobile-cta"/, 'Mobile CTA must live inside the footer landmark');
+
 /* ---------- Images and performance ---------- */
 const images = html.split('<img').slice(1).map(part => part.split('>')[0]);
 for (const tag of images) {
