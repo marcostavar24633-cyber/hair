@@ -42,20 +42,20 @@ assert.ok(html.includes('sizes="(max-width: 720px) 44vw, (max-width: 1000px) 30v
 assert.ok(html.includes('sizes="(max-width: 720px) 88vw, 80vw"'),'Comparison images should use the content width, not full viewport width');
 
 // Structural HTML and responsive-image regression checks.
-const startTags=[...html.matchAll(/<([a-z][a-z0-9:-]*)\\b([^<>]*?)>/gi)];
+const startTags=[...html.matchAll(/<([a-z][a-z0-9:-]*)\b([^<>]*?)>/gi)];
 for(const match of startTags){
   const tagName=match[1].toLowerCase();
   const attributeText=match[2];
-  const names=[...attributeText.matchAll(/([^\\s=/>]+)(?:\\s*=\\s*(?:"[^"]*"|'[^']*'|[^\\s>]+))?/g)].map(item=>item[1].toLowerCase());
+  const names=[...attributeText.matchAll(/([^\s=/>]+)(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?/g)].map(item=>item[1].toLowerCase());
   assert.equal(new Set(names).size,names.length,'Duplicate attribute on <'+tagName+'>: '+names.join(', '));
 }
-for(const tag of imageTags.filter(item=>/\\bsrc=/.test(item))){
-  assert.match(tag,/\\balt="[^"]*"/,'Content image must have an alt attribute');
-  assert.match(tag,/\\bdecoding="async"/,'Content image must opt into async decoding');
+for(const tag of imageTags.filter(item=>/\bsrc=/.test(item))){
+  assert.match(tag,/\balt="[^"]*"/,'Content image must have an alt attribute');
+  assert.match(tag,/\bdecoding="async"/,'Content image must opt into async decoding');
 }
 assert.equal(responsiveImages.length,10,'Every remote content image should be responsive');
 for(const tag of responsiveImages){
-  const candidates=[...tag.matchAll(/(https:\\/\\/[^,\\s"]+)\\s+(\\d+)w/g)];
+  const candidates=[...tag.matchAll(/(https:\/\/[^,\s"]+)\s+(\d+)w/g)];
   assert.equal(candidates.length,3,'Each responsive image should expose three width candidates');
   for(const candidate of candidates){
     assert.ok(candidate[1].includes('w='+candidate[2]),'Image URL width must match its srcset descriptor');
@@ -65,6 +65,6 @@ const heroTag=imageTags.find(tag=>tag.includes('class="hero-image"'));
 assert.ok(heroTag,'Hero image must exist');
 assert.match(heroTag,/fetchpriority="high"/,'Hero image should have high fetch priority');
 assert.doesNotMatch(heroTag,/loading="lazy"/,'Hero image must not be lazy-loaded');
-for(const tag of imageTags.filter(item=>!item.includes('class="hero-image"')&&/\\bsrc=/.test(item))){
+for(const tag of imageTags.filter(item=>!item.includes('class="hero-image"')&&/\bsrc=/.test(item))){
   assert.match(tag,/loading="lazy"/,'Below-the-fold images should be lazy-loaded');
 }
