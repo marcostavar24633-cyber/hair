@@ -153,7 +153,7 @@ async function main() {
           (item.right > viewport + 1 || item.left < -1)).slice(0, 30);
         const flowOverflow = [...document.querySelectorAll('body *')].filter(element => {
           const style = getComputedStyle(element);
-          if (style.position === 'fixed' || style.position === 'absolute' || style.display === 'none' || style.visibility === 'hidden') return false;
+          if (element.tagName === 'BR' || style.position === 'fixed' || style.position === 'absolute' || style.display === 'none' || style.visibility === 'hidden') return false;
           let parent = element.parentElement;
           while (parent && parent !== document.body) {
             const parentStyle = getComputedStyle(parent);
