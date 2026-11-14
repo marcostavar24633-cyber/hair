@@ -134,9 +134,6 @@ async function main() {
       await page.setViewportSize({ width, height: 900 });
       await page.waitForTimeout(50);
       const dimensions = await page.evaluate(() => {
-        const menu = document.querySelector('.site-menu');
-        const previousDisplay = menu?.style.display ?? '';
-        if (menu) menu.style.display = 'none';
         const viewport = document.documentElement.clientWidth;
         const overflowing = [...document.querySelectorAll('body *')].map(element => {
           const rect = element.getBoundingClientRect();
@@ -160,7 +157,6 @@ async function main() {
           body: document.body.scrollWidth,
           overflowing
         };
-        if (menu) menu.style.display = previousDisplay;
         return dimensions;
       });
       assert.ok(dimensions.document <= dimensions.viewport + 1 && dimensions.body <= dimensions.viewport + 1,
