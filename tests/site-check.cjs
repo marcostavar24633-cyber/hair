@@ -50,6 +50,14 @@ assert.ok(html.includes('<noscript><p class="form-status">Интерактивн
 assert.ok(css.includes('html:not(.js) .mobile-menu[hidden]{display:block'),'Mobile navigation must remain visible without JavaScript');
 assert.ok(css.includes('html:not(.js) .booking-form button[type="submit"]{display:none}'),'The demo form must not submit personal data when JavaScript is unavailable');
 assert.ok(css.includes('--serif:"Playfair Display",Georgia,serif')&&css.includes('--sans:"DM Sans",Arial,sans-serif'),'Typography must have local system font fallbacks if Google Fonts fail');
+
+assert.ok(js.includes("lightbox?.addEventListener('focusin'"),'Lightbox must keep keyboard focus inside the modal');
+assert.ok(js.includes("previousBodyOverflow=document.body.style.overflow"),'Lightbox must remember the previous scroll-lock style');
+assert.ok(js.includes("document.body.style.overflow=previousBodyOverflow"),'Closing the lightbox must restore the previous scroll-lock style');
+assert.ok(js.includes("if(event.key==='Escape'){closeMenu();closeLightbox()}"),'Escape must close open overlays');
+assert.match(html,/<meta name="viewport" content="width=device-width,initial-scale=1">/,'Viewport must allow user zoom without a restrictive maximum-scale');
+assert.ok(css.includes(':focus-visible{outline:2px solid var(--bronze);outline-offset:4px}'),'Keyboard users must have a visible focus indicator');
+assert.ok(css.includes('.site-header :focus-visible')&&css.includes('.lightbox :focus-visible'),'Focus indicators must remain visible on dark surfaces');
 const appScripts=[...html.matchAll(/<script\b([^>]*)src="([^"]+)"([^>]*)>/g)];
 assert.equal(appScripts.length,1,'The landing should load only one local application script');
 assert.match(appScripts[0][0],/\bdefer\b/,'The local application script must be deferred so HTML parsing is not blocked');
