@@ -39,6 +39,28 @@ const canonical=html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];const og
 assert.ok(css.includes(':focus-visible'));assert.ok(css.includes(':focus-visible{outline-color:#59263f}'));assert.ok(css.includes('.lightbox :focus-visible{outline-color:#e6d6c9}'));assert.ok(css.includes('prefers-reduced-motion:reduce'));assert.ok(css.includes('max-width:330px'));assert.match(css,/@media\(max-width:390px\)\{\.concept-bar\{font-size:7px;letter-spacing:\.16em\}\.concept-bar span\{display:none\}\}/);assert.match(css,/@media\(max-width:720px\)\{[\s\S]*?\.filter-button\{min-height:44px\}/);
 
 
+
+const countMatches=(source,pattern)=>(source.match(pattern)||[]).length;
+assert.equal(countMatches(html,/<link rel="canonical"/g),1,'The document must declare exactly one canonical URL');
+assert.equal(countMatches(html,/<meta name="description"/g),1,'The document must declare exactly one meta description');
+assert.equal(countMatches(html,/<title>/g),1,'The document must declare exactly one title');
+const metaContent=(property)=>html.match(new RegExp('<meta (?:property|name)="'+property+'" content="([^"]+)"'))?.[1]||'';
+const canonicalUrl=html.match(/<link rel="canonical" href="([^"]+)"/)?.[1]||'';
+const ogImage=metaContent('og:image');
+assert.ok(/^https:\/\//.test(canonicalUrl),'Canonical URL must be absolute HTTPS');
+assert.equal(metaContent('og:type'),'website','Open Graph type must describe a website');
+assert.equal(metaContent('og:locale'),'ru_RU','Open Graph locale must match the Russian-language site');
+assert.ok(metaContent('og:site_name')&&metaContent('og:title')&&metaContent('og:description'),'Open Graph title, description and site name must be present');
+assert.ok(/^https:\/\//.test(ogImage),'Open Graph preview image must be an absolute HTTPS URL');
+assert.ok(metaContent('og:image:alt'),'Open Graph image must have descriptive alternative text');
+assert.equal(metaContent('og:url'),canonicalUrl,'Open Graph URL must match canonical URL');
+assert.equal(metaContent('twitter:card'),'summary_large_image','Twitter card must use a large image preview');
+assert.ok(metaContent('twitter:title')&&metaContent('twitter:description')&&metaContent('twitter:image:alt'),'Twitter preview must include title, description and image alternative text');
+assert.equal(metaContent('twitter:image'),ogImage,'Twitter and Open Graph previews must use the same image');
+assert.doesNotMatch(html,/<meta name="robots" content="[^"]*noindex/i,'Published portfolio demo must remain indexable');
+assert.match(html,/rel="icon"[^>]+href="favicon\.svg"/,'A favicon must be available for browser tabs and bookmarks');
+assert.equal(countMatches(html,/<h1\\b/g),1,'The page must have exactly one primary heading');
+assert.ok(sitemap.includes(canonicalUrl),'Sitemap must contain the canonical page URL');
 assert.match(html,/og:site_name/);assert.match(html,/twitter:image:alt/);
 assert.ok(js.includes("document.addEventListener('error'")&&js.includes('image.dataset.fallbackApplied'),'Failed remote images must receive a one-time local fallback');
 assert.ok(js.includes('data:image/svg+xml'),'Image fallback must be self-contained and must not depend on another external host');
