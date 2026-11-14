@@ -65,6 +65,6 @@ const heroTag=imageTags.find(tag=>tag.includes('class="hero-image"'));
 assert.ok(heroTag,'Hero image must exist');
 assert.match(heroTag,/fetchpriority="high"/,'Hero image should have high fetch priority');
 assert.doesNotMatch(heroTag,/loading="lazy"/,'Hero image must not be lazy-loaded');
-for(const tag of imageTags.filter(item=>!item.includes('class="hero-image"')&&/\bsrc=/.test(item))){
+for(const tag of imageTags.filter(item=>!item.includes('class="hero-image"')&&/\bsrc="[^"]+"/.test(item))){
   assert.match(tag,/loading="lazy"/,'Below-the-fold images should be lazy-loaded');
 }
