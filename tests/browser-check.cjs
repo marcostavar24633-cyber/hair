@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
-const { chromium } = require('playwright');
+const { chromium, firefox, webkit } = require('playwright');
 
 const root = path.resolve(__dirname, '..');
 const mime = {
@@ -36,6 +36,11 @@ const server = http.createServer((request, response) => {
 });
 
 async function main() {
+  const browserName = process.env.BROWSER || 'chromium';
+  const browserTypes = { chromium, firefox, webkit };
+  if (!Object.hasOwn(browserTypes, browserName)) {
+    throw new Error('Unsupported BROWSER value: ' + browserName);
+  }
   await new Promise((resolve, reject) => {
     server.once('error', reject);
     server.listen(4173, '127.0.0.1', resolve);
@@ -43,7 +48,8 @@ async function main() {
 
   let browser;
   try {
-    browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
+    browser = await browserTypes[browserName].launch({ headless: true, args: browserName === 'chromium' ? ['--no-sandbox'] : [] });
+    console.log('Running browser regression suite in: ' + browserName);
     const page = await browser.newPage({
       viewport: { width: 1365, height: 900 },
       reducedMotion: 'reduce'
@@ -97,7 +103,7 @@ async function main() {
     };
     assert.equal(await page.locator('h1').count(), 1, 'The page must render one main heading');
 
-    const screenshotsDir = path.join(root, 'artifacts');
+    const screenshotsDir = path.join(root, 'artifacts', browserName);
     fs.mkdirSync(screenshotsDir, { recursive: true });
 
     for (const width of [1365, 1024, 768, 720, 390, 360, 320]) {
