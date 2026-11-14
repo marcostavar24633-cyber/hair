@@ -86,6 +86,12 @@ assert.ok(css.includes('--serif:"Playfair Display",Georgia,serif')&&css.includes
 assert.ok(js.includes("lightbox?.addEventListener('focusin'"),'Lightbox must keep keyboard focus inside the modal');
 assert.ok(js.includes('delete lightboxImage.dataset.fallbackApplied'),'Each newly opened lightbox image must be eligible for its own one-time fallback');
 assert.ok(js.includes("lightboxImage.classList.remove('image-fallback')"),'A previous image fallback style must not leak into the next lightbox image');
+assert.ok(js.includes("if(!mobileMenu)return;const open="),'The mobile-menu toggle must safely no-op if its controlled panel is absent');
+assert.ok(js.includes("Number.isFinite(rawValue)?Math.min(100,Math.max(0,rawValue)):50"),'Comparison input must be clamped to a finite percentage');
+assert.ok(js.includes("!calcTotal||!lengthValue"),'Calculator updates must guard all required output elements');
+assert.ok(js.includes("function openLightbox(card){if(!lightbox||!lightboxImage)return;"),'Portfolio cards must not throw if the lightbox markup is unavailable');
+assert.ok(js.includes("lightbox.querySelector('button')?.focus()"),'Lightbox focus must tolerate a missing close control');
+
 assert.ok(js.includes("previousBodyOverflow=document.body.style.overflow"),'Lightbox must remember the previous scroll-lock style');
 assert.ok(js.includes("document.body.style.overflow=previousBodyOverflow"),'Closing the lightbox must restore the previous scroll-lock style');
 assert.ok(js.includes("if(event.key==='Escape'){closeMenu();closeLightbox()}"),'Escape must close open overlays');
