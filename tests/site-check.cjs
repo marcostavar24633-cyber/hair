@@ -61,6 +61,16 @@ assert.doesNotMatch(html,/<meta name="robots" content="[^"]*noindex/i,'Published
 assert.match(html,/rel="icon"[^>]+href="favicon\.svg"/,'A favicon must be available for browser tabs and bookmarks');
 assert.equal(countMatches(html,/<h1\b/g),1,'The page must have exactly one primary heading');
 assert.ok(sitemap.includes(canonicalUrl),'Sitemap must contain the canonical page URL');
+
+const headingLevels=[...html.matchAll(/<h([1-6])\\b/gi)].map(match=>Number(match[1]));
+assert.equal(headingLevels.filter(level=>level===1).length,1,'Use exactly one H1');
+for(let index=1;index<headingLevels.length;index++){
+  assert.ok(headingLevels[index]<=headingLevels[index-1]+1,'Heading levels must not skip a level');
+}
+for(const photo of ['photo-1580618672591-eb180b1a973f','photo-1595152772835-219674b2a8a6','photo-1551836022-d5d88e9218df']){
+  const image=html.match(new RegExp('<img\\b(?=[^>]*'+photo+')[^>]*>'))?.[0]||'';
+  assert.ok(image.includes('sizes="(max-width: 720px) 46vw, 30vw"'),'Team image sizes must match the two-column mobile and three-column desktop layout');
+}
 assert.match(html,/og:site_name/);assert.match(html,/twitter:image:alt/);
 assert.ok(js.includes("document.addEventListener('error'")&&js.includes('image.dataset.fallbackApplied'),'Failed remote images must receive a one-time local fallback');
 assert.ok(js.includes('data:image/svg+xml'),'Image fallback must be self-contained and must not depend on another external host');
