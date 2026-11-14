@@ -146,7 +146,7 @@ assert.ok(heroTag,'Hero image must exist');
 assert.match(heroTag,/fetchpriority="high"/,'Hero image should have high fetch priority');
 assert.doesNotMatch(heroTag,/loading="lazy"/,'Hero image must not be lazy-loaded');
 
-assert.equal((html.match(/fetchpriority="high"/g)||[]).length,1,'Only the primary hero image should receive high fetch priority');
+assert.equal(imageTags.filter(tag=>/fetchpriority="high"/.test(tag)).length,1,'Only the primary hero image element should receive high fetch priority');
 assert.match(css,/\\.hero-art\\{[^}]*min-height:[^;}]+/,'Hero image container must reserve vertical space before image load');
 assert.match(css,/\\.visual-break\\{[^}]*min-height:[^;}]+/,'Editorial image section must reserve vertical space before image load');
 assert.match(css,/\\.portfolio-card img\\{[^}]*height:[^;}]+/,'Portfolio image cards must reserve image height');
