@@ -32,9 +32,9 @@
     menuButton.setAttribute('aria-expanded', 'true');
     menuButton.setAttribute('aria-label', 'Закрыть меню');
     document.body.classList.add('menu-open');
-    window.requestAnimationFrame(() => {
-      menu.focus({ preventScroll: true });
-    });
+    window.setTimeout(() => {
+      (menu.querySelector('.menu-close') || menu.querySelector('a,button'))?.focus({ preventScroll: true });
+    }, 0);
   }
 
   function closeMenu(restoreFocus = true) {
