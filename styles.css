@@ -100,3 +100,7 @@ body::before{content:"";position:fixed;z-index:1000;top:0;left:0;width:100%;heig
 
 /* Compact-phone cleanup: remove the unreadable micro-caption from the narrow concept strip. */
 @media(max-width:390px){.concept-bar{font-size:7px;letter-spacing:.16em}.concept-bar span{display:none}}
+
+/* Focus indicators: dark plum on light surfaces, warm ivory on dark surfaces. */
+:focus-visible{outline-color:#59263f}
+.site-header :focus-visible,.mobile-menu :focus-visible,.hero :focus-visible,.calculator :focus-visible,.final-cta :focus-visible,.footer :focus-visible,.lightbox :focus-visible{outline-color:#e6d6c9}
