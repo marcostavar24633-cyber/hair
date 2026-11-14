@@ -133,11 +133,30 @@ async function main() {
     for (const width of [1440, 1024, 768, 720, 430, 390, 360, 320]) {
       await page.setViewportSize({ width, height: 900 });
       await page.waitForTimeout(50);
-      const dimensions = await page.evaluate(() => ({
-        viewport: document.documentElement.clientWidth,
-        document: document.documentElement.scrollWidth,
-        body: document.body.scrollWidth
-      }));
+      const dimensions = await page.evaluate(() => {
+        const viewport = document.documentElement.clientWidth;
+        const overflowing = [...document.querySelectorAll('body *')].map(element => {
+          const rect = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          return {
+            tag: element.tagName.toLowerCase(),
+            id: element.id,
+            className: typeof element.className === 'string' ? element.className : '',
+            left: Math.round(rect.left),
+            right: Math.round(rect.right),
+            width: Math.round(rect.width),
+            display: style.display,
+            visibility: style.visibility
+          };
+        }).filter(item => item.display !== 'none' && item.visibility !== 'hidden' &&
+          (item.right > viewport + 1 || item.left < -1)).slice(0, 30);
+        return {
+          viewport,
+          document: document.documentElement.scrollWidth,
+          body: document.body.scrollWidth,
+          overflowing
+        };
+      });
       assert.ok(dimensions.document <= dimensions.viewport + 1 && dimensions.body <= dimensions.viewport + 1,
         'Horizontal overflow at ' + width + 'px: ' + JSON.stringify(dimensions));
       if (width === 1440) await page.screenshot({ path: path.join(screenshotsDir, 'desktop.png'), fullPage: true });
