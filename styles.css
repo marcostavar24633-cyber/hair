@@ -94,14 +94,14 @@ button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible{o
 .ticker-track i{font-style:normal;font-size:13px;color:#956b5c}
 @keyframes ticker-flow{to{transform:translateX(-50%)}}
 .section-shell{padding:clamp(78px,10vw,145px) var(--page-gutter)}
-.section-kicker{display:flex;justify-content:space-between;gap:18px;color:#8b6a5b;font-size:8px;letter-spacing:.2em}
+.section-kicker{display:flex;justify-content:space-between;gap:18px;color:#6d4f43;font-size:8px;letter-spacing:.2em}
 .philosophy{position:relative;overflow:hidden;background:var(--cream)}
 .philosophy-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:8vw;align-items:center;margin-top:60px;position:relative;z-index:1}
 .philosophy h2,.section-heading h2,.approach-head h2,.estimate-copy h2,.faq h2{margin:0;font:clamp(56px,7.5vw,106px)/.94 var(--serif);font-weight:400;letter-spacing:-.05em}
 .philosophy h2 em{color:#8d5e6b}
 .philosophy-copy{max-width:470px}
 .philosophy-copy p{font-size:14px;line-height:2;color:#5f514b;margin:0 0 18px}
-.signature{display:inline-block;margin-top:17px;color:#966f5d;font-size:8px;letter-spacing:.23em}
+.signature{display:inline-block;margin-top:17px;color:#704b3e;font-size:8px;letter-spacing:.23em}
 .philosophy-orbit{position:absolute;width:380px;height:380px;right:-120px;bottom:-200px;border:1px solid rgba(181,140,112,.25);border-radius:50%;display:grid;place-items:center}
 .philosophy-orbit:before,.philosophy-orbit:after{content:"";position:absolute;border:1px solid rgba(181,140,112,.25);border-radius:50%}
 .philosophy-orbit:before{inset:34px}.philosophy-orbit:after{inset:78px}
@@ -131,7 +131,7 @@ button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible{o
 .service-featured .service-link{border-color:rgba(255,255,255,.22);color:#e0bfa6}
 .service-link span{font-size:14px;transition:transform .2s}
 .service-link:hover span{transform:translate(3px,-3px)}
-.concept-note{margin:24px 0 0;color:#89776d;font-size:9px;line-height:1.7}
+.concept-note{margin:24px 0 0;color:#66564e;font-size:9px;line-height:1.7}
 .interlude{height:min(720px,70vw);min-height:480px;position:relative;overflow:hidden;background:#2b1c27;color:var(--paper)}
 .interlude>img{width:100%;height:100%;object-fit:cover;object-position:center 40%;filter:saturate(.62) brightness(.74)}
 .interlude-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(27,15,24,.85),rgba(27,15,24,.18) 70%),linear-gradient(0deg,rgba(27,15,24,.45),transparent 50%)}
@@ -144,7 +144,7 @@ button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible{o
 .lookbook{background:var(--cream)}
 .lookbook .section-heading{margin-bottom:38px}
 .lookbook-toolbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:17px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.lookbook-toolbar>span{color:#8a7062;font-size:8px;letter-spacing:.2em}
+.lookbook-toolbar>span{color:#695044;font-size:8px;letter-spacing:.2em}
 .lookbook-filters{display:flex;gap:7px;flex-wrap:wrap}
 .filter-chip{min-height:40px;padding:0 17px;border:1px solid transparent;border-radius:999px;background:transparent;color:#75645c;font-size:10px;cursor:pointer;transition:all .2s}
 .filter-chip:hover{border-color:#b99a85}
@@ -165,9 +165,9 @@ button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible{o
 .steps{border-top:1px solid #cbb9aa}
 .steps article{min-height:112px;display:grid;grid-template-columns:70px 1fr 40px;align-items:center;gap:20px;border-bottom:1px solid #cbb9aa;transition:padding .3s,background .3s}
 .steps article:hover{padding-left:15px;background:rgba(255,255,255,.24)}
-.steps article>span{color:#987763;font-size:9px;letter-spacing:.15em}
+.steps article>span{color:#6c4e40;font-size:9px;letter-spacing:.15em}
 .steps article h3{margin:0 0 5px;font:30px var(--serif);font-weight:400}
-.steps article p{margin:0;color:#76655c;font-size:11px}
+.steps article p{margin:0;color:#594a43;font-size:11px}
 .steps article>i{font-size:18px;color:#986e5d;font-style:normal}
 .estimate-section{position:relative;overflow:hidden;display:grid;grid-template-columns:1fr .7fr;gap:8vw;align-items:center;padding:clamp(85px,10vw,140px) var(--page-gutter);background:#21131d;color:var(--paper)}
 .estimate-orb{position:absolute;width:480px;height:480px;left:-200px;top:-240px;border-radius:50%;background:radial-gradient(circle,rgba(134,79,104,.36),transparent 68%);pointer-events:none}
