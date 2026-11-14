@@ -12,11 +12,11 @@ for(const id of ['services','works','philosophy','team','contacts','booking','bo
 const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);assert.equal(new Set(ids).size,ids.length,'Duplicate HTML id');
 const anchors=[...html.matchAll(/href="#([^"]+)"/g)].map(x=>x[1]);for(const id of anchors)assert.ok(ids.includes(id),'Broken anchor '+id);
 assert.match(html,/type="application\/ld\+json"/);
-const seoTitle=html.match(/<title>([^<]+)<\\/title>/)?.[1]||'';
+const seoTitle=html.match(/<title>([^<]+)<\/title>/)?.[1]||'';
 const seoDescription=html.match(/<meta name="description" content="([^"]+)"/)?.[1]||'';
 assert.ok(seoTitle.length>=30&&seoTitle.length<=60,'SEO title should remain concise and descriptive');
 assert.ok(seoDescription.length>=70&&seoDescription.length<=160,'SEO description should remain within a useful snippet length');
-const jsonLd=JSON.parse(html.match(/<script type="application\\/ld\\+json">([\\s\\S]*?)<\\/script>/)?.[1]||'null');
+const jsonLd=JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1]||'null');
 assert.equal(jsonLd['@type'],'WebSite','Demo site must use accurate WebSite structured data');
 assert.doesNotMatch(JSON.stringify(jsonLd),/LocalBusiness|HairSalon|BeautySalon/,'Demo must not claim to be a real local business');assert.match(html,/twitter:card/);assert.match(html,/rel="canonical"/);assert.match(html,/@type":"WebSite"/);assert.match(html,/og:image:alt/);assert.match(html,/twitter:image/);assert.match(html,/twitter:description/);
 assert.match(html,/Демо-режим/);assert.match(html,/ул\. Демонстрационная, 15/);assert.match(html,/hello@hairstudio\.example/);assert.match(html,/демо-отзыв/);assert.match(html,/Смоделировать запись/);assert.match(html,/decoding="async"/);assert.match(html,/rel="preconnect" href="https:\/\/images\.pexels\.com"/);assert.match(html,/rel="preconnect" href="https:\/\/images\.unsplash\.com"/);assert.match(html,/fonts\.googleapis\.com[^"]*display=swap/);assert.match(html,/booking-summary/);assert.match(html,/booking-price/);assert.match(html,/модельный ориентир/);assert.match(html,/не отправляет данные/);
