@@ -482,8 +482,10 @@
       const heroBottom = hero ? hero.offsetTop + hero.offsetHeight - header.offsetHeight : 400;
       const locked = document.body.classList.contains('is-locked');
       header.classList.toggle('is-compact', y > 8);
-      if (!locked && !header.contains(document.activeElement)) header.classList.toggle('is-hidden', y > lastY && y > heroBottom);
-      if (y < lastY || y < heroBottom) header.classList.remove('is-hidden');
+      const delta = y - lastY;
+      /* Ignore tiny shifts (lazy images, scroll anchoring) so the header does not flicker */
+      if (y <= heroBottom || delta < -6) header.classList.remove('is-hidden');
+      else if (delta > 6 && !locked && !header.contains(document.activeElement)) header.classList.add('is-hidden');
       const probe = y + header.offsetHeight / 2;
       const dark = darkSections.some(section => probe >= section.offsetTop && probe < section.offsetTop + section.offsetHeight);
       header.classList.toggle('is-dark', dark);
@@ -496,7 +498,7 @@
       const lit = Math.round(progress * words.length);
       words.forEach((word, index) => word.classList.toggle('is-lit', index < lit));
     }
-    lastY = y;
+    if (Math.abs(y - lastY) > 6 || y <= 0) lastY = y;
   }
   const requestFrame = () => { if (!ticking) { ticking = true; window.requestAnimationFrame(onFrame); } };
   window.addEventListener('scroll', requestFrame, { passive: true });

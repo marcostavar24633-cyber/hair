@@ -227,7 +227,7 @@ for (const needle of [
   'function setTone(', 'tab.tabIndex = active ? 0 : -1', "atlasPanel?.setAttribute('aria-labelledby', tab.id)", 'ArrowRight', "'Home'", "'End'",
   "swatch.setAttribute('aria-pressed'", 'function renderSteps(', 'function goToFirstIncomplete()', "setAttribute('aria-current', 'step')",
   'реальная запись не создана', "removeAttribute('disabled')", 'IntersectionObserver', 'prefers-reduced-motion', 'requestAnimationFrame', '--scroll-progress',
-  "'pointerleave'", 'closeDelay', "classList.toggle('is-hidden'", "classList.toggle('is-dark'"
+  "'pointerleave'", 'closeDelay', "classList.add('is-hidden')", "classList.toggle('is-dark'"
 ]) assert.ok(js.includes(needle), 'script.js must keep: ' + needle);
 assert.equal(count(js, /addEventListener\('scroll'/g), 1, 'All scroll effects run in one rAF loop');
 
