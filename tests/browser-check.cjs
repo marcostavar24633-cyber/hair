@@ -151,15 +151,32 @@ async function main() {
           };
         }).filter(item => item.display !== 'none' && item.visibility !== 'hidden' &&
           (item.right > viewport + 1 || item.left < -1)).slice(0, 30);
-        const dimensions = {
+        const flowOverflow = [...document.querySelectorAll('body *')].filter(element => {
+          const style = getComputedStyle(element);
+          if (style.position === 'fixed' || style.position === 'absolute' || style.display === 'none' || style.visibility === 'hidden') return false;
+          let parent = element.parentElement;
+          while (parent && parent !== document.body) {
+            const parentStyle = getComputedStyle(parent);
+            if (['hidden', 'clip'].includes(parentStyle.overflowX)) return false;
+            parent = parent.parentElement;
+          }
+          const rect = element.getBoundingClientRect();
+          return rect.right > viewport + 1 || rect.left < -1;
+        }).slice(0, 20).map(element => ({
+          tag: element.tagName.toLowerCase(),
+          className: typeof element.className === 'string' ? element.className : '',
+          text: (element.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 70),
+          left: Math.round(element.getBoundingClientRect().left),
+          right: Math.round(element.getBoundingClientRect().right)
+        }));
+        return {
           viewport,
           document: document.documentElement.scrollWidth,
-          body: document.body.scrollWidth,
+          flowOverflow,
           overflowing
         };
-        return dimensions;
       });
-      assert.ok(dimensions.document <= dimensions.viewport + 1 && dimensions.body <= dimensions.viewport + 1,
+      assert.ok(dimensions.document <= dimensions.viewport + 1 && dimensions.flowOverflow.length === 0,
         'Horizontal overflow at ' + width + 'px: ' + JSON.stringify(dimensions));
       if (width === 1440) await page.screenshot({ path: path.join(screenshotsDir, 'desktop.png'), fullPage: true });
       if (width === 390) await page.screenshot({ path: path.join(screenshotsDir, 'mobile-390.png'), fullPage: true });
