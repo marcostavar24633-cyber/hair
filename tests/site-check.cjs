@@ -2,6 +2,7 @@ const fs=require('node:fs');const assert=require('node:assert/strict');
 
 function contrastRatio(foreground,background){const luminance=hex=>{const rgb=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2]};const a=luminance(foreground),b=luminance(background);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05)}
 for(const background of ['#f5efe7','#e9ded1']){assert.ok(contrastRatio('#76574d',background)>=4.5,'Dark section labels and disclaimers must meet WCAG AA');}
+for(const background of ['#f5efe7','#e9ded1']){assert.ok(contrastRatio('#6f6058',background)>=4.5,'Muted body text must meet WCAG AA on light surfaces');}
 assert.ok(contrastRatio('#6f6058','#e9ded1')>=4.5,'Form status text must meet WCAG AA on sand background');
 assert.ok(contrastRatio('#59263f','#f5efe7')>=3&&contrastRatio('#59263f','#e9ded1')>=3,'Light-surface keyboard focus indicators must meet 3:1');
 for(const background of ['#25131f','#34202e','#59263f','#160c16'])assert.ok(contrastRatio('#e6d6c9',background)>=3,'Dark-surface keyboard focus indicators must meet 3:1');
