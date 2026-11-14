@@ -77,6 +77,24 @@ async function main() {
       };
     });
     console.log('Accessibility audit: ' + JSON.stringify(accessibilityResults));
+    assert.equal(accessibilityResults.violations.length, 0, 'The page must pass the initial WCAG accessibility audit');
+    const auditAccessibilityState = async state => {
+      const violations = await page.evaluate(async () => {
+        const result = await axe.run(document, {
+          runOnly: {
+            type: 'tag',
+            values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']
+          }
+        });
+        return result.violations.map(item => ({
+          id: item.id,
+          impact: item.impact,
+          targets: item.nodes.map(node => node.target)
+        }));
+      });
+      console.log('Accessibility state ' + state + ': ' + JSON.stringify(violations));
+      assert.equal(violations.length, 0, 'Accessibility violations in state: ' + state);
+    };
     assert.equal(await page.locator('h1').count(), 1, 'The page must render one main heading');
 
     const screenshotsDir = path.join(root, 'artifacts');
@@ -128,9 +146,16 @@ async function main() {
     const mobileMenu = page.locator('#mobile-menu');
     await menuButton.click();
     assert.equal(await menuButton.getAttribute('aria-expanded'), 'true', 'Mobile menu must open');
+    assert.equal(await mobileMenu.locator('a').first().evaluate(element => element === document.activeElement), true, 'Opening the mobile menu must move focus to its first link');
+    await page.keyboard.press('Shift+Tab');
+    assert.equal(await mobileMenu.locator('a').last().evaluate(element => element === document.activeElement), true, 'Shift+Tab from the first menu link must wrap to the last link');
+    await page.keyboard.press('Tab');
+    assert.equal(await mobileMenu.locator('a').first().evaluate(element => element === document.activeElement), true, 'Tab from the last menu link must wrap to the first link');
+    await auditAccessibilityState('mobile menu open');
     assert.equal(await mobileMenu.isVisible(), true, 'Opened mobile menu must be visible');
     await page.keyboard.press('Escape');
     assert.equal(await menuButton.getAttribute('aria-expanded'), 'false', 'Escape must close mobile menu');
+    assert.equal(await menuButton.evaluate(element => element === document.activeElement), true, 'Closing the mobile menu must restore focus to its trigger');
     assert.equal(await mobileMenu.isVisible(), false, 'Closed mobile menu must be hidden');
 
     await page.locator('.filter-button[data-filter="color"]').click();
@@ -164,7 +189,10 @@ async function main() {
     await page.locator('.portfolio-card:not([hidden])').first().click();
     const lightbox = page.locator('#lightbox');
     assert.equal(await lightbox.isVisible(), true, 'Portfolio card must open the lightbox');
+    assert.equal(await lightbox.locator('button').evaluate(element => element === document.activeElement), true, 'Opening the lightbox must move focus to its close button');
+    await auditAccessibilityState('lightbox open');
     await page.keyboard.press('Escape');
+    assert.equal(await page.locator('.portfolio-card:not([hidden])').first().evaluate(element => element === document.activeElement), true, 'Closing the lightbox must restore focus to its trigger');
     assert.equal(await lightbox.isVisible(), false, 'Escape must close the lightbox');
 
     assert.deepEqual(pageErrors, [], 'The page must not produce uncaught JavaScript errors');
