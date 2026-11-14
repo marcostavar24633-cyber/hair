@@ -200,17 +200,18 @@ for(const reference of ariaReferences){
 
 
 // Security and privacy regression checks.
-const unsafeDomPatterns=[/\\binnerHTML\\b/,/\\bouterHTML\\b/,/insertAdjacentHTML/,/document\\.write/,/\\beval\\s*\\(/,/new\\s+Function/];
-for(const pattern of unsafeDomPatterns)assert.doesNotMatch(js,pattern,'Avoid executable HTML or dynamic-code sinks: '+pattern);
-const browserDataAndNetworkPatterns=[/\\blocalStorage\\b/,/\\bsessionStorage\\b/,/document\\.cookie/,/\\bfetch\\s*\\(/,/XMLHttpRequest/,/sendBeacon/];
-for(const pattern of browserDataAndNetworkPatterns)assert.doesNotMatch(js,pattern,'The demo must not store or transmit visitor data: '+pattern);
-assert.doesNotMatch(html,/javascript\\s*:/i,'HTML must not contain javascript: URLs');
-assert.doesNotMatch(html,/\\b(?:href|src)\\s*=\\s*["']http:\\/\\//i,'External HTML resources must use HTTPS');
-const externalTargetLinks=[...html.matchAll(/<a\\b([^>]*)>/gi)].filter(match=>/\\btarget=["']_blank["']/i.test(match[1]));
-for(const link of externalTargetLinks)assert.match(link[1],/\\brel=["'][^"']*noopener[^"']*noreferrer[^"']*["']/i,'New-tab links must use noopener noreferrer');
+for(const token of ['innerHTML','outerHTML','insertAdjacentHTML','document.write','eval(','new Function']){
+  assert.ok(!js.includes(token),'Avoid unsafe DOM or dynamic-code sink: '+token);
+}
+for(const token of ['localStorage','sessionStorage','document.cookie','fetch(','XMLHttpRequest','sendBeacon']){
+  assert.ok(!js.includes(token),'The demo must not store or transmit visitor data: '+token);
+}
+assert.ok(!html.toLowerCase().includes('javascript:'),'HTML must not contain javascript: URLs');
+assert.ok(!html.includes('href="http://')&&!html.includes('src="http://'),'External HTML resources must use HTTPS');
+assert.ok(!html.includes('target="_blank"'),'No new-tab links should be introduced without an explicit safe rel policy');
 const demoImageUrls=[...html.matchAll(/data-image="([^"]+)"/g)].map(match=>match[1]);
 assert.ok(demoImageUrls.length>0,'Portfolio lightbox images must remain explicitly declared in HTML');
-for(const url of demoImageUrls)assert.match(url,/^https:\\/\\/images\\.unsplash\\.com\\//,'Lightbox image URLs must use the trusted HTTPS image host');
-assert.match(formMarkup,/<button\\b[^>]*type="submit"[^>]*\\bdisabled(?:\\s|>)/,'Demo form submit control must be disabled until its JavaScript handler is ready');
-assert.ok(js.includes("form?.querySelector('button[type=\\"submit\\"]')?.removeAttribute('disabled')"),'Enable demo submission only after the client-side handler is registered');
-assert.doesNotMatch(formMarkup,/\\baction=/i,'Demo form must not declare a network submission destination');
+for(const url of demoImageUrls)assert.ok(url.startsWith('https://images.unsplash.com/'),'Lightbox image URLs must use the trusted HTTPS image host');
+assert.ok(formMarkup.includes('type="submit" disabled'),'Demo form submit control must be disabled until its JavaScript handler is ready');
+assert.ok(js.includes("form?.querySelector('button[type=\"submit\"]')?.removeAttribute('disabled')"),'Enable demo submission only after the client-side handler is registered');
+assert.ok(!/\baction\s*=/i.test(formMarkup),'Demo form must not declare a network submission destination');
