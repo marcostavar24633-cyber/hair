@@ -73,11 +73,27 @@ async function main() {
 
     await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded' });
     await page.locator('h1').waitFor();
-    await page.waitForFunction(() => {
-      const stylesheetLink = [...document.querySelectorAll('link[rel="stylesheet"]')]
-        .some(link => new URL(link.href).pathname.endsWith('/styles.css'));
-      return stylesheetLink && getComputedStyle(document.body).marginTop === '0px';
-    }, null, { timeout: 15000 });
+    try {
+      await page.waitForFunction(() => {
+        const stylesheetLink = [...document.querySelectorAll('link[rel="stylesheet"]')]
+          .some(link => new URL(link.href).pathname.endsWith('/styles.css'));
+        return stylesheetLink && getComputedStyle(document.body).marginTop === '0px';
+      }, null, { timeout: 15000 });
+    } catch (error) {
+      const cssState = await page.evaluate(() => ({
+        links: [...document.querySelectorAll('link[rel="stylesheet"]')].map(link => ({
+          href: link.href,
+          rel: link.rel,
+          disabled: link.disabled,
+          sheetAvailable: Boolean(link.sheet)
+        })),
+        bodyMarginTop: getComputedStyle(document.body).marginTop,
+        bodyFontFamily: getComputedStyle(document.body).fontFamily,
+        readyState: document.readyState
+      }));
+      console.error('Stylesheet readiness diagnostics (' + browserName + '): ' + JSON.stringify(cssState));
+      throw error;
+    }
 
     const runAxe = browserName !== 'webkit';
     if (runAxe) {
