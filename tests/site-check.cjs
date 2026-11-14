@@ -18,6 +18,17 @@ assert.ok(seoTitle.length>=30&&seoTitle.length<=60,'SEO title should remain conc
 assert.ok(seoDescription.length>=70&&seoDescription.length<=160,'SEO description should remain within a useful snippet length');
 const jsonLd=JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1]||'null');
 assert.equal(jsonLd['@type'],'WebSite','Demo site must use accurate WebSite structured data');
+const seoCanonical=html.match(/<link rel="canonical" href="([^"]+)"/)?.[1]||'';
+assert.equal(jsonLd.url,seoCanonical,'Structured-data URL must match the canonical page URL');
+assert.equal(jsonLd.inLanguage,'ru-RU','Structured data must declare the page language');
+assert.match(jsonLd.description,/вымышленный демонстрационный дизайн-концепт/i,'Structured data must clearly identify the project as a fictional demo');
+assert.match(jsonLd.description,/не является реальным салоном/i,'Structured data must not imply that this demo is a real salon');
+assert.match(robots,/^User-agent: \\*\\s+Allow: \\/\\s+/,'Robots policy must allow public crawling');
+assert.match(robots,/^Sitemap: https:\\/\\/marcostavar24633-cyber\\.github\\.io\\/hair\\/sitemap\\.xml$/m,'Robots policy must advertise the canonical sitemap');
+assert.match(sitemap,/<urlset xmlns="http:\\/\\/www\\.sitemaps\\.org\\/schemas\\/sitemap\\/0\\.9">/,'Sitemap must use the standard XML sitemap namespace');
+const sitemapLocations=[...sitemap.matchAll(/<loc>([^<]+)<\\/loc>/g)].map(match=>match[1]);
+assert.deepEqual(sitemapLocations,[seoCanonical],'The one-page demo sitemap must contain exactly its canonical URL');
+
 assert.doesNotMatch(JSON.stringify(jsonLd),/LocalBusiness|HairSalon|BeautySalon/,'Demo must not claim to be a real local business');assert.match(html,/twitter:card/);assert.match(html,/rel="canonical"/);assert.match(html,/@type":"WebSite"/);assert.match(html,/og:image:alt/);assert.match(html,/twitter:image/);assert.match(html,/twitter:description/);
 assert.match(html,/Демо-режим/);assert.match(html,/ул\. Демонстрационная, 15/);assert.match(html,/hello@hairstudio\.example/);assert.match(html,/демо-отзыв/);assert.match(html,/Смоделировать запись/);assert.match(html,/decoding="async"/);assert.match(html,/rel="preconnect" href="https:\/\/images\.pexels\.com"/);assert.match(html,/rel="preconnect" href="https:\/\/images\.unsplash\.com"/);assert.match(html,/fonts\.googleapis\.com[^"]*display=swap/);assert.match(html,/booking-summary/);assert.match(html,/booking-price/);assert.match(html,/модельный ориентир/);assert.match(html,/не отправляет данные/);
 assert.match(js,/const restoreFocus=mobileMenu\.contains\(document\.activeElement\)/);
