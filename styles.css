@@ -111,7 +111,7 @@ html:not(.js) .mobile-menu a{opacity:1;transform:none;font-size:22px}
 .hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(32px,5vw,80px);align-items:center;max-width:var(--max);margin:0 auto;padding:clamp(40px,6vw,80px) var(--pad) clamp(64px,8vw,110px);min-height:calc(100svh - var(--header-h) - 30px)}
 .kicker{display:flex;align-items:center;gap:14px;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--copper);font-weight:500;margin-bottom:28px}
 .kicker span{width:48px;height:1px;background:currentColor}
-.hero h1{font-size:clamp(50px,7.6vw,124px);line-height:.98;letter-spacing:-.025em}
+.hero h1{font-size:clamp(50px,6.6vw,112px);line-height:.98;letter-spacing:-.025em}
 .hero-line{display:block}
 .hero h1 em{font-style:normal;color:var(--copper)}
 .hero-lead{margin-top:32px;max-width:44ch;font-size:clamp(17px,1.4vw,19px);color:var(--muted)}
@@ -253,6 +253,11 @@ input[type="range"]#calc-length{width:100%;accent-color:var(--copper-bright);min
 .team-photo{aspect-ratio:3/4;border-radius:999px 999px 16px 16px;overflow:hidden;background:var(--paper)}
 .team-photo img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
 .team-card:hover .team-photo img{transform:scale(1.05)}
+.team-monogram{position:relative;display:grid;place-items:center;background:radial-gradient(120% 90% at 30% 15%,var(--s1),var(--s2) 45%,var(--s3) 100%);color:var(--ivory)}
+.team-monogram::before{content:"";position:absolute;inset:14px;border:1px solid rgba(244,239,231,.45);border-radius:999px 999px 8px 8px}
+.team-monogram span{font-family:var(--serif);font-size:clamp(64px,7vw,104px);letter-spacing:.04em;text-shadow:0 2px 24px rgba(22,18,15,.25);transition:transform .8s var(--ease)}
+.team-monogram small{position:absolute;bottom:34px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.85}
+.team-card:hover .team-monogram span{transform:translateY(-6px)}
 .team-role{margin-top:22px;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--copper)}
 .team-card h3{font-size:30px;margin:8px 0}
 .team-card p:last-child{color:var(--muted);font-size:15px}
@@ -373,7 +378,7 @@ html:not(.js) .booking-form button[type="submit"]{display:none}
   .process-list::after{width:2px;transform-origin:50% 0;transform:scaleY(var(--process,0))}
   .team-grid{grid-template-columns:minmax(0,1fr);gap:48px}
   .team-card:nth-child(2){margin-top:0}
-  .team-photo{max-width:420px}
+  .team-photo{max-width:420px;aspect-ratio:4/4.4}
   .reviews-track{grid-auto-columns:86%}
   .footer-grid{grid-template-columns:minmax(0,1fr)}
   .footer{padding-bottom:96px}

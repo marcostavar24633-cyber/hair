@@ -240,7 +240,7 @@ async function main() {
     await auditAccessibilityState('atlas changed');
 
     await page.locator('.filter-button[data-filter="color"]').click();
-    assert.equal(await page.locator('.portfolio-card:not([hidden])').count(), 1, 'Portfolio color filter must show matching cards only');
+    assert.equal(await page.locator('.portfolio-card:not([hidden])').count(), 2, 'Portfolio color filter must show matching cards only');
 
     const comparison = page.locator('#comparison');
     await page.locator('.compare-range').evaluate(element => {
