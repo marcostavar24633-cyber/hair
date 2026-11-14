@@ -1,0 +1,41 @@
+name: Site quality checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: HTML, CSS and JavaScript regression checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: node --check script.js
+
+      - name: Check regression suite syntax
+        run: node --check tests/site-check.cjs
+
+      - name: Run site regression checks
+        run: node tests/site-check.cjs
