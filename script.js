@@ -53,7 +53,7 @@
   menuClose?.addEventListener('click', () => closeMenu());
   menuBackdrop?.addEventListener('click', () => closeMenu());
   menu?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => closeMenu(false)));
-  menu?.querySelectorAll('.menu-branch').forEach(button => {
+  menu?.querySelectorAll('.menu-branch, .menu-subbranch').forEach(button => {
     button.addEventListener('click', () => {
       const panel = document.getElementById(button.getAttribute('aria-controls'));
       const expanded = button.getAttribute('aria-expanded') === 'true';
