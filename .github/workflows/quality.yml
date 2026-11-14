@@ -1,0 +1,49 @@
+name: HAIR STUDIO — quality checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hair-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Static and browser checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install test-only dependencies
+        run: npm install --no-save --no-package-lock playwright axe-core
+
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Run static quality checks
+        run: node tests/site-check.cjs
+
+      - name: Run Chromium browser checks
+        run: BROWSER=chromium node tests/browser-check.cjs
+
+      - name: Run Firefox browser checks
+        run: BROWSER=firefox node tests/browser-check.cjs
+
+      - name: Run WebKit browser checks
+        run: BROWSER=webkit node tests/browser-check.cjs
