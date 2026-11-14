@@ -1,33 +1,52 @@
-# HAIR STUDIO — premium concept
+# HAIR ATELIER — editorial concept
 
-Адаптивный одностраничный концепт премиальной студии волос в Ульяновске. Стек: HTML, CSS, vanilla JavaScript. Публикация: GitHub Pages.
+A premium, single-page beauty-studio website concept for Ulyanovsk, built with semantic HTML, CSS and vanilla JavaScript.
 
-## Запуск
-Откройте `index.html` или запустите папку через Live Server.
+**Live preview:** https://marcostavar24633-cyber.github.io/hair/
 
-## Реализовано
-- Редакционная арт-дирекция: молочный, баклажановый, шоколадный и бронзовый цвета.
-- Адаптивная шапка и полноэкранное мобильное меню.
-- Hero, философия, каталог услуг, галерея, сравнение изображений, этапы работы, калькулятор, блок команды, FAQ, форма и подвал.
-- Фильтрация галереи и доступный lightbox.
-- Интерактивный before/after slider.
-- Калькулятор по демонстрационному прайсу и длине волос.
-- Предварительный расчёт и сводка выбранных услуги, дня и времени в форме записи.
-- Проверка выбора услуги, демонстрационного дня и времени без сбора персональных данных.
-- SEO-метаданные, Open Graph, Twitter Card и JSON-LD WebSite (без ложной разметки реального салона).
-- Content Security Policy: локальные скрипты, разрешённые источники шрифтов/изображений, запрет API-соединений через `connect-src` и отправки форм; политика referrer ограничивает передачу адреса страницы.
-- Лёгкие scroll-reveal анимации через IntersectionObserver, прогресс чтения страницы и анимация первого экрана без сторонних библиотек.
-- Поддержка клавиатуры и prefers-reduced-motion.
-- Дополнительная мобильная адаптация для ширины 330–360 px, увеличенные сенсорные зоны и поля форм с размером шрифта 16 px.
-- Асинхронное декодирование изображений для более плавной отрисовки.
-- Адаптивные `srcset` и `sizes` для изображений Pexels/Unsplash: браузер выбирает подходящий размер под ширину экрана и плотность пикселей.
+## Experience
 
-Примечание по безопасности: CSP задана через meta-тег, поскольку GitHub Pages не предоставляет этому статическому проекту произвольную настройку HTTP-заголовков. Поэтому HTTP-заголовки вроде `X-Frame-Options` и `X-Content-Type-Options` здесь отдельно не подтверждены.
+- Cinematic aubergine-and-champagne visual system with responsive editorial layouts.
+- Slide-out navigation with an expandable services submenu.
+- Guided service-discovery flow that recommends a discussion direction without collecting personal data.
+- Filterable visual lookbook and accessible image lightbox.
+- Scroll reveals, subtle ambient lighting and reading progress, with reduced-motion support.
+- Responsive service cards, FAQ and keyboard-accessible overlays.
 
-## Важно: демонстрационный проект
-HAIR STUDIO — вымышленная концепция, не подтверждение существующего салона. Услуги и цены придуманы для прототипа и ориентированы на открытые предложения рынка Ульяновска. Они не являются фактическим прайсом или публичной офертой. Команда, портреты, отзывы, адрес, телефон, часы работы и электронная почта — полностью вымышленные демонстрационные данные. Адрес «ул. Демонстрационная, 15», номер +7 (8422) 00-00-00 и почта hello@hairstudio.example не предназначены для связи с реальным салоном. Отзывы не принадлежат реальным клиентам.
+## Project status and content integrity
 
-Демонстрационный блок позволяет выбрать только услугу, условный день и время, а затем просмотреть подтверждение сценария. Полей для имени, телефона, электронной почты и иных персональных данных нет. Выбор не отправляется, не хранится и не передаётся; календарь не подключён, реальная запись не создаётся. Для приёма заявок в будущем потребуется отдельное решение владельца и согласованная интеграция с сервисом записи.
+This repository is a **design and interaction concept**, not a representation of an operating salon. The name, sample service descriptions and visual direction are conceptual. The lookbook uses editorial reference photography, not verified client results. No real team, address, phone number, reviews, prices, appointment availability or booking provider have been supplied.
 
-## Замена материалов
-Замените изображения в `index.html` на собственные фотографии с разрешением на публикацию: главный портрет, интерьер, стрижки, окрашивания, укладки, реальные пары до/после и портреты сотрудников. Удалите пометки DEMO после подтверждения всех фактических данных.
+The guided selector runs entirely in the browser. It does not collect, transmit or store personal data and does not create an appointment. The website intentionally does not pretend that a booking has been made.
+
+Before a real commercial launch, the owner must provide verified business details, actual services and prices, original photography with publication rights, contact channels, privacy/legal copy, and an approved booking or enquiry integration. Those cannot safely be fabricated.
+
+## Technology
+
+- HTML5
+- CSS (responsive layout, custom properties, motion and reduced-motion handling)
+- Vanilla JavaScript (no framework and no runtime API)
+- GitHub Pages deployment
+- Playwright browser regression checks and axe-core accessibility checks in Chromium and Firefox
+
+## Local preview
+
+Because this is a static site, serve the repository root with any static HTTP server, for example:
+
+```bash
+python -m http.server 4173
+```
+
+Then open http://127.0.0.1:4173/.
+
+## Quality checks
+
+The GitHub Actions workflow checks JavaScript syntax, site structure, navigation targets, responsive behaviour, interactive flows, keyboard access and browser console errors. Automated axe-core scans run in Chromium and Firefox. WebKit runs the functional suite; axe-core is not injected in WebKit in this configuration.
+
+The browser regression script expects Playwright and axe-core to be installed by the workflow:
+
+```bash
+npm install --no-save playwright axe-core
+npx playwright install --with-deps chromium firefox webkit
+for browser in chromium firefox webkit; do BROWSER="$browser" node tests/browser-check.cjs; done
+```
