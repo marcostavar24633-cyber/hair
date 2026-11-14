@@ -203,8 +203,12 @@ async function main() {
     assert.equal(await menu.evaluate(element => element.contains(document.activeElement)), true, 'Opening the menu must move focus inside');
     const submenuButton = page.locator('.menu-branch');
     await submenuButton.click();
-    assert.equal(await submenuButton.getAttribute('aria-expanded'), 'true', 'Nested menu must expand');
-    assert.equal(await page.locator('#menu-services').isVisible(), true, 'Nested menu links must become visible');
+    assert.equal(await submenuButton.getAttribute('aria-expanded'), 'true', 'Services submenu must expand');
+    assert.equal(await page.locator('#menu-services').isVisible(), true, 'Services submenu links must become visible');
+    const colourSubmenuButton = page.locator('.menu-subbranch');
+    await colourSubmenuButton.click();
+    assert.equal(await colourSubmenuButton.getAttribute('aria-expanded'), 'true', 'Second-level colour submenu must expand');
+    assert.equal(await page.locator('#menu-colour').isVisible(), true, 'Second-level colour links must become visible');
     await page.keyboard.press('Escape');
     assert.equal(await menuButton.getAttribute('aria-expanded'), 'false', 'Escape must close the slide-out menu');
     assert.equal(await menuButton.evaluate(element => element === document.activeElement), true, 'Closing the menu must restore focus');
