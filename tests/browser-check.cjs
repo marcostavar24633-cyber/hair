@@ -192,12 +192,34 @@ async function main() {
     const menu = page.locator('#site-menu');
     await menuButton.click();
     assert.equal(await menuButton.getAttribute('aria-expanded'), 'true', 'Slide-out menu must open');
-    await page.waitForFunction(() => {
-      const panel = document.querySelector('#site-menu');
-      const bounds = panel.getBoundingClientRect();
-      return bounds.left >= -1 && bounds.right <= document.documentElement.clientWidth + 1 &&
-        panel.contains(document.activeElement);
-    }, null, { timeout: 2000 });
+    try {
+      await page.waitForFunction(() => {
+        const panel = document.querySelector('#site-menu');
+        const bounds = panel.getBoundingClientRect();
+        return bounds.left >= -1 && bounds.right <= document.documentElement.clientWidth + 1 &&
+          panel.contains(document.activeElement);
+      }, null, { timeout: 2000 });
+    } catch (error) {
+      const state = await page.evaluate(() => {
+        const panel = document.querySelector('#site-menu');
+        const bounds = panel.getBoundingClientRect();
+        const active = document.activeElement;
+        return {
+          className: panel.className,
+          bounds: { left: bounds.left, right: bounds.right, width: bounds.width },
+          visibility: getComputedStyle(panel).visibility,
+          transform: getComputedStyle(panel).transform,
+          ariaHidden: panel.getAttribute('aria-hidden'),
+          inert: panel.inert,
+          inertAttribute: panel.hasAttribute('inert'),
+          activeTag: active?.tagName,
+          activeClass: active?.className,
+          focusInside: panel.contains(active)
+        };
+      });
+      console.error('Slide-out menu diagnostics (' + browserName + '): ' + JSON.stringify(state));
+      throw error;
+    }
     const menuBounds = await menu.boundingBox();
     assert.ok(menuBounds && menuBounds.x >= -1 && menuBounds.x + menuBounds.width <= 391,
       'Open slide-out menu must fit within the mobile viewport: ' + JSON.stringify(menuBounds));
