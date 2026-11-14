@@ -34,7 +34,7 @@
     document.body.classList.add('menu-open');
     window.setTimeout(() => {
       (menu.querySelector('.menu-close') || menu.querySelector('a,button'))?.focus({ preventScroll: true });
-    }, 0);
+    }, 50);
   }
 
   function closeMenu(restoreFocus = true) {
