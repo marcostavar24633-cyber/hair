@@ -138,6 +138,7 @@
     closeMenu(false);
     dialogReturnFocus = document.activeElement;
     initialNeed = need;
+    activeStep = 0;
     selectedNeed = '';
     selectedPace = '';
     consultation.querySelectorAll('.choice').forEach(button => {
