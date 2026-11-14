@@ -84,6 +84,8 @@ assert.ok(css.includes('html:not(.js) .booking-form button[type="submit"]{displa
 assert.ok(css.includes('--serif:"Playfair Display",Georgia,serif')&&css.includes('--sans:"DM Sans",Arial,sans-serif'),'Typography must have local system font fallbacks if Google Fonts fail');
 
 assert.ok(js.includes("lightbox?.addEventListener('focusin'"),'Lightbox must keep keyboard focus inside the modal');
+assert.ok(js.includes('delete lightboxImage.dataset.fallbackApplied'),'Each newly opened lightbox image must be eligible for its own one-time fallback');
+assert.ok(js.includes("lightboxImage.classList.remove('image-fallback')"),'A previous image fallback style must not leak into the next lightbox image');
 assert.ok(js.includes("previousBodyOverflow=document.body.style.overflow"),'Lightbox must remember the previous scroll-lock style');
 assert.ok(js.includes("document.body.style.overflow=previousBodyOverflow"),'Closing the lightbox must restore the previous scroll-lock style');
 assert.ok(js.includes("if(event.key==='Escape'){closeMenu();closeLightbox()}"),'Escape must close open overlays');
