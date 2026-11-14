@@ -199,6 +199,19 @@ for(const reference of ariaReferences){
 }
 
 
+
+// Content Security Policy and referrer-policy regression checks.
+const csp=html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)">/)?.[1]||'';
+assert.ok(csp,'A document-level Content Security Policy must be present');
+for(const directive of ["default-src 'self'","base-uri 'self'","form-action 'none'","object-src 'none'","frame-src 'none'","script-src 'self'","connect-src 'none'","upgrade-insecure-requests"]){
+  assert.ok(csp.split(';').map(value=>value.trim()).includes(directive),'CSP must include '+directive);
+}
+for(const host of ["https://fonts.googleapis.com","https://fonts.gstatic.com","https://images.pexels.com","https://images.unsplash.com"]){
+  assert.ok(csp.includes(host),'CSP must explicitly allow the required asset host '+host);
+}
+assert.match(html,/<meta name="referrer" content="strict-origin-when-cross-origin">/,'Cross-origin referrers must not expose full page paths');
+assert.doesNotMatch(csp,/unsafe-eval|\*\s*(?:;|$)/,'CSP must not allow eval or wildcard sources');
+
 // Security and privacy regression checks.
 for(const token of ['innerHTML','outerHTML','insertAdjacentHTML','document.write','eval(','new Function']){
   assert.ok(!js.includes(token),'Avoid unsafe DOM or dynamic-code sink: '+token);
