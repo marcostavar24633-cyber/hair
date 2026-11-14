@@ -26,7 +26,7 @@ assert.match(jsonLd.description,/не является реальным сало
 assert.ok(robots.includes('User-agent: *')&&robots.includes('Allow: /'),'Robots policy must allow public crawling');
 assert.ok(robots.includes('Sitemap: https://marcostavar24633-cyber.github.io/hair/sitemap.xml'),'Robots policy must advertise the canonical sitemap');
 assert.ok(sitemap.includes('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'),'Sitemap must use the standard XML sitemap namespace');
-const sitemapLocations=[...sitemap.matchAll(/<loc>([^<]+)<\\/loc>/g)].map(match=>match[1]);
+const sitemapLocations=sitemap.split('<loc>').slice(1).map(entry=>entry.split('</loc>')[0]);
 assert.deepEqual(sitemapLocations,[seoCanonical],'The one-page demo sitemap must contain exactly its canonical URL');
 
 assert.doesNotMatch(JSON.stringify(jsonLd),/LocalBusiness|HairSalon|BeautySalon/,'Demo must not claim to be a real local business');assert.match(html,/twitter:card/);assert.match(html,/rel="canonical"/);assert.match(html,/@type":"WebSite"/);assert.match(html,/og:image:alt/);assert.match(html,/twitter:image/);assert.match(html,/twitter:description/);
