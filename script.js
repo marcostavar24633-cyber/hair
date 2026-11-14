@@ -72,7 +72,7 @@
   }
   themeToggle?.addEventListener('click', () => {
     setMode(root.dataset.mode === 'light' ? 'dark' : 'light', { animate: true, save: true });
-    window.dispatchEvent(new Event('scroll')); /* the header re-checks which variant it needs */
+    onFrame(); /* the header re-checks which variant it needs right away */
   });
   setMode(store.get('mode') === 'light' ? 'light' : 'dark');
 
