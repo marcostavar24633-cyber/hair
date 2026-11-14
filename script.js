@@ -24,6 +24,7 @@
     if (!menu || !menuButton || menu.classList.contains('is-open')) return;
     menuReturnFocus = document.activeElement;
     menu.classList.add('is-open');
+    void menu.offsetWidth;
     menu.setAttribute('aria-hidden', 'false');
     menu.inert = false;
     menuBackdrop.hidden = false;
