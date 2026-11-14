@@ -3,6 +3,8 @@ name: Deploy HAIR STUDIO to GitHub Pages
 on:
   push:
     branches: ["main"]
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -16,7 +18,7 @@ concurrency:
 
 jobs:
   quality:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -33,9 +35,13 @@ jobs:
 
       - name: Run cross-browser regression checks
         run: |
+          status=0
           for browser in chromium firefox webkit; do
-            BROWSER="$browser" node tests/browser-check.cjs
+            if ! BROWSER="$browser" node tests/browser-check.cjs; then
+              status=1
+            fi
           done
+          exit "$status"
 
       - name: Upload browser screenshots
         if: always()
@@ -46,6 +52,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
   build:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     needs: quality
     steps:
@@ -58,6 +65,7 @@ jobs:
         with:
           path: "."
   deploy:
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
