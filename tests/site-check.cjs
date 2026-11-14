@@ -89,7 +89,7 @@ assert.ok(js.includes("image.removeAttribute('srcset')"),'Fallback must remove r
 assert.ok(css.includes('.image-fallback{')&&css.includes('object-fit:contain'),'Fallback image should use contained rendering and preserve its composition');
 
 assert.ok(js.includes("document.documentElement.classList.add('js')"),'Enhancement state must be added only after JavaScript starts');
-assert.ok(html.includes('<noscript><p class="form-status">Интерактивная демонстрационная форма требует JavaScript.'),'No-script users must be told why the demo form is unavailable');
+assert.ok(html.includes('<noscript><p class="form-status">Для просмотра демонстрационного сценария требуется JavaScript.'),'No-script users must be told why the demo form is unavailable');
 assert.ok(css.includes('html:not(.js) .mobile-menu[hidden]{display:block'),'Mobile navigation must remain visible without JavaScript');
 assert.ok(css.includes('html:not(.js) .booking-form button[type="submit"]{display:none}'),'The demo form must not submit personal data when JavaScript is unavailable');
 assert.ok(css.includes('--serif:"Playfair Display",Georgia,serif')&&css.includes('--sans:"DM Sans",Arial,sans-serif'),'Typography must have local system font fallbacks if Google Fonts fail');
