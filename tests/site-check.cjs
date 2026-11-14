@@ -1,5 +1,5 @@
 const fs=require('node:fs');const assert=require('node:assert/strict');
-const html=fs.readFileSync('index.html','utf8');const js=fs.readFileSync('script.js','utf8');const css=fs.readFileSync('styles.css','utf8');const readme=fs.readFileSync('README.md','utf8');
+const html=fs.readFileSync('index.html','utf8');const js=fs.readFileSync('script.js','utf8');const css=fs.readFileSync('styles.css','utf8');const readme=fs.readFileSync('README.md','utf8');const robots=fs.readFileSync('robots.txt','utf8');const sitemap=fs.readFileSync('sitemap.xml','utf8');
 assert.match(html,/<html lang="ru">/);assert.equal((html.match(/<h1\b/g)||[]).length,1);assert.match(html,/HAIR STUDIO — эстетика волос в Ульяновске/);
 for(const id of ['services','works','philosophy','team','contacts','booking','booking-form','comparison','calculator','lightbox'])assert.ok(html.includes('id="'+id+'"'),'Missing section '+id);
 const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);assert.equal(new Set(ids).size,ids.length,'Duplicate HTML id');
@@ -12,7 +12,7 @@ assert.match(js,/IntersectionObserver/);assert.match(js,/prefers-reduced-motion/
 assert.doesNotMatch(js,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|localStorage|sessionStorage|document\.cookie/,'Form must not send or persist data');
 assert.match(css,/body\.menu-open\{overflow:hidden\}/);
 assert.match(css,/@media\(max-width:720px\)/);assert.match(css,/@media\(max-width:390px\)/);assert.match(css,/prefers-reduced-motion/);assert.match(css,/:focus-visible/);assert.match(css,/\.filter-button\{[^}]*min-width:44px;min-height:44px/);assert.match(css,/\.filter-button\{min-height:44px;padding:8px 13px\}/);assert.match(css,/\.booking-form input:focus-visible,.booking-form select:focus-visible\{outline:2px solid var\(--aub\)/);assert.match(css,/\.comparison:focus-within\{outline:2px solid var\(--aub\);outline-offset:4px\}/);assert.match(css,/\.comparison:focus-within \.compare-handle\{box-shadow:/);assert.ok(css.includes('@media(max-width:360px)'));assert.ok(css.includes('@media(max-width:330px)'));assert.ok(css.includes('min-height:46px'));assert.match(css,/hero-image-enter/);assert.match(css,/js-reveal/);
-assert.match(readme,/демонстрационный проект/i);assert.match(readme,/данные не отправляются, не хранятся и не передаются/);assert.match(readme,/полностью вымышленные демонстрационные данные/);assert.match(readme,/анимац/i);
+assert.match(readme,/демонстрационный проект/i);assert.match(readme,/данные не отправляются, не хранятся и не передаются/);assert.match(readme,/полностью вымышленные демонстрационные данные/);assert.match(readme,/анимац/i);assert.match(robots,/User-agent: \\*/);assert.match(robots,/Allow: \\//);assert.match(robots,/Sitemap: https:\\/\\/marcostavar24633-cyber\\.github\\.io\\/hair\\/sitemap\\.xml/);assert.match(sitemap,/<urlset xmlns="http:\\/\\/www\\.sitemaps\\.org\\/schemas\\/sitemap\\/0\\.9">/);assert.match(sitemap,/<loc>https:\\/\\/marcostavar24633-cyber\\.github\\.io\\/hair\\/<\\/loc>/);
 
 const imageTags=html.split('<img').slice(1).map(part=>part.split('>')[0]);
 assert.ok(imageTags.length>=10,'Expected image-rich layout');
