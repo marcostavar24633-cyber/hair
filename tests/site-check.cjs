@@ -41,6 +41,12 @@ assert.ok(css.includes(':focus-visible'));assert.ok(css.includes(':focus-visible
 
 assert.match(html,/og:site_name/);assert.match(html,/twitter:image:alt/);
 assert.match(html,/<link rel="preload" as="image" fetchpriority="high" imagesrcset="[^"]+480w[^"]+800w[^"]+1200w" imagesizes="\(max-width: 720px\) 90vw, 45vw">/,"Hero image should have a responsive high-priority preload matching its rendered sizes");
+const heroPreload=html.match(/<link rel="preload" as="image"[^>]*>/)?.[0]||'';
+const heroSource=heroTag||'';
+const getAttribute=(tag,name)=>tag.match(new RegExp('\\\\b'+name+'="([^"]*)"'))?.[1];
+assert.equal(getAttribute(heroPreload,'imagesrcset'),getAttribute(heroSource,'srcset'),'Hero preload candidates must exactly match the rendered image srcset to avoid duplicate downloads');
+assert.equal(getAttribute(heroPreload,'imagesizes'),getAttribute(heroSource,'sizes'),'Hero preload sizes must exactly match the rendered image sizes');
+assert.equal(getAttribute(heroPreload,'fetchpriority'),'high','Hero preload must retain high fetch priority');
 
 const responsiveImages=imageTags.filter(tag=>/src="https:\/\/images\.(?:unsplash|pexels)\.com\//.test(tag));
 assert.ok(responsiveImages.length>=10,'Expected all remote content images to use responsive image candidates');
