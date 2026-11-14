@@ -104,3 +104,4 @@ body::before{content:"";position:fixed;z-index:1000;top:0;left:0;width:100%;heig
 /* Focus indicators: dark plum on light surfaces, warm ivory on dark surfaces. */
 :focus-visible{outline-color:#59263f}
 .site-header :focus-visible,.mobile-menu :focus-visible,.hero :focus-visible,.calculator :focus-visible,.final-cta :focus-visible,.footer :focus-visible,.lightbox :focus-visible{outline-color:#e6d6c9}
+\n.image-fallback{filter:none!important;object-fit:contain!important;background:#25131f}\n

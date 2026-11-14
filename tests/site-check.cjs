@@ -40,6 +40,10 @@ assert.ok(css.includes(':focus-visible'));assert.ok(css.includes(':focus-visible
 
 
 assert.match(html,/og:site_name/);assert.match(html,/twitter:image:alt/);
+assert.match(js,/document\\.addEventListener\\('error',[\\s\\S]*?image\\.dataset\\.fallbackApplied/,'Failed remote images must receive a one-time local fallback');
+assert.match(js,/data:image\\/svg\\+xml/,'Image fallback must be self-contained and must not depend on another external host');
+assert.match(js,/image\\.removeAttribute\\('srcset'\\)/,'Fallback must remove remote responsive candidates to prevent retry loops');
+assert.match(css,/\\.image-fallback\\{[^}]*object-fit:contain/,'Fallback image should use contained rendering and preserve its composition');
 const appScripts=[...html.matchAll(/<script\b([^>]*)src="([^"]+)"([^>]*)>/g)];
 assert.equal(appScripts.length,1,'The landing should load only one local application script');
 assert.match(appScripts[0][0],/\bdefer\b/,'The local application script must be deferred so HTML parsing is not blocked');
