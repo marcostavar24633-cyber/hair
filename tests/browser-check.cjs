@@ -160,6 +160,12 @@ async function main() {
     await page.keyboard.press('Escape');
     assert.equal(await menuButton.getAttribute('aria-expanded'), 'false', 'Escape must close the slide-out menu');
     assert.equal(await menuButton.evaluate(element => element === document.activeElement), true, 'Closing the menu must restore focus');
+    await menuButton.click();
+    await page.locator('.menu-aside [data-open-consultation]').click();
+    assert.equal(await page.locator('#consultation').isVisible(), true, 'Menu CTA must open the guided selector');
+    await page.keyboard.press('Escape');
+    assert.equal(await menuButton.evaluate(element => element === document.activeElement), true,
+      'Closing a selector opened from the menu must restore focus to the visible menu trigger');
 
     const consultationTrigger = page.locator('[data-open-consultation]:visible').first();
     await consultationTrigger.click();
