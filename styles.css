@@ -115,3 +115,11 @@ body::before{content:"";position:fixed;z-index:1000;top:0;left:0;width:100%;heig
   html:not(.js) .menu-button{display:none}
 }
 html:not(.js) .booking-form button[type="submit"]{display:none}
+
+/* Narrow-phone overflow fix: constrain grid tracks and editorial caption width. */
+@media(max-width:360px){
+  .calculator{grid-template-columns:minmax(0,1fr);min-width:0}
+  .calculator-copy,.calculator-panel{min-width:0;max-width:100%}
+  .calculator-copy>p:last-child{max-width:100%}
+  .visual-break-caption h2{font-size:clamp(36px,11vw,42px)}
+}
