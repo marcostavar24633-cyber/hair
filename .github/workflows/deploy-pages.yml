@@ -35,9 +35,13 @@ jobs:
 
       - name: Run cross-browser regression checks
         run: |
+          status=0
           for browser in chromium firefox webkit; do
-            BROWSER="$browser" node tests/browser-check.cjs
+            if ! BROWSER="$browser" node tests/browser-check.cjs; then
+              status=1
+            fi
           done
+          exit "$status"
 
       - name: Upload browser screenshots
         if: always()
