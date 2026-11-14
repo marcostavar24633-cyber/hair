@@ -78,7 +78,7 @@
   let selectedNeed = '';
   let selectedPace = '';
   let dialogReturnFocus = null;
-  let initialNeed = '';
+  
 
   const recommendations = {
     shape: { title: 'Форма и движение', detail: 'Обсудите стрижку и силуэт, которые поддерживают естественную текстуру и не требуют сложной ежедневной укладки.', service: 'Форма и стрижка' },
@@ -105,7 +105,7 @@
     const controls = consultation?.querySelector('.dialog-controls');
     if (controls) controls.hidden = activeStep === 2;
     if (activeStep === 2) finishButton?.focus();
-    else steps[activeStep]?.querySelector('.choice.is-selected')?.focus();
+    else (steps[activeStep]?.querySelector('.choice.is-selected') || steps[activeStep]?.querySelector('.choice'))?.focus();
   }
 
   function selectChoice(button) {
@@ -135,9 +135,9 @@
 
   function openConsultation(need = '') {
     if (!consultation || !dialog) return;
+    const activeElement = document.activeElement;
+    dialogReturnFocus = menu?.contains(activeElement) ? menuButton : activeElement;
     closeMenu(false);
-    dialogReturnFocus = document.activeElement;
-    initialNeed = need;
     activeStep = 0;
     selectedNeed = '';
     selectedPace = '';
