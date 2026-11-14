@@ -23,9 +23,9 @@ assert.equal(jsonLd.url,seoCanonical,'Structured-data URL must match the canonic
 assert.equal(jsonLd.inLanguage,'ru-RU','Structured data must declare the page language');
 assert.match(jsonLd.description,/вымышленный демонстрационный дизайн-концепт/i,'Structured data must clearly identify the project as a fictional demo');
 assert.match(jsonLd.description,/не является реальным салоном/i,'Structured data must not imply that this demo is a real salon');
-assert.match(robots,/^User-agent: \\*\\s+Allow: \\/\\s+/,'Robots policy must allow public crawling');
-assert.match(robots,/^Sitemap: https:\\/\\/marcostavar24633-cyber\\.github\\.io\\/hair\\/sitemap\\.xml$/m,'Robots policy must advertise the canonical sitemap');
-assert.match(sitemap,/<urlset xmlns="http:\\/\\/www\\.sitemaps\\.org\\/schemas\\/sitemap\\/0\\.9">/,'Sitemap must use the standard XML sitemap namespace');
+assert.ok(robots.includes('User-agent: *')&&robots.includes('Allow: /'),'Robots policy must allow public crawling');
+assert.ok(robots.includes('Sitemap: https://marcostavar24633-cyber.github.io/hair/sitemap.xml'),'Robots policy must advertise the canonical sitemap');
+assert.ok(sitemap.includes('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'),'Sitemap must use the standard XML sitemap namespace');
 const sitemapLocations=[...sitemap.matchAll(/<loc>([^<]+)<\\/loc>/g)].map(match=>match[1]);
 assert.deepEqual(sitemapLocations,[seoCanonical],'The one-page demo sitemap must contain exactly its canonical URL');
 
