@@ -300,14 +300,17 @@ async function main() {
     const header = page.locator('.site-header');
     const atlasTop = await page.locator('#atlas').evaluate(element => element.offsetTop);
     const headerState = (name, expected) => page.waitForFunction(([cls, value]) => document.querySelector('.site-header').classList.contains(cls) === value, [name, expected], { timeout: 3000 }).then(() => true, () => false);
-    console.log('Header scroll start: ' + JSON.stringify(await page.evaluate(() => ({ y: window.scrollY, header: document.querySelector('.site-header').className }))));
-    await page.evaluate(y => window.scrollTo(0, y), atlasTop + 200);
-    await page.evaluate(() => window.dispatchEvent(new Event('scroll')));
+    const scrollAndSettle = y => page.evaluate(target => new Promise(resolve => {
+      window.scrollTo(0, target);
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    }), y);
+    await scrollAndSettle(0);
+    assert.equal(await headerState('is-hidden', false), true, 'Header is visible at the top');
+    await scrollAndSettle(atlasTop + 200);
     assert.equal(await headerState('is-hidden', true), true, 'Header hides while scrolling down');
-    await page.evaluate(y => window.scrollTo(0, y), atlasTop + 100);
-    await page.evaluate(() => window.dispatchEvent(new Event('scroll')));
+    await scrollAndSettle(atlasTop + 100);
     const returned = await headerState('is-hidden', false);
-    if (!returned) console.error('Header diagnostics: ' + JSON.stringify(await page.evaluate(top => ({ top, y: window.scrollY, max: document.documentElement.scrollHeight - innerHeight, header: document.querySelector('.site-header').className, body: document.body.className, active: document.activeElement.tagName + '.' + document.activeElement.className }), atlasTop)));
+    if (!returned) console.error('Header diagnostics: ' + JSON.stringify(await page.evaluate(top => ({ top, y: window.scrollY, header: document.querySelector('.site-header').className, active: document.activeElement.tagName }), atlasTop)));
     assert.equal(returned, true, 'Header returns while scrolling up');
     assert.equal(await header.evaluate(element => element.classList.contains('is-dark')), true, 'Header switches to its dark variant over dark sections');
     assert.equal(await header.evaluate(element => element.classList.contains('is-compact')), true, 'Header becomes compact after the first screen');
