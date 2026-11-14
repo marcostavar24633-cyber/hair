@@ -61,10 +61,28 @@ async function main() {
     for (const width of [1365, 1024, 768, 720, 390, 360, 320]) {
       await page.setViewportSize({ width, height: 900 });
       await page.waitForTimeout(80);
-      const dimensions = await page.evaluate(() => ({
-        viewport: document.documentElement.clientWidth,
-        document: document.documentElement.scrollWidth
-      }));
+      const dimensions = await page.evaluate(() => {
+        const viewport = document.documentElement.clientWidth;
+        const overflow = [...document.querySelectorAll('body *')]
+          .map(element => {
+            const rect = element.getBoundingClientRect();
+            return {
+              tag: element.tagName.toLowerCase(),
+              id: element.id,
+              className: typeof element.className === 'string' ? element.className : '',
+              left: Math.round(rect.left),
+              right: Math.round(rect.right),
+              width: Math.round(rect.width)
+            };
+          })
+          .filter(item => item.width > 0 && (item.right > viewport + 1 || item.left < -1))
+          .slice(0, 20);
+        return {
+          viewport,
+          document: document.documentElement.scrollWidth,
+          overflow
+        };
+      });
       assert.ok(
         dimensions.document <= dimensions.viewport + 1,
         'Horizontal overflow at ' + width + 'px: document ' +
