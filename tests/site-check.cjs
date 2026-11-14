@@ -40,6 +40,12 @@ assert.ok(css.includes(':focus-visible'));assert.ok(css.includes(':focus-visible
 
 
 assert.match(html,/og:site_name/);assert.match(html,/twitter:image:alt/);
+const fontStylesheet=html.match(/<link href="(https:\/\/fonts\.googleapis\.com\/css2\?[^"]+)" rel="stylesheet">/)?.[1]||'';
+assert.ok(fontStylesheet.includes('family=DM+Sans:wght@400;500;600;700'),'DM Sans must load the four weights used by the design');
+assert.ok(fontStylesheet.includes('family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500'),'Playfair Display must load the regular and italic weights used by headings');
+assert.ok(fontStylesheet.includes('display=swap'),'Web fonts must not block text rendering');
+assert.match(html,/<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>/,'Google font files should use a crossorigin preconnect');
+
 assert.match(html,/<link rel="preload" as="image" fetchpriority="high" imagesrcset="[^"]+480w[^"]+800w[^"]+1200w" imagesizes="\(max-width: 720px\) 90vw, 45vw">/,"Hero image should have a responsive high-priority preload matching its rendered sizes");
 
 const responsiveImages=imageTags.filter(tag=>/src="https:\/\/images\.(?:unsplash|pexels)\.com\//.test(tag));
