@@ -50,7 +50,7 @@ body::before{content:"";position:fixed;z-index:1000;top:0;left:0;width:100%;heig
 .menu-button{width:44px;height:44px;min-width:44px;align-items:center;justify-content:center;flex-shrink:0}
 .header-book{white-space:nowrap;flex-shrink:0;min-height:40px;display:inline-flex;align-items:center}
 .booking-form input,.booking-form select,.calculator-panel select{font-size:16px;min-height:46px}
-.filter-button{min-height:40px}.booking-form .button{min-height:48px}
+.filter-button{min-height:44px}.booking-form .button{min-height:48px}
 .portfolio-card,.team-grid article{min-width:0}
 }
 @media(max-width:360px){
