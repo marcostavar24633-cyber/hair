@@ -242,6 +242,7 @@ async function main() {
     await colourSubmenuButton.click();
     assert.equal(await colourSubmenuButton.getAttribute('aria-expanded'), 'true', 'Second-level colour submenu must expand');
     assert.equal(await page.locator('#menu-colour').isVisible(), true, 'Second-level colour links must become visible');
+    await auditState('nested service submenu open');
     await page.keyboard.press('Escape');
     assert.equal(await menuButton.getAttribute('aria-expanded'), 'false', 'Escape must close the slide-out menu');
     assert.equal(await menuButton.evaluate(element => element === document.activeElement), true, 'Closing the menu must restore focus');
