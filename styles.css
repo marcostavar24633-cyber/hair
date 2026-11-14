@@ -88,3 +88,12 @@ body::before{content:"";position:fixed;z-index:1000;top:0;left:0;width:100%;heig
 /* WCAG AA contrast pass for secondary text on light surfaces */
 .signature,.disclaimer,.team-grid article>span,.review-placeholder span,.booking-form small,.form-status{color:#6b5951}
 .booking-summary p{color:#65565b}
+
+
+/* Mobile touch targets: keep primary header and service actions comfortably tappable. */
+@media(max-width:720px){
+.header-book{min-height:44px}
+.service-row{grid-template-columns:30px minmax(0,1fr) 44px}
+.service-row>a{width:44px;height:44px;min-width:44px;min-height:44px}
+}
+@media(max-width:360px){.service-row{grid-template-columns:22px minmax(0,1fr) 44px}.service-row>a{width:44px;height:44px}}
