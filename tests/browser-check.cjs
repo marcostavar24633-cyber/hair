@@ -17,6 +17,20 @@ const mime = {
 const server = http.createServer((request, response) => {
   const pathname = decodeURIComponent(new URL(request.url, 'http://127.0.0.1').pathname);
   const relative = pathname === '/' ? 'index.html' : (pathname.startsWith('/') ? pathname.slice(1) : pathname);
+  if (pathname === '/__test__/axe.min.js') {
+    fs.readFile(require.resolve('axe-core/axe.min.js'), (error, content) => {
+      if (error) {
+        response.writeHead(500).end('Test dependency unavailable');
+        return;
+      }
+      response.writeHead(200, {
+        'Content-Type': 'text/javascript; charset=utf-8',
+        'Cache-Control': 'no-store'
+      });
+      response.end(content);
+    });
+    return;
+  }
   const filePath = path.resolve(root, relative);
   if (filePath !== root && !filePath.startsWith(root + path.sep)) {
     response.writeHead(403).end('Forbidden');
@@ -60,7 +74,7 @@ async function main() {
     await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded' });
     await page.locator('h1').waitFor();
 
-    await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
+    await page.addScriptTag({ url: 'http://127.0.0.1:4173/__test__/axe.min.js' });
     const accessibilityResults = await page.evaluate(async () => {
       const result = await axe.run(document, {
         runOnly: {
