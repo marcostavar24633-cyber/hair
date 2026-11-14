@@ -151,6 +151,13 @@ async function main() {
           };
         }).filter(item => item.display !== 'none' && item.visibility !== 'hidden' &&
           (item.right > viewport + 1 || item.left < -1)).slice(0, 30);
+        const serviceHeadingOverflow = [...document.querySelectorAll('.service-card h3')].map(element => {
+          const range = document.createRange();
+          range.selectNodeContents(element);
+          const textRect = range.getBoundingClientRect();
+          const boxRect = element.getBoundingClientRect();
+          return { text: element.innerText, textRight: Math.round(textRect.right), boxRight: Math.round(boxRect.right) };
+        }).filter(item => item.textRight > item.boxRight + 1);
         const flowOverflow = [...document.querySelectorAll('body *')].filter(element => {
           const style = getComputedStyle(element);
           if (element.tagName === 'BR' || style.position === 'fixed' || style.position === 'absolute' || style.display === 'none' || style.visibility === 'hidden') return false;
@@ -177,10 +184,11 @@ async function main() {
           viewport,
           document: document.documentElement.scrollWidth,
           flowOverflow,
+          serviceHeadingOverflow,
           overflowing
         };
       });
-      assert.ok(dimensions.document <= dimensions.viewport + 1 && dimensions.flowOverflow.length === 0,
+      assert.ok(dimensions.document <= dimensions.viewport + 1 && dimensions.flowOverflow.length === 0 && dimensions.serviceHeadingOverflow.length === 0,
         'Horizontal overflow at ' + width + 'px: ' + JSON.stringify(dimensions));
       if (width === 1440) await page.screenshot({ path: path.join(screenshotsDir, 'desktop.png'), fullPage: true });
       if (width === 390) await page.screenshot({ path: path.join(screenshotsDir, 'mobile-390.png'), fullPage: true });
