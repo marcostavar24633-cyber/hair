@@ -73,6 +73,10 @@ async function main() {
 
     await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded' });
     await page.locator('h1').waitFor();
+    await page.waitForFunction(() => {
+      const stylesheet = document.querySelector('link[rel="stylesheet"][href="styles.css"]');
+      return Boolean(stylesheet && stylesheet.sheet && getComputedStyle(document.body).margin === '0px');
+    }, null, { timeout: 10000 });
 
     const runAxe = browserName !== 'webkit';
     if (runAxe) {
