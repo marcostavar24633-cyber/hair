@@ -28,11 +28,14 @@ jobs:
       - name: Install Playwright
         run: npm install --no-save playwright axe-core
 
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Chromium Firefox and WebKit
+        run: npx playwright install --with-deps chromium firefox webkit
 
-      - name: Run responsive browser regression checks
-        run: node tests/browser-check.cjs
+      - name: Run cross-browser regression checks
+        run: |
+          for browser in chromium firefox webkit; do
+            BROWSER="$browser" node tests/browser-check.cjs
+          done
 
       - name: Upload browser screenshots
         if: always()
