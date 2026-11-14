@@ -16,7 +16,7 @@ body::before{content:"";position:fixed;z-index:1000;top:0;left:0;width:100%;heig
 .js-reveal{opacity:0;transform:translateY(24px);transition:opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1);transition-delay:var(--reveal-delay,0ms);will-change:opacity,transform}
 .js-reveal.is-visible{opacity:1;transform:translateY(0);will-change:auto}
 .service-row,.portfolio-card,.team-grid article,.process-grid article,.faq-list details{transition-property:opacity,transform,background-color;transition-duration:.65s}
-.service-row{transition:padding .25s,background-color .25s}
+.service-row{transition:opacity .65s cubic-bezier(.2,.7,.2,1) var(--reveal-delay,0ms),transform .65s cubic-bezier(.2,.7,.2,1) var(--reveal-delay,0ms),padding .25s,background-color .25s}
 .service-row:hover{background:rgba(113,54,80,.035)}
 .portfolio-card:focus-visible{outline-offset:5px}
 .button:active,.header-book:active{transform:translateY(1px) scale(.985)}
