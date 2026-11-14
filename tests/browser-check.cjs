@@ -174,6 +174,9 @@ async function main() {
     const menu = page.locator('#site-menu');
     await menuButton.click();
     assert.equal(await menuButton.getAttribute('aria-expanded'), 'true', 'Slide-out menu must open');
+    const menuBounds = await menu.boundingBox();
+    assert.ok(menuBounds && menuBounds.x >= -1 && menuBounds.x + menuBounds.width <= 391,
+      'Open slide-out menu must fit within the mobile viewport: ' + JSON.stringify(menuBounds));
     assert.equal(await menu.getAttribute('aria-hidden'), 'false', 'Open menu must be exposed to assistive technology');
     await auditState('slide-out menu open');
     assert.equal(await menu.evaluate(element => element.contains(document.activeElement)), true, 'Opening the menu must move focus inside');
