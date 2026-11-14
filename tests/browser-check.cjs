@@ -149,7 +149,8 @@ async function main() {
             right: Math.round(rect.right),
             width: Math.round(rect.width),
             display: style.display,
-            visibility: style.visibility
+            visibility: style.visibility,
+            text: (element.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 70)
           };
         }).filter(item => item.display !== 'none' && item.visibility !== 'hidden' &&
           (item.right > viewport + 1 || item.left < -1)).slice(0, 30);
