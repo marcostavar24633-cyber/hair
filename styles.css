@@ -502,7 +502,7 @@ h1 em,h2 em{background:linear-gradient(100deg,var(--grad-a),var(--grad-b),var(--
 .chips{display:flex;flex-wrap:wrap;gap:var(--sp-1)}
 .chip-btn{min-height:44px;padding:0 var(--sp-3);border:var(--hair) solid var(--rule-strong);border-radius:var(--r-pill);background:transparent;color:var(--fg-muted);font-size:var(--t-sm);cursor:pointer;transition:color var(--d-fast) var(--ease),border-color var(--d-fast) var(--ease),background-color var(--d-fast) var(--ease)}
 .chip-btn:hover{color:var(--fg);border-color:var(--fg)}
-.chip-btn[aria-pressed="true"]{background:var(--fg);color:var(--surface);border-color:var(--fg)}
+.chip-btn[aria-pressed="true"]{background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg)}
 .catalog{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter);perspective:1200px}
 .card{position:relative;display:grid;grid-template-rows:auto auto 1fr auto;gap:var(--sp-1);padding:var(--sp-3);border:var(--hair) solid var(--rule);border-radius:var(--r-soft);background:var(--surface-2);overflow:hidden;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform var(--d-fast) var(--ease),border-color var(--d-fast) var(--ease)}
 .card[hidden]{display:none}
@@ -688,6 +688,60 @@ html:not(.js) .floating-cta{display:none}
 .confetti{position:fixed;z-index:450;width:8px;height:14px;border-radius:var(--r);background:var(--s2);pointer-events:none;animation:confetti 1400ms var(--ease) forwards}
 @keyframes confetti{to{transform:translate3d(var(--dx),var(--dy),0) rotate(var(--rot));opacity:0}}
 
+
+/* ---------- tabs (services teaser, masters / first visit) ---------- */
+.tab-list{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;margin-bottom:var(--sp-4);border:var(--hair) solid var(--rule-strong);border-radius:var(--r-pill)}
+.tab{position:relative;display:inline-flex;align-items:center;gap:var(--sp-1);min-height:44px;padding:0 var(--sp-3);border:0;border-radius:var(--r-pill);background:transparent;color:var(--fg-muted);font-size:var(--t-sm);font-weight:500;cursor:pointer;transition:color var(--d-fast) var(--ease),background-color var(--d-fast) var(--ease)}
+.tab:hover{color:var(--fg)}
+.tab[aria-selected="true"]{background:var(--btn-bg);color:var(--btn-fg)}
+.tab-count{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:var(--r-pill);border:var(--hair) solid currentColor;font-size:var(--t-xs);opacity:.8}
+.tab-panel[hidden]{display:none}
+.team .tabs{margin-top:var(--sp-4)}
+.team .masters{margin-top:0}
+.team .visit{margin-top:0;padding-top:0;border-top:0}
+.tab-panel:focus-visible{outline-offset:8px}
+.js .tab-panel:not([hidden]){animation:info-in var(--d-base) var(--ease) both}
+html:not(.js) .tab-list{display:none}
+html:not(.js) .tab-panel[hidden]{display:block}
+
+/* price list on the home page */
+.price-list{border-top:var(--hair) solid var(--rule)}
+.price-row{display:grid;grid-template-columns:minmax(0,1fr) 9em 9em auto;align-items:baseline;gap:var(--sp-1) var(--sp-3);padding:var(--sp-2) 0;border-bottom:var(--hair) solid var(--rule)}
+.price-name{font-family:var(--serif);font-size:var(--t-lg);line-height:1.15;text-decoration:none;transition:transform var(--d-fast) var(--ease)}
+.price-row:hover .price-name{transform:translateX(6px);font-style:italic}
+.price-time{font-size:var(--t-sm);color:var(--fg-muted)}
+.price-value{font-size:var(--t-sm);font-weight:500;text-align:right}
+.teaser-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--sp-2) var(--sp-4);margin-top:var(--sp-4)}
+
+/* the catalogue button: label, a count chip and an arrow that slides */
+.btn-catalog{min-height:60px;padding:0 var(--sp-2) 0 var(--sp-4);gap:var(--sp-2);font-size:var(--t-base)}
+.btn-count{display:inline-grid;place-items:center;height:30px;padding:0 var(--sp-2);border-radius:var(--r-pill);background:var(--btn-fg);color:var(--btn-bg);font-size:var(--t-xs);letter-spacing:.06em}
+.btn-catalog .icon{width:44px;height:44px;padding:13px;border-radius:var(--r-round);background:var(--btn-fg);color:var(--btn-bg)}
+.btn-catalog:hover .icon{transform:translateX(4px) rotate(-45deg)}
+
+/* ---------- catalogue page ---------- */
+.page-catalog{padding-top:var(--header-h)}
+.page-tabs{position:sticky;top:0;z-index:40;border-bottom:var(--hair) solid var(--rule);background:var(--veil);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.page-tabs .wrap{display:flex;gap:var(--sp-1);overflow-x:auto;scrollbar-width:none;padding-top:var(--sp-1);padding-bottom:var(--sp-1)}
+.page-tabs a{flex:none;display:inline-flex;align-items:center;min-height:40px;padding:0 var(--sp-2);border-radius:var(--r-pill);font-size:var(--t-sm);text-decoration:none;color:var(--fg-muted);transition:color var(--d-fast) var(--ease),background-color var(--d-fast) var(--ease)}
+.page-tabs a:hover{color:var(--fg)}
+.page-tabs a[aria-current="true"]{background:var(--btn-bg);color:var(--btn-fg)}
+.catalog-page{border-top:0}
+.catalog-page h1{font-size:var(--t-3xl);line-height:1}
+.crumbs{display:flex;gap:var(--sp-1);font-size:var(--t-xs);letter-spacing:var(--track-caps);text-transform:uppercase;color:var(--fg-muted)}
+.crumbs a{color:inherit;text-underline-offset:4px}
+.nav-link[aria-current="page"]::after{transform:scaleX(1)}
+
+/* ---------- principles: a compact four-column strip ---------- */
+.principles-grid{align-items:end}
+.principles-head{position:static}
+.stack{grid-column:1 / -1;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gutter);margin-top:var(--sp-3)}
+.stack-card{position:relative;top:auto;padding:var(--sp-3)}
+.stack-card h3{font-size:var(--t-lg)}
+.stack-card p{font-size:var(--t-sm)}
+.terms-note{grid-column:1 / -1}
+.cta{padding:var(--sp-6) 0}
+
 /* ---------- reveal on scroll ---------- */
 .js [data-reveal]{opacity:0;transform:translateY(20px);transition:opacity var(--d-base) var(--ease),transform var(--d-base) var(--ease);transition-delay:calc(var(--i,0) * var(--stagger))}
 .js [data-reveal].is-in{opacity:1;transform:none}
@@ -698,6 +752,7 @@ html:not(.js) .floating-cta{display:none}
 
 /* ---------- responsive ---------- */
 @media(max-width:1100px){
+  .stack{grid-template-columns:repeat(2,minmax(0,1fr))}
   .catalog{grid-template-columns:repeat(2,minmax(0,1fr))}
   .masters{grid-template-columns:repeat(3,minmax(0,1fr))}
   .principles-head{position:static}
@@ -740,6 +795,18 @@ html:not(.js) .floating-cta{display:none}
   .footer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:760px){
+  .price-row{grid-template-columns:minmax(0,1fr) auto;row-gap:2px}
+  .price-time{grid-row:2}
+  .price-value{grid-row:1;grid-column:2}
+  .price-book{grid-row:2;grid-column:2;justify-self:end;min-height:32px}
+  .tab-list{display:flex;width:100%}
+  .tab{flex:1;justify-content:center;padding:0 var(--sp-2)}
+  .masters{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;gap:var(--sp-2);margin-right:calc(-1 * var(--pad))}
+  .masters>li{flex:none;width:min(240px,64vw);scroll-snap-align:start}
+  .works-grid{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:min(280px,76vw);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-right:calc(-1 * var(--pad))}
+  .works-grid>.ref{grid-column:auto!important;grid-row:2!important;scroll-snap-align:start}
+  .works-head{grid-column:1 / span 4!important;grid-row:1;position:sticky;left:0;width:calc(100vw - 2 * var(--pad))}
+  .ref-a .ref-media,.ref-b .ref-media,.ref-d .ref-media,.ph-art{aspect-ratio:3 / 4;max-height:none}
   .masters{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ref-a,.ref-b,.ref-c,.ref-d,.works-grid.is-filtered .ref{grid-column:1 / -1}
   .ref-a .ref-media{max-height:62vh;width:100%}
@@ -760,6 +827,11 @@ html:not(.js) .floating-cta{display:none}
   .mobile-cta{display:flex;margin-top:var(--sp-3);width:100%}
 }
 @media(max-width:600px){
+  .tab-list{flex-wrap:nowrap}
+  .tab{padding:0 var(--sp-1);font-size:var(--t-xs)}
+  .tab-count{display:none}
+  .stack{grid-template-columns:minmax(0,1fr)}
+  .btn-catalog{width:100%;justify-content:space-between}
   .hero .eyebrow{padding-right:136px}
   .open-now{display:flex;margin:4px 0 0}
   .seal{display:none}

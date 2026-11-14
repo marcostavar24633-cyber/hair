@@ -6,6 +6,7 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const html = read('index.html');
+const catalogHtml = read('services.html');
 const css = read('styles.css');
 const js = read('script.js');
 const config = read('config.js');
@@ -76,7 +77,7 @@ assert.doesNotMatch(JSON.stringify(jsonLd), /LocalBusiness|HairSalon|BeautySalon
 assert.ok(robots.includes('User-agent: *') && robots.includes('Allow: /'));
 assert.ok(robots.includes('Sitemap: https://marcostavar24633-cyber.github.io/hair/sitemap.xml'));
 assert.ok(sitemap.includes('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'));
-assert.deepEqual(sitemap.split('<loc>').slice(1).map(part => part.split('</loc>')[0]), [canonical], 'Sitemap must list exactly the canonical URL');
+assert.deepEqual(sitemap.split('<loc>').slice(1).map(part => part.split('</loc>')[0]), [canonical, canonical + 'services.html'], 'Sitemap lists the home page and the catalogue');
 
 /* ---------- Structure and accessibility ---------- */
 assert.ok(html.includes('<a class="skip-link" href="#main">'), 'Skip link to main content required');
@@ -87,7 +88,7 @@ assert.equal(levels[0], 1, 'H1 must come first');
 for (let i = 1; i < levels.length; i++) assert.ok(levels[i] <= levels[i - 1] + 1, 'Heading levels must not skip');
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
 assert.equal(new Set(ids).size, ids.length, 'Duplicate HTML id');
-for (const id of ['services', 'catalog', 'atlas', 'regrowth', 'compare', 'styles', 'forms-track', 'nails-track', 'works', 'philosophy', 'team', 'masters', 'principles', 'reviews', 'location', 'faq', 'cta', 'contacts', 'booking', 'wizard', 'booking-drawer', 'quick-drawer', 'quiz-drawer', 'lightbox', 'mobile-menu', 'tone-panel', 'concept-note', 'sub-services', 'sub-atlas']) assert.ok(ids.includes(id), 'Missing #' + id);
+for (const id of ['services', 'dir-tabs', 'dir-panels', 'catalog-count', 'atlas', 'works', 'philosophy', 'team', 'panel-masters', 'panel-visit', 'masters', 'principles', 'reviews', 'location', 'faq', 'cta', 'contacts', 'booking', 'wizard', 'booking-drawer', 'quiz-drawer', 'lightbox', 'mobile-menu', 'tone-panel', 'concept-note', 'sub-services', 'sub-atlas']) assert.ok(ids.includes(id), 'Missing #' + id);
 for (const [, id] of html.matchAll(/href="#([^"]+)"/g)) assert.ok(ids.includes(id), 'Broken anchor #' + id);
 for (const [, refs] of html.matchAll(/\baria-(?:labelledby|describedby|controls)="([^"]+)"/g)) for (const ref of refs.split(/\s+/)) assert.ok(ids.includes(ref), 'Broken ARIA reference ' + ref);
 for (const [, attrs] of html.matchAll(/<nav\b([^>]*)>/g)) assert.match(attrs, /aria-label="[^"]+"/, 'Every nav needs a label');
@@ -100,13 +101,15 @@ for (const [, attrs, text] of html.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/butto
 
 /* Target order of the client path: 8 content sections, comparison removed */
 const order = [...html.matchAll(/<section class="([a-z-]+)"/g)].map(match => match[1]);
-assert.deepEqual(order, ['hero', 'manifesto', 'services', 'atlas', 'regrowth', 'styles', 'works', 'team', 'principles', 'reviews-section', 'booking', 'location', 'faq', 'cta'], 'Section order must follow the brief');
-assert.match(html, /Схематичная иллюстрация, не&nbsp;фото клиента/, 'The regrowth comparison is labelled as an illustration, not a real case');
+assert.deepEqual(order, ['hero', 'manifesto', 'services', 'atlas', 'works', 'team', 'principles', 'reviews-section', 'booking', 'location', 'faq', 'cta'], 'Home keeps the client path; the full catalogue lives on its own page');
+assert.match(html, /<a class="btn btn-fill btn-catalog" href="services\.html">/, 'Home links to the catalogue page with a dedicated button');
+assert.match(html, /role="tablist" aria-label="Направления услуг"/, 'Services teaser is organised in tabs');
+assert.match(html, /role="tablist" aria-label="Мастера и&nbsp;первый визит"|role="tablist" aria-label="Мастера и первый визит"/, 'Masters and the first visit share tabs');
 for (const id of ['atlas', 'team', 'booking', 'contacts']) assert.match(html, new RegExp('id="' + id + '" data-theme="dark"'), 'Dark rhythm section: ' + id);
 
 /* Navigation, submenus and panels */
 assert.match(html, /class="menu-button" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobile-menu"/);
-for (const id of ['mobile-menu', 'booking-drawer', 'quick-drawer', 'quiz-drawer']) assert.match(html, new RegExp('id="' + id + '" role="dialog" aria-modal="true" aria-labelledby="[^"]+" hidden'), 'Drawer must be a labelled modal dialog: ' + id);
+for (const id of ['mobile-menu', 'booking-drawer', 'quiz-drawer']) assert.match(html, new RegExp('id="' + id + '" role="dialog" aria-modal="true" aria-labelledby="[^"]+" hidden'), 'Drawer must be a labelled modal dialog: ' + id);
 assert.match(html, /id="lightbox" hidden role="dialog" aria-modal="true"/);
 assert.equal(count(html, /class="sub-toggle" type="button" aria-expanded="false" aria-controls="sub-/g), 2, 'Services and atlas submenus need disclosure buttons');
 assert.equal(count(html, /data-pick-tone="/g), 6, 'Atlas mega menu offers six tones');
@@ -114,12 +117,12 @@ for (const [tag] of html.matchAll(/<a\b[^>]*data-open-booking[^>]*>/g)) {
   assert.match(tag, /href="#booking"/, 'Booking triggers must work as plain links without JS');
   assert.match(tag, /aria-controls="booking-drawer"/, 'Booking triggers must reference the drawer');
 }
-assert.ok(count(html, /data-open-booking/g) >= 7, 'Header, menu, hero, atlas, quick view, final CTA and the floating button open the booking panel');
+assert.ok(count(html, /data-open-booking/g) >= 6, 'Header, menu, hero, atlas, final CTA and the floating button open the booking panel');
 assert.equal(count(html, /<form\b[^>]*id="wizard"/g), 1, 'The booking drawer reuses the one form, it is not a copy');
 assert.equal(count(html, /<form\b/g), 2, 'Only the booking wizard and the tone quiz are forms');
 
 /* Atlas */
-const tabs = [...html.matchAll(/<button\b[^>]*role="tab"[^>]*>/g)].map(match => match[0]);
+const tabs = [...html.matchAll(/<button\b[^>]*role="tab"[^>]*>/g)].map(match => match[0]).filter(tab => tab.includes("atlas-tab"));
 assert.equal(tabs.length, 6, 'Colour atlas must expose six tabs');
 assert.equal(tabs.filter(tab => tab.includes('aria-selected="true"')).length, 1, 'Exactly one atlas tab selected');
 assert.match(html, /role="tablist" aria-label="[^"]+"/);
@@ -292,5 +295,28 @@ assert.equal(cfg.booking.provider, null, 'Online booking integration point stays
 for (const key of ['phone', 'telegram', 'max', 'legal', 'terms']) assert.match(cfg.contacts[key], /^\[.+\]$/, 'Placeholder contact: ' + key);
 for (const flag of ['cursor', 'magnetic', 'tilt', 'marquee', 'ambient', 'seal', 'confetti', 'floatingCta', 'storage']) assert.equal(typeof cfg.features[flag], 'boolean', 'Feature flag: ' + flag);
 assert.ok(fs.existsSync(path.join(root, 'docs/TZ-beauty-services.md')), 'Brief for nails and cosmetology with price analysis');
+
+/* ---------- Catalogue page ---------- */
+const catalogTitle = catalogHtml.match(/<title>([^<]+)<\/title>/)?.[1] || '';
+assert.ok(catalogTitle.length >= 30 && catalogTitle.length <= 60, 'Catalogue title 30–60: ' + catalogTitle.length);
+const catalogDescription = catalogHtml.match(/<meta name="description" content="([^"]+)"/)?.[1] || '';
+assert.ok(catalogDescription.length >= 70 && catalogDescription.length <= 160, 'Catalogue description 70–160: ' + catalogDescription.length);
+assert.match(catalogHtml, /<link rel="canonical" href="https:\/\/marcostavar24633-cyber\.github\.io\/hair\/services\.html">/);
+assert.match(catalogHtml, /^<!doctype html>\s*<html lang="ru" data-mode="dark">/i);
+assert.equal(catalogHtml.match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)">/)?.[1], csp, 'Same CSP on both pages');
+const catalogLevels = [...catalogHtml.matchAll(/<h([1-6])\b/g)].map(match => Number(match[1]));
+assert.equal(catalogLevels.filter(level => level === 1).length, 1, 'Catalogue has one H1');
+for (let i = 1; i < catalogLevels.length; i++) assert.ok(catalogLevels[i] <= catalogLevels[i - 1] + 1, 'Catalogue heading levels must not skip');
+const catalogIds = [...catalogHtml.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+assert.equal(new Set(catalogIds).size, catalogIds.length, 'Duplicate id on the catalogue page');
+for (const id of ['catalog', 'filter-group', 'filter-time', 'filter-sort', 'regrowth', 'compare', 'styles', 'forms-track', 'nails-track', 'quick-drawer', 'mobile-menu']) assert.ok(catalogIds.includes(id), 'Catalogue page needs #' + id);
+for (const [, id] of catalogHtml.matchAll(/href="#([^"]+)"/g)) assert.ok(catalogIds.includes(id), 'Broken anchor on the catalogue page #' + id);
+for (const [, id] of catalogHtml.matchAll(/href="index\.html#([^"]+)"/g)) assert.ok(ids.includes(id), 'Catalogue links to a missing home anchor #' + id);
+for (const [, refs] of catalogHtml.matchAll(/\baria-(?:labelledby|describedby|controls)="([^"]+)"/g)) for (const ref of refs.split(/\s+/)) assert.ok(catalogIds.includes(ref), 'Broken ARIA reference on the catalogue page ' + ref);
+assert.doesNotMatch(catalogHtml, /data-open-booking/, 'The catalogue page sends visitors to the booking on the home page');
+assert.match(catalogHtml, /Схематичная иллюстрация, не&nbsp;фото клиента/, 'The regrowth comparison is labelled as an illustration');
+assert.deepEqual([...catalogHtml.matchAll(/<script\b[^>]*src="([^"]+)"/g)].map(match => match[1].split('?')[0]), ['config.js', 'script.js']);
+assert.doesNotMatch(catalogHtml.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<head>[\s\S]*?<\/head>/, '').replace(/<[^>]+>/g, ' '), forbidden);
+assert.match(catalogHtml, /модельный ориентир/);
 
 console.log('Site checks passed: SEO, structure, accessibility, images, luxury standard, privacy, security and colour contrast.');

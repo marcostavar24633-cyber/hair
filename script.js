@@ -188,7 +188,7 @@
     column.append(el('h3', '', title));
     serviceList.filter(item => item.dir === dir).forEach(item => {
       const link = el('a');
-      link.href = '#services';
+      link.href = 'services.html#service-' + item.id;
       link.dataset.goService = item.id;
       link.append(el('b', '', item.name), el('span', 'num', 'от ' + formatRub(item.base)), el('small', 'num', item.time));
       column.append(link);
@@ -254,6 +254,8 @@
     button.setAttribute('aria-pressed', String(group.id === 'all'));
     groupBox?.append(button);
   });
+  const hasBookingDrawer = Boolean(document.getElementById('booking-drawer'));
+  const bookingHref = id => 'index.html?service=' + encodeURIComponent(id) + '#booking';
   const cards = new Map();
   serviceList.forEach((item, index) => {
     const card = el('li', 'card');
@@ -264,11 +266,7 @@
     meta.append(el('span', 'card-price num', 'от ' + formatRub(item.base)), el('span', 'card-time num', item.time));
     const actions = el('div', 'card-actions');
     const book = el('a', 'text-link', 'Записаться');
-    book.href = '#booking';
-    book.dataset.openBooking = '';
-    book.dataset.bookService = item.id;
-    book.setAttribute('aria-haspopup', 'dialog');
-    book.setAttribute('aria-controls', 'booking-drawer');
+    book.href = bookingHref(item.id);
     book.append(el('span', 'visually-hidden', ': ' + item.name.toLowerCase()));
     const more = el('button', 'text-link', 'Подробнее');
     more.type = 'button';
@@ -309,9 +307,81 @@
   bindChips('filter-time', 'time', 'time');
   bindChips('filter-sort', 'sort', 'sort');
   renderCatalog({ announce: false });
+  const hashCard = /^#service-/.test(window.location.hash) && document.getElementById(window.location.hash.slice(1));
+  if (hashCard) window.requestAnimationFrame(() => { hashCard.scrollIntoView({ block: 'center' }); $('a', hashCard)?.focus({ preventScroll: true }); });
+
+  /* ---------- Home: services teaser in tabs, one per direction ---------- */
+  const dirTabs = document.getElementById('dir-tabs');
+  const dirPanels = document.getElementById('dir-panels');
+  setText('catalog-count', serviceList.length + ' услуг');
+  if (dirTabs && dirPanels) Object.entries(directions).forEach(([dir, title], index) => {
+    const list = serviceList.filter(item => item.dir === dir);
+    const tab = el('button', 'tab', title);
+    tab.type = 'button';
+    tab.id = 'tab-dir-' + dir;
+    tab.setAttribute('role', 'tab');
+    tab.setAttribute('aria-controls', 'panel-dir-' + dir);
+    tab.setAttribute('aria-selected', String(index === 0));
+    tab.append(el('span', 'tab-count num', String(list.length)));
+    if (index) tab.tabIndex = -1;
+    dirTabs.append(tab);
+    const panel = el('div', 'tab-panel');
+    panel.id = 'panel-dir-' + dir;
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', tab.id);
+    panel.tabIndex = 0;
+    panel.hidden = index !== 0;
+    const rows = el('ul', 'price-list');
+    list.forEach(item => {
+      const row = el('li', 'price-row');
+      const name = el('a', 'price-name', item.name);
+      name.href = 'services.html#service-' + item.id;
+      const book = el('a', 'text-link price-book', 'Записаться');
+      book.href = '#booking';
+      book.dataset.openBooking = '';
+      book.dataset.bookService = item.id;
+      book.setAttribute('aria-haspopup', 'dialog');
+      book.setAttribute('aria-controls', 'booking-drawer');
+      book.append(el('span', 'visually-hidden', ': ' + item.name.toLowerCase()));
+      row.append(name, el('span', 'price-time num', item.time), el('span', 'price-value num', 'от ' + formatRub(item.base)), book);
+      rows.append(row);
+    });
+    panel.append(rows);
+    dirPanels.append(panel);
+  });
+
+  /* ---------- Generic tabs: click, arrows, Home, End ---------- */
+  $$('[data-tabs]').forEach(box => {
+    const tabs = $$('[role="tab"]', box);
+    if (!tabs.length) return;
+    const select = (tab, focus) => {
+      tabs.forEach(item => {
+        const active = item === tab;
+        item.setAttribute('aria-selected', String(active));
+        item.tabIndex = active ? 0 : -1;
+        const panel = document.getElementById(item.getAttribute('aria-controls'));
+        if (panel) panel.hidden = !active;
+      });
+      if (focus) tab.focus();
+    };
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => select(tab, false));
+      tab.addEventListener('keydown', event => {
+        const keys = { ArrowRight: 1, ArrowLeft: -1 };
+        let next = null;
+        if (event.key in keys) next = (index + keys[event.key] + tabs.length) % tabs.length;
+        else if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = tabs.length - 1;
+        if (next === null) return;
+        event.preventDefault();
+        select(tabs[next], true);
+      });
+    });
+    select(tabs.find(tab => tab.getAttribute('aria-selected') === 'true') || tabs[0], false);
+  });
   document.addEventListener('click', event => {
     const link = event.target.closest('[data-go-service]');
-    if (!link) return;
+    if (!link || !cards.get(link.dataset.goService)) return;
     event.preventDefault();
     state.group = 'all'; state.time = 'all';
     $$('#filter-group .chip-btn').forEach(item => item.setAttribute('aria-pressed', String(item.dataset.group === 'all')));
@@ -335,7 +405,7 @@
     setText('quick-time', item.time);
     setText('quick-includes', item.includes.join(', '));
     setText('quick-fine', item.dir === 'hair' ? 'Цена «от»: зависит от длины, густоты и исходной базы. Модельный ориентир, не оферта.' : 'Цена «от». Модельный ориентир концепта, не оферта.');
-    if (quickBook) quickBook.dataset.bookService = item.id;
+    if (quickBook) { if (hasBookingDrawer) quickBook.dataset.bookService = item.id; else quickBook.href = bookingHref(item.id); }
     quick.open(button);
   });
 
@@ -609,6 +679,13 @@
     if (draft) ['service', 'length', 'shade', 'day', 'time'].forEach(name => draft[name] && check(name, draft[name]));
     renderMasters();
     if (draft?.master) check('master', draft.master);
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('service') && services[params.get('service')]) {
+      check('service', params.get('service'));
+      renderMasters();
+      saveDraft();
+      goToFirstIncomplete();
+    }
     nextButton?.addEventListener('click', () => {
       const active = activeSteps()[stepIndex];
       if (!isComplete(active)) {
@@ -879,6 +956,7 @@
   const darkSections = $$('[data-theme="dark"]');
   const marqueeTrack = $('.marquee-track');
   const floating = $('.floating-cta');
+  const noFloat = $$('[data-no-float]');
   const timeline = document.getElementById('timeline');
   const bookingSection = document.getElementById('booking');
   let lastY = window.scrollY, frameY = window.scrollY, marqueeX = 0, velocity = 0, ticking = false;
@@ -901,7 +979,8 @@
       root.classList.toggle('header-dark', dark);
       if (floating) {
         const nearBooking = bookingSection && y + window.innerHeight > bookingSection.offsetTop + 120 && y < bookingSection.offsetTop + bookingSection.offsetHeight;
-        floating.classList.toggle('is-shown', y > heroBottom && !nearBooking && !locked);
+        const overOwnButtons = noFloat.some(section => { const rect = section.getBoundingClientRect(); return rect.top < window.innerHeight && rect.bottom > 0; });
+        floating.classList.toggle('is-shown', y > heroBottom && !nearBooking && !overOwnButtons && !locked);
       }
     }
     if (!reducedMotion) {

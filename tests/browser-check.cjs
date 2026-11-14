@@ -405,60 +405,118 @@ async function main() {
     await page.locator('#booking-drawer .drawer-close').click();
     await settle();
 
-    /* ---------- Catalogue: filters, sorting, quick view ---------- */
-    const visibleCards = () => page.locator('#catalog .card:not([hidden])');
-    assert.equal(await visibleCards().count(), 14, 'Catalogue shows fourteen services');
-    await page.locator('#filter-group [data-group="nails"]').click();
-    assert.equal(await visibleCards().count(), 4, 'Nails filter shows manicure and pedicure');
-    await page.locator('#filter-group [data-group="cosmo"]').click();
-    await page.locator('#filter-sort [data-sort="asc"]').click();
-    assert.match(await visibleCards().first().locator('h3').innerText(), /Консультация косметолога/, 'Cheapest first');
-    await page.locator('#filter-group [data-group="all"]').click();
-    await page.locator('#filter-time [data-time="long"]').click();
-    assert.equal(await visibleCards().count(), 1, 'Only complex techniques take four hours or more');
-    await page.locator('#filter-group [data-group="nails"]').click();
-    assert.equal(await page.locator('#catalog-empty').isVisible(), true, 'Empty result is explained');
-    await page.locator('#filter-group [data-group="all"]').click();
-    await page.locator('#filter-time [data-time="all"]').click();
-    await page.locator('#filter-sort [data-sort="order"]').click();
-    const quickButton = page.locator('[data-quick="peel"]');
-    await quickButton.click();
+    /* ---------- Home: services teaser tabs and masters / first visit tabs ---------- */
+    const dirTab = name => page.locator('#tab-dir-' + name);
+    assert.equal(await page.locator('#dir-tabs [role="tab"]').count(), 3, 'Three direction tabs');
+    assert.equal(await page.locator('#panel-dir-hair .price-row').count(), 6, 'Hair tab lists six services');
+    await dirTab('nails').click();
+    assert.equal(await dirTab('nails').getAttribute('aria-selected'), 'true', 'Clicking a tab selects it');
+    assert.equal(await page.locator('#panel-dir-nails').isVisible(), true, 'Nails panel is shown');
+    assert.equal(await page.locator('#panel-dir-hair').isVisible(), false, 'Other panels are hidden');
+    await dirTab('nails').focus();
+    await page.keyboard.press('End');
+    assert.equal(await isFocused(dirTab('cosmo')), true, 'End moves to the last tab');
+    assert.equal(await page.locator('#panel-dir-cosmo .price-row').count(), 4, 'Cosmetology tab lists four services');
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await isFocused(dirTab('hair')), true, 'Arrow keys wrap around');
+    await auditAccessibilityState('services tabs');
+    await dirTab('nails').click();
+    const rowBook = page.locator('#panel-dir-nails [data-book-service="pedi-gel"]');
+    await rowBook.click();
     await settle();
-    assert.equal(await page.locator('#quick-drawer').isVisible(), true, 'Quick view opens');
-    assert.equal(await page.locator('#quick-title').innerText(), 'Пилинг');
-    assert.match(await page.locator('#quick-price').innerText(), /3\s000\s₽/);
-    await auditAccessibilityState('quick view open');
-    await page.locator('#quick-book').click();
-    await settle();
-    assert.equal(await page.locator('#quick-drawer').isVisible(), false, 'Quick view hands over to the booking panel');
-    assert.equal(await page.locator('#wizard input[name="service"][value="peel"]').isChecked(), true, 'Quick view passes the service');
-    assert.equal(await page.locator('.wizard-steps li[data-for="length"]').getAttribute('data-state'), 'skip', 'Skin services skip the hair length step');
-    assert.equal(await page.locator('#opt-master input').count(), 2, 'Only the cosmetologist is offered');
+    assert.equal(await page.locator('#booking-drawer').isVisible(), true, 'Price row opens the booking panel');
+    assert.equal(await page.locator('#wizard input[name="service"][value="pedi-gel"]').isChecked(), true, 'Price row passes its service');
     await page.keyboard.press('Escape');
     await settle();
+    assert.match(await page.locator('.btn-catalog').getAttribute('href'), /^services\.html$/, 'Catalogue button opens the catalogue page');
+    assert.match(await page.locator('#catalog-count').innerText(), /14/, 'Catalogue button shows the number of services');
+
+    await page.locator('#tab-visit').click();
+    assert.equal(await page.locator('#panel-visit .timeline').isVisible(), true, 'First visit tab shows the timeline');
+    assert.equal(await page.locator('#panel-masters').isVisible(), false);
+    await page.locator('#tab-masters').click();
     const bookMaster = page.locator('[data-book-master="vera"]');
     await bookMaster.click();
     await settle();
-    assert.equal(await currentStep(), 'service', 'Booking a nail master asks for a service first');
-    await page.locator('#wizard input[name="service"][value="mani-gel"]').check();
-    await next.click();
-    assert.equal(await currentStep(), 'master');
-    assert.equal(await page.locator('#wizard input[name="master"][value="vera"]').count(), 1);
+    assert.equal(await page.locator('#wizard input[name="master"][value="vera"]').isChecked(), true, 'Master card pre-selects the master');
+    assert.equal(await page.locator('#sum-master').innerText(), 'Вера Соколова · демо', 'Summary names the chosen master');
+    await page.keyboard.press('Escape');
+    await settle();
+    await page.locator('[data-book-master="irina"]').click();
+    await settle();
+    assert.equal(await currentStep(), 'service', 'A master from another direction asks for a matching service first');
     await page.keyboard.press('Escape');
     await settle();
 
-    /* ---------- Carousels, comparison, quiz, favourites ---------- */
-    const formsTrack = page.locator('#forms-track');
+    /* ---------- Catalogue page: filters, sorting, quick view, carousels, comparison ---------- */
+    const catalogPage = await browser.newPage({ viewport: { width: 1365, height: 900 }, reducedMotion: 'reduce' });
+    catalogPage.on('pageerror', error => pageErrors.push('catalogue: ' + error.message));
+    await catalogPage.goto('http://127.0.0.1:4173/services.html', { waitUntil: 'domcontentloaded' });
+    await catalogPage.locator('h1').waitFor();
+    await catalogPage.waitForFunction(() => getComputedStyle(document.body).marginTop === '0px', null, { timeout: 15000 });
+    if (runAxe) await catalogPage.addScriptTag({ url: 'http://127.0.0.1:4173/__test__/axe.min.js' });
+    const auditCatalog = async state => {
+      if (!runAxe) return;
+      const violations = await catalogPage.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'] } })).violations.map(item => ({ id: item.id, targets: item.nodes.map(node => node.target), why: item.nodes.map(node => node.failureSummary).slice(0, 2) })));
+      console.log('Accessibility state ' + state + ': ' + JSON.stringify(violations));
+      assert.equal(violations.length, 0, 'Accessibility violations in state: ' + state);
+    };
+    await auditCatalog('catalogue page');
+    for (const width of [390, 320]) {
+      await catalogPage.setViewportSize({ width, height: 844 });
+      await catalogPage.waitForTimeout(80);
+      assert.ok(await catalogPage.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1), 'No horizontal scroll on the catalogue page at ' + width + 'px');
+    }
+    await catalogPage.setViewportSize({ width: 1365, height: 900 });
+    const visibleCards = () => catalogPage.locator('#catalog .card:not([hidden])');
+    assert.equal(await visibleCards().count(), 14, 'Catalogue shows fourteen services');
+    await catalogPage.locator('#filter-group [data-group="nails"]').click();
+    assert.equal(await visibleCards().count(), 4, 'Nails filter shows manicure and pedicure');
+    await catalogPage.locator('#filter-group [data-group="cosmo"]').click();
+    await catalogPage.locator('#filter-sort [data-sort="asc"]').click();
+    assert.match(await visibleCards().first().locator('h3').innerText(), /Консультация косметолога/, 'Cheapest first');
+    await catalogPage.locator('#filter-group [data-group="all"]').click();
+    await catalogPage.locator('#filter-time [data-time="long"]').click();
+    assert.equal(await visibleCards().count(), 1, 'Only complex techniques take four hours or more');
+    await catalogPage.locator('#filter-group [data-group="nails"]').click();
+    assert.equal(await catalogPage.locator('#catalog-empty').isVisible(), true, 'Empty result is explained');
+    await catalogPage.locator('#filter-group [data-group="all"]').click();
+    await catalogPage.locator('#filter-time [data-time="all"]').click();
+    await catalogPage.locator('#filter-sort [data-sort="order"]').click();
+    assert.match(await catalogPage.locator('[data-book-service], #service-cut a').first().getAttribute('href'), /index\.html\?service=cut#booking/, 'Card booking links carry the service to the home page');
+    await catalogPage.locator('[data-quick="peel"]').click();
+    await catalogPage.waitForTimeout(450);
+    assert.equal(await catalogPage.locator('#quick-drawer').isVisible(), true, 'Quick view opens');
+    assert.equal(await catalogPage.locator('#quick-title').innerText(), 'Пилинг');
+    assert.match(await catalogPage.locator('#quick-price').innerText(), /3\s000\s₽/);
+    await auditCatalog('quick view open');
+    assert.match(await catalogPage.locator('#quick-book').getAttribute('href'), /index\.html\?service=peel#booking/, 'Quick view hands the service over to the booking');
+    await catalogPage.keyboard.press('Escape');
+    await catalogPage.waitForTimeout(450);
+    assert.equal(await catalogPage.locator('#quick-drawer').isVisible(), false, 'Escape closes the quick view');
+
+    const formsTrack = catalogPage.locator('#forms-track');
     assert.equal(await formsTrack.locator('.form-card').count(), 6, 'Six haircut forms');
-    assert.equal(await page.locator('#nails-track .nail-card').count(), 8, 'Eight nail shades');
-    await page.setViewportSize({ width: 768, height: 900 });
+    assert.equal(await catalogPage.locator('#nails-track .nail-card').count(), 8, 'Eight nail shades');
+    await catalogPage.setViewportSize({ width: 768, height: 900 });
     await formsTrack.evaluate(element => { element.scrollLeft = 0; });
-    await page.locator('button[aria-label="Формы: вперёд"]').click();
-    await page.waitForTimeout(200);
+    await catalogPage.locator('button[aria-label="Формы: вперёд"]').click();
+    await catalogPage.waitForTimeout(200);
     assert.ok(await formsTrack.evaluate(element => element.scrollLeft) > 0, 'Carousel button scrolls the track');
-    await page.setViewportSize({ width: 1365, height: 900 });
-    await page.locator('.compare-range').evaluate(element => { element.value = '20'; element.dispatchEvent(new Event('input', { bubbles: true })); });
-    assert.equal(await page.locator('#compare').evaluate(element => element.style.getPropertyValue('--split')), '20%', 'Regrowth slider moves the split');
+    await catalogPage.locator('.compare-range').evaluate(element => { element.value = '20'; element.dispatchEvent(new Event('input', { bubbles: true })); });
+    assert.equal(await catalogPage.locator('#compare').evaluate(element => element.style.getPropertyValue('--split')), '20%', 'Regrowth slider moves the split');
+    await catalogPage.close();
+
+    /* The home page picks up the service sent from the catalogue */
+    const handoff = await browser.newPage({ viewport: { width: 1365, height: 900 }, reducedMotion: 'reduce' });
+    handoff.on('pageerror', error => pageErrors.push('handoff: ' + error.message));
+    await handoff.goto('http://127.0.0.1:4173/?service=peel#booking', { waitUntil: 'domcontentloaded' });
+    await handoff.locator('#wizard input[name="service"]').first().waitFor({ state: 'attached' });
+    assert.equal(await handoff.locator('#wizard input[name="service"][value="peel"]').isChecked(), true, 'Service from the catalogue is pre-selected');
+    assert.equal(await handoff.locator('#wizard .step:not([hidden])').getAttribute('data-step'), 'time', 'Skin services skip length and shade; master defaults to any, so the visitor lands on time');
+    await handoff.close();
+
+    /* ---------- Quiz and favourites ---------- */
     await page.evaluate(() => new Promise(resolve => { window.scrollTo(0, 0); requestAnimationFrame(() => requestAnimationFrame(resolve)); }));
     const quizTrigger = page.locator('[data-open-quiz]');
     await quizTrigger.click();
@@ -541,7 +599,7 @@ async function main() {
     await noJs.close();
 
     assert.deepEqual(pageErrors, [], 'The page must not produce uncaught JavaScript errors');
-    console.log('Browser checks passed: 10 viewport widths, fullscreen menu, mega menu, header, atlas, booking panel, catalogue filters, quick view, carousels, comparison, quiz, favourites, references, lightbox, reviews, FAQ, theme toggle, no-JS mode, no uncaught JS errors.');
+    console.log('Browser checks passed: 10 viewport widths, fullscreen menu, mega menu, header, atlas, booking panel, services tabs, masters tabs, catalogue page (filters, quick view, carousels, comparison, hand-off to booking), quiz, favourites, references, lightbox, reviews, FAQ, theme toggle, no-JS mode, no uncaught JS errors.');
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));
