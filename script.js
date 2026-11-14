@@ -42,11 +42,29 @@ lightbox?.addEventListener('focusin',event=>{if(!lightbox.hidden&&!lightbox.cont
 document.querySelectorAll('.portfolio-card').forEach(card=>card.addEventListener('click',()=>openLightbox(card)));
 lightbox?.querySelector('button')?.addEventListener('click',closeLightbox);lightbox?.addEventListener('click',event=>{if(event.target===lightbox)closeLightbox()});
 lightbox?.addEventListener('keydown',event=>{if(event.key!=='Tab')return;const controls=[...lightbox.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(element=>!element.disabled);if(!controls.length)return;const first=controls[0],last=controls[controls.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}});
-const form=document.getElementById('bookingForm');const phone=form?.querySelector('[name=phone]');const status=form?.querySelector('.form-status');
-function formatPhone(value){let digits=value.replace(/\D/g,'');if(!digits)return'';if(digits[0]==='8')digits='7'+digits.slice(1);else if(digits[0]!=='7')digits='7'+digits;digits=digits.slice(0,11);const local=digits.slice(1);let out='+7';if(local.length)out+=' ('+local.slice(0,3);if(local.length>=3)out+=')';if(local.length>3)out+=' '+local.slice(3,6);if(local.length>6)out+='-'+local.slice(6,8);if(local.length>8)out+='-'+local.slice(8,10);return out}
-phone?.addEventListener('input',()=>{const before=phone.value;const pos=phone.selectionStart??before.length;const digitsBefore=before.slice(0,pos).replace(/\D/g,'').length;const formatted=formatPhone(before);phone.value=formatted;let caret=0,count=0;while(caret<formatted.length&&count<digitsBefore){if(/\d/.test(formatted[caret]))count++;caret++}phone.setSelectionRange(caret,caret);if(phone.value.replace(/\D/g,'').length===11)phone.removeAttribute('aria-invalid')});
-form?.addEventListener('submit',event=>{event.preventDefault();const name=form.elements.name.value.trim();const digits=phone.value.replace(/\D/g,'');const service=form.elements.service.value;const date=form.elements.date.value;const time=form.elements.time.value;const invalid=[{field:form.elements.name,ok:name.length>=2,message:'Введите имя — не менее двух символов.'},{field:phone,ok:digits.length===11&&digits.startsWith('7'),message:'Введите корректный российский номер.'},{field:form.elements.service,ok:Boolean(service),message:'Выберите направление.'},{field:form.elements.date,ok:Boolean(date),message:'Выберите демонстрационный день.'},{field:form.elements.time,ok:Boolean(time),message:'Выберите демонстрационное время.'}].find(item=>!item.ok);form.querySelectorAll('[aria-invalid=true]').forEach(field=>field.removeAttribute('aria-invalid'));if(invalid){invalid.field.setAttribute('aria-invalid','true');status.dataset.state='error';status.textContent=invalid.message;invalid.field.focus();return}status.dataset.state='info';status.textContent='Сценарий пройден: '+service+', '+date.toLowerCase()+', '+time+'. Это только демонстрация — время не забронировано, данные не отправлены и не сохранены.';});
+const form=document.getElementById('bookingForm');const status=form?.querySelector('.form-status');
+form?.addEventListener('submit',event=>{
+  event.preventDefault();
+  const requiredFields=[form.elements.service,form.elements.date,form.elements.time];
+  const invalid=requiredFields.find(field=>!field.value);
+  requiredFields.forEach(field=>field.removeAttribute('aria-invalid'));
+  if(invalid){
+    invalid.setAttribute('aria-invalid','true');
+    status.dataset.state='error';
+    status.textContent='Выберите услугу, демонстрационный день и время.';
+    invalid.focus();
+    return;
+  }
+  status.dataset.state='info';
+  status.textContent='Демонстрационный сценарий просмотрен: '+form.elements.service.value+', '+form.elements.date.value.toLowerCase()+', '+form.elements.time.value+'. Никакие данные не отправлены и не сохранены; реальная запись не создана.';
+});
 form?.querySelector('button[type="submit"]')?.removeAttribute('disabled');
+form?.querySelectorAll('select').forEach(field=>field.addEventListener('change',()=>{
+  if(field.getAttribute('aria-invalid')==='true'&&field.value){
+    field.removeAttribute('aria-invalid');
+    if(status?.dataset.state==='error'){status.textContent='';delete status.dataset.state}
+  }
+}));
 function isBookingFieldValid(field){if(field.name==='name')return field.value.trim().length>=2;if(field.name==='phone'){const digits=field.value.replace(/\D/g,'');return digits.length===11&&digits.startsWith('7')}return Boolean(field.value)}form?.querySelectorAll('input,select').forEach(field=>['input','change'].forEach(type=>field.addEventListener(type,()=>{if(field.getAttribute('aria-invalid')!=='true'||!isBookingFieldValid(field))return;field.removeAttribute('aria-invalid');if(status?.dataset.state==='error'){status.textContent='';delete status.dataset.state}})));
 const bookingPrice=document.getElementById('booking-price');const bookingSummaryText=document.getElementById('booking-summary-text');
 const demoPrices={'Стрижка':'от 2 200 ₽','Окрашивание':'от 4 600 ₽','Сложная техника':'от 8 000 ₽','Тонирование':'от 2 500 ₽','Укладка':'от 2 300 ₽','Уход':'от 3 000 ₽','Консультация':'бесплатно · демо'};
