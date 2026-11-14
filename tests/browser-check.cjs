@@ -169,6 +169,7 @@ async function main() {
           tag: element.tagName.toLowerCase(),
           className: typeof element.className === 'string' ? element.className : '',
           text: (element.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 70),
+          fontSize: getComputedStyle(element).fontSize,
           left: Math.round(element.getBoundingClientRect().left),
           right: Math.round(element.getBoundingClientRect().right)
         }));
@@ -192,8 +193,10 @@ async function main() {
     await menuButton.click();
     assert.equal(await menuButton.getAttribute('aria-expanded'), 'true', 'Slide-out menu must open');
     await page.waitForFunction(() => {
-      const bounds = document.querySelector('#site-menu').getBoundingClientRect();
-      return bounds.left >= -1 && bounds.right <= document.documentElement.clientWidth + 1;
+      const panel = document.querySelector('#site-menu');
+      const bounds = panel.getBoundingClientRect();
+      return bounds.left >= -1 && bounds.right <= document.documentElement.clientWidth + 1 &&
+        panel.contains(document.activeElement);
     }, null, { timeout: 2000 });
     const menuBounds = await menu.boundingBox();
     assert.ok(menuBounds && menuBounds.x >= -1 && menuBounds.x + menuBounds.width <= 391,
