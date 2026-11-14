@@ -299,12 +299,13 @@ async function main() {
     /* ---------- Header behaviour ---------- */
     const header = page.locator('.site-header');
     const atlasTop = await page.locator('#atlas').evaluate(element => element.offsetTop);
+    const headerState = (name, expected) => page.waitForFunction(([cls, value]) => document.querySelector('.site-header').classList.contains(cls) === value, [name, expected], { timeout: 3000 }).then(() => true, () => false);
     await page.evaluate(y => window.scrollTo(0, y), atlasTop + 200);
-    await page.waitForTimeout(150);
-    assert.equal(await header.evaluate(element => element.classList.contains('is-hidden')), true, 'Header hides while scrolling down');
+    await page.evaluate(() => window.dispatchEvent(new Event('scroll')));
+    assert.equal(await headerState('is-hidden', true), true, 'Header hides while scrolling down');
     await page.evaluate(y => window.scrollTo(0, y), atlasTop + 100);
-    await page.waitForTimeout(150);
-    assert.equal(await header.evaluate(element => element.classList.contains('is-hidden')), false, 'Header returns while scrolling up');
+    await page.evaluate(() => window.dispatchEvent(new Event('scroll')));
+    assert.equal(await headerState('is-hidden', false), true, 'Header returns while scrolling up');
     assert.equal(await header.evaluate(element => element.classList.contains('is-dark')), true, 'Header switches to its dark variant over dark sections');
     assert.equal(await header.evaluate(element => element.classList.contains('is-compact')), true, 'Header becomes compact after the first screen');
     const progress = await page.evaluate(() => Number(getComputedStyle(document.documentElement).getPropertyValue('--scroll-progress')));
