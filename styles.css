@@ -104,4 +104,11 @@ body::before{content:"";position:fixed;z-index:1000;top:0;left:0;width:100%;heig
 /* Focus indicators: dark plum on light surfaces, warm ivory on dark surfaces. */
 :focus-visible{outline-color:#59263f}
 .site-header :focus-visible,.mobile-menu :focus-visible,.hero :focus-visible,.calculator :focus-visible,.final-cta :focus-visible,.footer :focus-visible,.lightbox :focus-visible{outline-color:#e6d6c9}
-\n.image-fallback{filter:none!important;object-fit:contain!important;background:#25131f}\n
+\n.image-fallback{filter:none!important;object-fit:contain!important;background:#25131f}\n\n
+/* Progressive enhancement: retain navigation and avoid fake form submission without JavaScript. */
+@media(max-width:720px){
+  html:not(.js) .mobile-menu[hidden]{display:block;position:static;inset:auto;padding:18px 6% 24px;background:var(--ink)}
+  html:not(.js) .mobile-menu nav a{font-size:clamp(24px,7vw,38px);padding:9px 0}
+  html:not(.js) .menu-button{display:none}
+}
+html:not(.js) .booking-form button[type="submit"]{display:none}
