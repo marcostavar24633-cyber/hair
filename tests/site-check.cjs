@@ -40,6 +40,12 @@ assert.ok(css.includes(':focus-visible'));assert.ok(css.includes(':focus-visible
 
 
 assert.match(html,/og:site_name/);assert.match(html,/twitter:image:alt/);
+const appScripts=[...html.matchAll(/<script\\b([^>]*)src="([^"]+)"([^>]*)>/g)];
+assert.equal(appScripts.length,1,'The landing should load only one local application script');
+assert.match(appScripts[0][0],/\\bdefer\\b/,'The local application script must be deferred so HTML parsing is not blocked');
+assert.doesNotMatch(css,/@import\\s/i,'Stylesheets must not introduce render-blocking CSS imports');
+assert.equal((html.match(/fonts\\.googleapis\\.com\\/css2\\?/g)||[]).length,1,'Web fonts should be requested through one consolidated stylesheet');
+
 const fontStylesheet=html.match(/<link href="(https:\/\/fonts\.googleapis\.com\/css2\?[^"]+)" rel="stylesheet">/)?.[1]||'';
 assert.ok(fontStylesheet.includes('family=DM+Sans:wght@400;500;600;700'),'DM Sans must load the four weights used by the design');
 assert.ok(fontStylesheet.includes('family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500'),'Playfair Display must load the regular and italic weights used by headings');
