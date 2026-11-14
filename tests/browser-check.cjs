@@ -50,6 +50,12 @@ const server = http.createServer((request, response) => {
       'Content-Type': mime[path.extname(filePath)] || 'application/octet-stream',
       'Cache-Control': 'no-store'
     });
+    // WebKit applies upgrade-insecure-requests even to http://127.0.0.1 and then fails to load
+    // local CSS/JS. The directive only matters on the HTTPS production host and is verified
+    // statically in site-check.cjs, so the local WebKit run serves the page without it.
+    if (process.env.BROWSER === 'webkit' && filePath.endsWith('.html')) {
+      content = Buffer.from(content.toString('utf8').replace('; upgrade-insecure-requests', ''));
+    }
     response.end(content);
   });
 });
