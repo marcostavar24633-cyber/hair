@@ -74,31 +74,15 @@ async function main() {
     await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded' });
     await page.locator('h1').waitFor();
 
-    await page.addScriptTag({ url: 'http://127.0.0.1:4173/__test__/axe.min.js' });
-    const accessibilityResults = await page.evaluate(async () => {
-      const result = await axe.run(document, {
-        runOnly: {
-          type: 'tag',
-          values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']
-        }
-      });
-      return {
-        violations: result.violations.map(item => ({
-          id: item.id,
-          impact: item.impact,
-          description: item.description,
-          nodes: item.nodes.map(node => ({
-            target: node.target,
-            summary: node.failureSummary
-          }))
-        })),
-        passes: result.passes.length,
-        incomplete: result.incomplete.length
-      };
-    });
-    console.log('Accessibility audit: ' + JSON.stringify(accessibilityResults));
-    assert.equal(accessibilityResults.violations.length, 0, 'The page must pass the initial WCAG accessibility audit');
+    const runAxe = browserName !== 'webkit';
+    if (runAxe) {
+      await page.addScriptTag({ url: 'http://127.0.0.1:4173/__test__/axe.min.js' });
+    }
     const auditAccessibilityState = async state => {
+      if (!runAxe) {
+        console.log('Accessibility state ' + state + ': skipped for WebKit; automated axe checks run in Chromium and Firefox.');
+        return;
+      }
       const violations = await page.evaluate(async () => {
         const result = await axe.run(document, {
           runOnly: {
@@ -115,6 +99,33 @@ async function main() {
       console.log('Accessibility state ' + state + ': ' + JSON.stringify(violations));
       assert.equal(violations.length, 0, 'Accessibility violations in state: ' + state);
     };
+    if (runAxe) {
+      const accessibilityResults = await page.evaluate(async () => {
+        const result = await axe.run(document, {
+          runOnly: {
+            type: 'tag',
+            values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']
+          }
+        });
+        return {
+          violations: result.violations.map(item => ({
+            id: item.id,
+            impact: item.impact,
+            description: item.description,
+            nodes: item.nodes.map(node => ({
+              target: node.target,
+              summary: node.failureSummary
+            }))
+          })),
+          passes: result.passes.length,
+          incomplete: result.incomplete.length
+        };
+      });
+      console.log('Accessibility audit: ' + JSON.stringify(accessibilityResults));
+      assert.equal(accessibilityResults.violations.length, 0, 'The page must pass the initial WCAG accessibility audit');
+    } else {
+      console.log('Accessibility audit: skipped for WebKit; automated axe checks run in Chromium and Firefox.');
+    }
     assert.equal(await page.locator('h1').count(), 1, 'The page must render one main heading');
 
     const screenshotsDir = path.join(root, 'artifacts', browserName);
