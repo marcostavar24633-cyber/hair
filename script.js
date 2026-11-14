@@ -1,8 +1,10 @@
 (() => {
 const menuButton=document.querySelector('.menu-button');
 const mobileMenu=document.getElementById('mobile-menu');
-function closeMenu(){if(!mobileMenu||!menuButton)return;const restoreFocus=mobileMenu.contains(document.activeElement);mobileMenu.hidden=true;menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Открыть меню');document.body.classList.remove('menu-open');if(restoreFocus&&menuButton.getClientRects().length)menuButton.focus()}
-menuButton?.addEventListener('click',()=>{const open=menuButton.getAttribute('aria-expanded')!=='true';menuButton.setAttribute('aria-expanded',String(open));menuButton.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');mobileMenu.hidden=!open;document.body.classList.toggle('menu-open',open);if(open)mobileMenu.querySelector('a')?.focus()});
+function syncMobileMenuPosition(){if(!mobileMenu||mobileMenu.hidden)return;const header=menuButton?.closest('.site-header');if(header)mobileMenu.style.setProperty('--mobile-menu-top',header.getBoundingClientRect().bottom+'px')}
+function closeMenu(){if(!mobileMenu||!menuButton)return;const restoreFocus=mobileMenu.contains(document.activeElement);mobileMenu.hidden=true;mobileMenu.style.removeProperty('--mobile-menu-top');menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Открыть меню');document.body.classList.remove('menu-open');if(restoreFocus&&menuButton.getClientRects().length)menuButton.focus()}
+menuButton?.addEventListener('click',()=>{const open=menuButton.getAttribute('aria-expanded')!=='true';menuButton.setAttribute('aria-expanded',String(open));menuButton.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');mobileMenu.hidden=!open;document.body.classList.toggle('menu-open',open);if(open){syncMobileMenuPosition();mobileMenu.querySelector('a')?.focus()}});
+window.addEventListener('scroll',syncMobileMenuPosition,{passive:true});
 mobileMenu?.querySelectorAll('a').forEach(link=>link.addEventListener('click',closeMenu));
 mobileMenu?.addEventListener('keydown',event=>{
 if(event.key!=='Tab'||mobileMenu.hidden)return;
@@ -12,7 +14,7 @@ const first=items[0],last=items[items.length-1];
 if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
 else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
 });
-window.addEventListener('resize',()=>{if(window.innerWidth>720)closeMenu()},{passive:true});
+window.addEventListener('resize',()=>{if(window.innerWidth>720)closeMenu();else syncMobileMenuPosition()},{passive:true});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeMenu();closeLightbox()}});
 document.addEventListener('click',event=>{if(mobileMenu&&!mobileMenu.hidden&&!mobileMenu.contains(event.target)&&!menuButton?.contains(event.target))closeMenu()});
 const portfolioStatus=document.getElementById('portfolio-status');document.querySelectorAll('.filter-button').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('.filter-button').forEach(item=>{const active=item===button;item.classList.toggle('is-active',active);item.setAttribute('aria-pressed',String(active))});let visible=0;document.querySelectorAll('.portfolio-card').forEach(card=>{card.hidden=button.dataset.filter!=='all'&&card.dataset.kind!==button.dataset.filter;if(!card.hidden)visible++});if(portfolioStatus)portfolioStatus.textContent='Показано изображений: '+visible+'. Фильтр: '+button.textContent.trim()+'.'}));
