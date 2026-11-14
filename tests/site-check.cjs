@@ -59,7 +59,7 @@ assert.ok(metaContent('twitter:title')&&metaContent('twitter:description')&&meta
 assert.equal(metaContent('twitter:image'),ogImage,'Twitter and Open Graph previews must use the same image');
 assert.doesNotMatch(html,/<meta name="robots" content="[^"]*noindex/i,'Published portfolio demo must remain indexable');
 assert.match(html,/rel="icon"[^>]+href="favicon\.svg"/,'A favicon must be available for browser tabs and bookmarks');
-assert.equal(countMatches(html,/<h1\\b/g),1,'The page must have exactly one primary heading');
+assert.equal(countMatches(html,/<h1\b/g),1,'The page must have exactly one primary heading');
 assert.ok(sitemap.includes(canonicalUrl),'Sitemap must contain the canonical page URL');
 assert.match(html,/og:site_name/);assert.match(html,/twitter:image:alt/);
 assert.ok(js.includes("document.addEventListener('error'")&&js.includes('image.dataset.fallbackApplied'),'Failed remote images must receive a one-time local fallback');
