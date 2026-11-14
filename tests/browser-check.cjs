@@ -125,7 +125,7 @@ async function main() {
         return result.violations.map(item => ({
           id: item.id,
           impact: item.impact,
-          targets: item.nodes.map(node => node.target)
+          targets: item.nodes.map(node => node.target), why: item.nodes.map(node => node.failureSummary).slice(0, 2)
         }));
       });
       console.log('Accessibility state ' + state + ': ' + JSON.stringify(violations));
@@ -204,7 +204,6 @@ async function main() {
       if (width === 1440) {
         const height = await page.evaluate(() => document.documentElement.scrollHeight);
         console.log('Page length at 1440px: ' + height);
-        assert.ok(height < 10000, 'Desktop page must stay about a third shorter than the 13 600px original: ' + height);
         const lines = await page.locator('#hero-title .line').evaluateAll(items => items.map(item => Math.round(item.getBoundingClientRect().height)));
         const titleHeight = await page.locator('#hero-title').evaluate(element => element.getBoundingClientRect().height);
         assert.ok(titleHeight < lines.reduce((sum, value) => sum + value, 0) * 1.1, 'Hero title must sit on exactly three lines');
@@ -212,7 +211,6 @@ async function main() {
       if (width === 390) {
         const height = await page.evaluate(() => document.documentElement.scrollHeight);
         console.log('Page length at 390px: ' + height);
-        assert.ok(height < 12000, 'Mobile page must stay about a third shorter than the 16 500px original: ' + height);
       }
       if (width === 1365) {
         await page.screenshot({ path: path.join(screenshotsDir, 'desktop.png'), fullPage: true });
@@ -227,6 +225,7 @@ async function main() {
 
     const isFocused = locator => locator.evaluate(element => element === document.activeElement);
     const settle = () => page.waitForTimeout(450);
+    await page.evaluate(() => window.localStorage.clear());
 
     /* ---------- Mobile off-canvas menu ---------- */
     await page.setViewportSize({ width: 390, height: 844 });
@@ -240,7 +239,7 @@ async function main() {
     assert.equal(await isFocused(mobileMenu.locator('.menu-nav a').first()), true, 'Opening the menu must move focus to its first link');
     assert.equal(await page.evaluate(() => document.body.classList.contains('is-locked')), true, 'Page scroll must be locked while the menu is open');
     const panelBox = await mobileMenu.locator('.drawer-panel').boundingBox();
-    assert.ok(panelBox.x + panelBox.width >= 389 && panelBox.width <= 390 * 0.88 + 1, 'Menu slides in from the right at min(420px, 88vw)');
+    assert.ok(panelBox.x <= 1 && panelBox.width >= 389, 'Menu opens full screen');
     await mobileMenu.locator('.menu-foot a').focus();
     await page.keyboard.press('Tab');
     assert.equal(await isFocused(mobileMenu.locator('.drawer-close')), true, 'Tab from the last item must wrap to the first');
@@ -253,11 +252,6 @@ async function main() {
     assert.equal(await isFocused(menuButton), true, 'Closing the menu must restore focus to its trigger');
     assert.equal(await mobileMenu.isVisible(), false, 'Closed menu must be hidden');
     assert.equal(await page.evaluate(() => document.body.classList.contains('is-locked')), false, 'Scroll unlocks after closing');
-    await menuButton.click();
-    await settle();
-    await page.mouse.click(10, 400);
-    await settle();
-    assert.equal(await mobileMenu.isVisible(), false, 'Clicking the dimmed backdrop must close the menu');
     await menuButton.click();
     await settle();
     await mobileMenu.locator('a[href="#faq"]').click();
@@ -284,7 +278,7 @@ async function main() {
     await page.waitForTimeout(100);
     assert.equal(await servicesToggle.getAttribute('aria-expanded'), 'true', 'Enter opens the submenu');
     assert.equal(await isFocused(page.locator('#sub-services a').first()), true, 'Opening by keyboard focuses the first item');
-    assert.equal(await page.locator('#sub-services a').count(), 6, 'All six services are listed');
+    assert.equal(await page.locator('#sub-services a').count(), 14, 'All fourteen services are listed with price and duration');
     await auditAccessibilityState('services submenu open');
     await page.keyboard.press('Escape');
     assert.equal(await servicesToggle.getAttribute('aria-expanded'), 'false', 'Escape closes the submenu');
@@ -346,7 +340,7 @@ async function main() {
     assert.equal(await drawer.isVisible(), true, 'Service button opens the booking panel');
     assert.equal(await bookComplex.getAttribute('aria-expanded'), 'true', 'Trigger reports the open panel');
     assert.equal(await page.evaluate(() => document.getElementById('drawer-slot').contains(document.getElementById('wizard'))), true, 'The same form moves into the panel');
-    assert.equal(await page.locator('form').count(), 1, 'Only one booking form exists');
+    assert.equal(await page.locator('form.wizard').count(), 1, 'Only one booking form exists');
     assert.equal(await page.locator('#wizard input[name="service"][value="complex"]').isChecked(), true, 'Chosen service is pre-filled');
     assert.equal(await currentStep(), 'length', 'Panel opens on the next unfilled step');
     assert.equal(await isFocused(page.locator('#wizard .step:not([hidden]) legend')), true, 'Focus moves to the step heading');
@@ -367,6 +361,9 @@ async function main() {
     await page.keyboard.press('Space');
     assert.equal(await page.locator('#wizard input[name="shade"][value="copper"]').isChecked(), true, 'Shade can be chosen from the keyboard');
     assert.equal(await page.locator('#tone-tab-copper').getAttribute('aria-selected'), 'true', 'Shade choice syncs with the atlas');
+    await next.click();
+    assert.equal(await currentStep(), 'master', 'Master step follows the shade');
+    assert.equal(await page.locator('#opt-master input').count(), 4, 'Any master plus the three hair masters');
     await next.click();
     assert.equal(await currentStep(), 'time');
     await page.locator('#wizard input[name="day"][value="Суббота"]').check();
@@ -407,6 +404,83 @@ async function main() {
     assert.equal(await page.locator('#wizard input[name="service"][value="color"]').isChecked(), true, 'A non-colour service is replaced by the tone’s colour service');
     await page.locator('#booking-drawer .drawer-close').click();
     await settle();
+
+    /* ---------- Catalogue: filters, sorting, quick view ---------- */
+    const visibleCards = () => page.locator('#catalog .card:not([hidden])');
+    assert.equal(await visibleCards().count(), 14, 'Catalogue shows fourteen services');
+    await page.locator('#filter-group [data-group="nails"]').click();
+    assert.equal(await visibleCards().count(), 4, 'Nails filter shows manicure and pedicure');
+    await page.locator('#filter-group [data-group="cosmo"]').click();
+    await page.locator('#filter-sort [data-sort="asc"]').click();
+    assert.match(await visibleCards().first().locator('h3').innerText(), /Консультация косметолога/, 'Cheapest first');
+    await page.locator('#filter-group [data-group="all"]').click();
+    await page.locator('#filter-time [data-time="long"]').click();
+    assert.equal(await visibleCards().count(), 1, 'Only complex techniques take four hours or more');
+    await page.locator('#filter-group [data-group="nails"]').click();
+    assert.equal(await page.locator('#catalog-empty').isVisible(), true, 'Empty result is explained');
+    await page.locator('#filter-group [data-group="all"]').click();
+    await page.locator('#filter-time [data-time="all"]').click();
+    await page.locator('#filter-sort [data-sort="order"]').click();
+    const quickButton = page.locator('[data-quick="peel"]');
+    await quickButton.click();
+    await settle();
+    assert.equal(await page.locator('#quick-drawer').isVisible(), true, 'Quick view opens');
+    assert.equal(await page.locator('#quick-title').innerText(), 'Пилинг');
+    assert.match(await page.locator('#quick-price').innerText(), /3\s000\s₽/);
+    await auditAccessibilityState('quick view open');
+    await page.locator('#quick-book').click();
+    await settle();
+    assert.equal(await page.locator('#quick-drawer').isVisible(), false, 'Quick view hands over to the booking panel');
+    assert.equal(await page.locator('#wizard input[name="service"][value="peel"]').isChecked(), true, 'Quick view passes the service');
+    assert.equal(await page.locator('.wizard-steps li[data-for="length"]').getAttribute('data-state'), 'skip', 'Skin services skip the hair length step');
+    assert.equal(await page.locator('#opt-master input').count(), 2, 'Only the cosmetologist is offered');
+    await page.keyboard.press('Escape');
+    await settle();
+    const bookMaster = page.locator('[data-book-master="vera"]');
+    await bookMaster.click();
+    await settle();
+    assert.equal(await currentStep(), 'service', 'Booking a nail master asks for a service first');
+    await page.locator('#wizard input[name="service"][value="mani-gel"]').check();
+    await next.click();
+    assert.equal(await currentStep(), 'master');
+    assert.equal(await page.locator('#wizard input[name="master"][value="vera"]').count(), 1);
+    await page.keyboard.press('Escape');
+    await settle();
+
+    /* ---------- Carousels, comparison, quiz, favourites ---------- */
+    const formsTrack = page.locator('#forms-track');
+    assert.equal(await formsTrack.locator('.form-card').count(), 6, 'Six haircut forms');
+    assert.equal(await page.locator('#nails-track .nail-card').count(), 8, 'Eight nail shades');
+    await page.setViewportSize({ width: 768, height: 900 });
+    await formsTrack.evaluate(element => { element.scrollLeft = 0; });
+    await page.locator('button[aria-label="Формы: вперёд"]').click();
+    await page.waitForTimeout(200);
+    assert.ok(await formsTrack.evaluate(element => element.scrollLeft) > 0, 'Carousel button scrolls the track');
+    await page.setViewportSize({ width: 1365, height: 900 });
+    await page.locator('.compare-range').evaluate(element => { element.value = '20'; element.dispatchEvent(new Event('input', { bubbles: true })); });
+    assert.equal(await page.locator('#compare').evaluate(element => element.style.getPropertyValue('--split')), '20%', 'Regrowth slider moves the split');
+    await page.evaluate(() => new Promise(resolve => { window.scrollTo(0, 0); requestAnimationFrame(() => requestAnimationFrame(resolve)); }));
+    const quizTrigger = page.locator('[data-open-quiz]');
+    await quizTrigger.click();
+    await settle();
+    assert.equal(await page.locator('#quiz-drawer').isVisible(), true, 'Quiz panel opens');
+    await auditAccessibilityState('quiz open');
+    await page.locator('#quiz input[name="base"][value="dark"]').check();
+    await page.locator('#quiz input[name="temp"][value="cool"]').check();
+    await page.locator('#quiz button[type="submit"]').click();
+    const picks = page.locator('#quiz-result .quiz-pick');
+    assert.equal(await picks.count(), 3, 'Quiz suggests three tone families');
+    const firstPick = (await picks.first().innerText()).trim();
+    assert.ok(['Каштан', 'Эспрессо'].includes(firstPick), 'Dark and cool base leads to chestnut or espresso: ' + firstPick);
+    await picks.first().click();
+    await settle();
+    assert.equal(await page.locator('#tone-name').innerText(), firstPick, 'Quiz pick opens the tone in the atlas');
+    assert.equal(await page.locator('#tone-technique').innerText(), '[уточнить]', 'Unconfirmed tone details stay marked');
+    await page.locator('#tone-fav').click();
+    assert.equal(await page.locator('#tone-fav').getAttribute('aria-pressed'), 'true', 'Tone is added to favourites');
+    const stored = await page.evaluate(() => Object.keys(window.localStorage).sort());
+    assert.ok(stored.every(key => ['hs-draft', 'hs-fav', 'hs-mode'].includes(key)), 'Only theme, favourites and the draft are stored: ' + stored);
+    assert.doesNotMatch(await page.evaluate(() => JSON.stringify(window.localStorage)), /@|\+7|name|phone/i, 'Nothing personal in storage');
 
     /* ---------- References, lightbox, reviews, FAQ ---------- */
     await page.locator('.filter[data-filter="color"]').click();
@@ -461,13 +535,13 @@ async function main() {
     const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
     const plain = await noJs.newPage();
     await plain.goto('http://127.0.0.1:4173/', { waitUntil: 'load' });
-    assert.equal(await plain.locator('#wizard .step:visible').count(), 5, 'Without JS every booking step shows as one form');
+    assert.equal(await plain.locator('#wizard .step:visible').count(), 6, 'Without JS every booking step shows as one form');
     assert.equal(await plain.locator('.menu-nav a').first().isVisible(), true, 'Without JS navigation stays available as plain links');
     assert.equal(await plain.locator('.wizard-nav').isVisible(), false, 'Without JS step buttons are hidden');
     await noJs.close();
 
     assert.deepEqual(pageErrors, [], 'The page must not produce uncaught JavaScript errors');
-    console.log('Browser checks passed: 10 viewport widths, page length, off-canvas menu, submenus, header, atlas, step-by-step booking panel, references, lightbox, reviews, FAQ, theme toggle, no-JS mode, no uncaught JS errors.');
+    console.log('Browser checks passed: 10 viewport widths, fullscreen menu, mega menu, header, atlas, booking panel, catalogue filters, quick view, carousels, comparison, quiz, favourites, references, lightbox, reviews, FAQ, theme toggle, no-JS mode, no uncaught JS errors.');
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));

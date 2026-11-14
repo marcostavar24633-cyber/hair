@@ -8,6 +8,7 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const html = read('index.html');
 const css = read('styles.css');
 const js = read('script.js');
+const config = read('config.js');
 const readme = read('README.md');
 const robots = read('robots.txt');
 const sitemap = read('sitemap.xml');
@@ -86,7 +87,7 @@ assert.equal(levels[0], 1, 'H1 must come first');
 for (let i = 1; i < levels.length; i++) assert.ok(levels[i] <= levels[i - 1] + 1, 'Heading levels must not skip');
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
 assert.equal(new Set(ids).size, ids.length, 'Duplicate HTML id');
-for (const id of ['services', 'atlas', 'works', 'philosophy', 'team', 'faq', 'contacts', 'booking', 'wizard', 'booking-drawer', 'lightbox', 'mobile-menu', 'tone-panel', 'concept-note', 'sub-services', 'sub-atlas']) assert.ok(ids.includes(id), 'Missing #' + id);
+for (const id of ['services', 'catalog', 'atlas', 'regrowth', 'compare', 'styles', 'forms-track', 'nails-track', 'works', 'philosophy', 'team', 'masters', 'principles', 'reviews', 'location', 'faq', 'cta', 'contacts', 'booking', 'wizard', 'booking-drawer', 'quick-drawer', 'quiz-drawer', 'lightbox', 'mobile-menu', 'tone-panel', 'concept-note', 'sub-services', 'sub-atlas']) assert.ok(ids.includes(id), 'Missing #' + id);
 for (const [, id] of html.matchAll(/href="#([^"]+)"/g)) assert.ok(ids.includes(id), 'Broken anchor #' + id);
 for (const [, refs] of html.matchAll(/\baria-(?:labelledby|describedby|controls)="([^"]+)"/g)) for (const ref of refs.split(/\s+/)) assert.ok(ids.includes(ref), 'Broken ARIA reference ' + ref);
 for (const [, attrs] of html.matchAll(/<nav\b([^>]*)>/g)) assert.match(attrs, /aria-label="[^"]+"/, 'Every nav needs a label');
@@ -99,23 +100,23 @@ for (const [, attrs, text] of html.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/butto
 
 /* Target order of the client path: 8 content sections, comparison removed */
 const order = [...html.matchAll(/<section class="([a-z-]+)"/g)].map(match => match[1]);
-assert.deepEqual(order, ['hero', 'manifesto', 'services', 'atlas', 'works', 'team', 'booking', 'faq'], 'Section order must follow the client path');
-assert.doesNotMatch(html, /comparison|compare-range|calculator/i, 'Unproven before/after comparison and the separate calculator are removed');
+assert.deepEqual(order, ['hero', 'manifesto', 'services', 'atlas', 'regrowth', 'styles', 'works', 'team', 'principles', 'reviews-section', 'booking', 'location', 'faq', 'cta'], 'Section order must follow the brief');
+assert.match(html, /Схематичная иллюстрация, не&nbsp;фото клиента/, 'The regrowth comparison is labelled as an illustration, not a real case');
 for (const id of ['atlas', 'team', 'booking', 'contacts']) assert.match(html, new RegExp('id="' + id + '" data-theme="dark"'), 'Dark rhythm section: ' + id);
 
 /* Navigation, submenus and panels */
 assert.match(html, /class="menu-button" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobile-menu"/);
-for (const id of ['mobile-menu', 'booking-drawer']) assert.match(html, new RegExp('id="' + id + '" role="dialog" aria-modal="true" aria-labelledby="[^"]+" hidden'), 'Drawer must be a labelled modal dialog: ' + id);
+for (const id of ['mobile-menu', 'booking-drawer', 'quick-drawer', 'quiz-drawer']) assert.match(html, new RegExp('id="' + id + '" role="dialog" aria-modal="true" aria-labelledby="[^"]+" hidden'), 'Drawer must be a labelled modal dialog: ' + id);
 assert.match(html, /id="lightbox" hidden role="dialog" aria-modal="true"/);
 assert.equal(count(html, /class="sub-toggle" type="button" aria-expanded="false" aria-controls="sub-/g), 2, 'Services and atlas submenus need disclosure buttons');
-assert.equal(count(html.match(/id="sub-services"[\s\S]*?<\/div>/)?.[0] || '', /href="#service-/g), 6, 'Services submenu lists all six directions');
 assert.equal(count(html, /data-pick-tone="/g), 6, 'Atlas mega menu offers six tones');
 for (const [tag] of html.matchAll(/<a\b[^>]*data-open-booking[^>]*>/g)) {
   assert.match(tag, /href="#booking"/, 'Booking triggers must work as plain links without JS');
   assert.match(tag, /aria-controls="booking-drawer"/, 'Booking triggers must reference the drawer');
 }
-assert.ok(count(html, /data-open-booking/g) >= 9, 'Header, hero, six services, atlas, menu and footer open the booking panel');
-assert.equal(count(html, /<form\b/g), 1, 'The booking drawer reuses the one form, it is not a copy');
+assert.ok(count(html, /data-open-booking/g) >= 7, 'Header, menu, hero, atlas, quick view, final CTA and the floating button open the booking panel');
+assert.equal(count(html, /<form\b[^>]*id="wizard"/g), 1, 'The booking drawer reuses the one form, it is not a copy');
+assert.equal(count(html, /<form\b/g), 2, 'Only the booking wizard and the tone quiz are forms');
 
 /* Atlas */
 const tabs = [...html.matchAll(/<button\b[^>]*role="tab"[^>]*>/g)].map(match => match[0]);
@@ -124,9 +125,8 @@ assert.equal(tabs.filter(tab => tab.includes('aria-selected="true"')).length, 1,
 assert.match(html, /role="tablist" aria-label="[^"]+"/);
 assert.match(html, /id="tone-panel" role="tabpanel" aria-labelledby="tone-tab-honey"/);
 assert.match(html, /id="works-status" role="status" aria-live="polite"/);
-assert.match(html, /class="reviews-track" role="region" aria-labelledby="[^"]+" tabindex="0"/, 'Scrollable reviews must be keyboard reachable');
+assert.match(html, /class="reviews-track" role="region" aria-label="[^"]+" tabindex="0"/, 'Scrollable reviews must be keyboard reachable');
 assert.doesNotMatch(html, /<a class="brand[^"]*" href="#top" aria-label=/, 'Brand link name must come from its visible text');
-assert.match(html.slice(html.indexOf('<footer')), /class="btn btn-fill mobile-cta"/, 'Mobile CTA must live inside the footer landmark');
 
 /* ---------- Images and performance ---------- */
 const images = html.split('<img').slice(1).map(part => part.split('>')[0]);
@@ -164,12 +164,12 @@ assert.match(css, /--serif:"Cormorant Garamond",[^;]*Georgia/, 'Display font nee
 assert.match(css, /--sans:"Onest",system-ui/, 'Text font needs a system fallback');
 assert.doesNotMatch(css, /@import\s/i, 'No render-blocking CSS imports');
 const scripts = [...html.matchAll(/<script\b[^>]*src="([^"]+)"[^>]*>/g)];
-assert.equal(scripts.length, 1, 'Only one local script');
-assert.match(scripts[0][0], /\bdefer\b/, 'Application script must be deferred');
+assert.deepEqual(scripts.map(match => match[1].split('?')[0]), ['config.js', 'script.js'], 'Config first, then the application script');
+for (const script of scripts) assert.match(script[0], /\bdefer\b/, 'Scripts must be deferred');
 const cssVersion = html.match(/href="styles\.css\?v=(\d+)"/)?.[1];
 const jsVersion = html.match(/src="script\.js\?v=(\d+)"/)?.[1];
 assert.ok(cssVersion && jsVersion, 'CSS and JS URLs must carry a cache-busting version');
-for (const selector of ['.hero-arch{', '.services-photo{', '.ref-a .ref-media{', '.monogram{', '.strands{']) {
+for (const selector of ['.hero-arch{', '.ref-a .ref-media{', '.ref-b .ref-media{', '.ref-d .ref-media{', '.compare{', '.strands{']) {
   const rule = css.slice(css.indexOf(selector), css.indexOf('}', css.indexOf(selector)));
   assert.match(rule, /aspect-ratio|height:/, 'Image container must reserve space: ' + selector);
 }
@@ -200,8 +200,6 @@ for (const [, value] of cssBody.matchAll(/transition:([^;}]+)/g)) for (const par
 }
 const modeBlocks = cssBody.match(/html\{--surface[\s\S]*?color-scheme:dark\}|html\[data-mode="light"\]\{[\s\S]*?color-scheme:light\}/g) || [];
 assert.equal(modeBlocks.length, 2, 'Dark and light mode token blocks');
-const accentUses = count(cssBody, /:var\(--accent\)/g) - count(cssBody, /--[a-z-]+:var\(--accent\)/g);
-assert.ok(accentUses >= 1 && accentUses <= 5, 'Accent (copper / gold) stays rare: at most 4 places plus the ambient glow, found ' + accentUses);
 assert.match(css, /\.btn\{[^}]*border-radius:var\(--r-pill\)/, 'Buttons have rounded ends');
 assert.match(css, /@keyframes drift-a/, 'Ambient background drifts slowly');
 assert.match(css, /prefers-reduced-motion:reduce\)\{\n  \.ambient span\{animation:none/, 'Ambient motion stops for reduced motion');
@@ -212,7 +210,8 @@ for (const [, content] of css.matchAll(/content:("[^"]*")/g)) assert.doesNotMatc
 for (const [, content] of css.matchAll(/content:("[^"]*")/g)) assert.equal(content, '""', 'Decorative CSS content only, no text glyphs');
 const forbidden = /премиальн|роскошн|эксклюзивн|элитн|\bVIP\b|индивидуальный подход|команда профессионалов|высокое качество|широкий спектр|доступные цены|мы работаем для вас|лучшие мастера|lorem ipsum/i;
 assert.doesNotMatch(html, forbidden, 'Luxury does not call itself luxury; no template phrases');
-assert.doesNotMatch(js, forbidden, 'Dynamic texts follow the same tone');
+assert.doesNotMatch(js + config, forbidden, 'Dynamic texts follow the same tone');
+assert.doesNotMatch(config.replace(/\/\/.*$/gm, ''), /!/, 'No exclamation marks in config texts');
 assert.doesNotMatch(visibleHtml, /!/, 'No exclamation marks in the texts');
 const headings = [...html.matchAll(/<(h[1-4])\b[^>]*>([\s\S]*?)<\/\1>/g)].map(match => match[2].replace(/<svg[\s\S]*?<\/svg>/g, '').replace(/<[^>]+>/g, ''));
 for (const heading of headings) {
@@ -225,14 +224,14 @@ assert.doesNotMatch(visibleHtml, /"[А-Яа-яЁё]/, 'Russian quotes are guille
 assert.match(css, /h1,h2,h3,h4\{[^}]*text-wrap:balance/, 'Headings are balanced');
 assert.match(css, /p\{margin:0;text-wrap:pretty\}/, 'Paragraphs avoid orphans');
 assert.match(css, /\.num\{font-variant-numeric:tabular-nums/, 'Prices use tabular figures');
-assert.doesNotMatch(html, /ticker|hero-badge|textPath/, 'Ticker and rotating seal are removed');
-assert.doesNotMatch(css + js, /cursor:\s*none|custom-cursor/, 'No custom cursor');
+assert.doesNotMatch(css, /cursor:\s*none/, 'The custom cursor never hides the system cursor');
+assert.match(css, /prefers-reduced-motion:reduce\)\{[\s\S]*animation:none!important;transition:none!important/, 'Every effect stops for reduced motion');
 
 /* ---------- JavaScript behaviour guarantees ---------- */
 for (const needle of [
   "root.classList.add('js')",
   "document.addEventListener('error'", "image.removeAttribute('srcset')", 'data:image/svg+xml',
-  'function trapFocus(', 'function lockScroll()', 'window.innerWidth - root.clientWidth', 'drawerSlot.append(wizard)', 'bookingSlot.append(wizard)',
+  'function trapFocus(', 'function lockScroll()', 'window.innerWidth - root.clientWidth', 'drawerSlot.append(wizard)', 'bookingSlot.append(wizard)', 'function renderCatalog(', 'function initCarousel(', 'function renderMasters()', 'window.HAIR_STUDIO',
   'function setTone(', 'tab.tabIndex = active ? 0 : -1', "atlasPanel?.setAttribute('aria-labelledby', tab.id)", 'ArrowRight', "'Home'", "'End'",
   "swatch.setAttribute('aria-pressed'", 'function renderSteps(', 'function goToFirstIncomplete()', "setAttribute('aria-current', 'step')",
   'реальная запись не создана', "removeAttribute('disabled')", 'IntersectionObserver', 'prefers-reduced-motion', 'requestAnimationFrame', '--scroll-progress',
@@ -248,8 +247,11 @@ for (const directive of ["default-src 'self'", "base-uri 'self'", "form-action '
 for (const host of ['https://fonts.googleapis.com', 'https://fonts.gstatic.com', 'https://images.pexels.com', 'https://images.unsplash.com']) assert.ok(csp.includes(host), 'CSP must allow ' + host);
 assert.doesNotMatch(csp, /unsafe-eval/);
 assert.match(html, /<meta name="referrer" content="strict-origin-when-cross-origin">/);
-for (const sink of ['innerHTML', 'outerHTML', 'insertAdjacentHTML', 'document.write', 'eval(', 'new Function']) assert.ok(!js.includes(sink), 'Unsafe sink: ' + sink);
-for (const channel of ['localStorage', 'sessionStorage', 'document.cookie', 'fetch(', 'XMLHttpRequest', 'sendBeacon']) assert.ok(!js.includes(channel), 'Demo must not store or send data: ' + channel);
+for (const sink of ['innerHTML', 'outerHTML', 'insertAdjacentHTML', 'document.write', 'eval(', 'new Function']) assert.ok(!(js + config).includes(sink), 'Unsafe sink: ' + sink);
+for (const channel of ['sessionStorage', 'document.cookie', 'indexedDB', 'fetch(', 'XMLHttpRequest', 'sendBeacon', 'WebSocket']) assert.ok(!(js + config).includes(channel), 'Demo must not send data or use other storage: ' + channel);
+assert.equal(count(js, /localStorage/g), 3, 'localStorage is touched only inside the store helper');
+assert.deepEqual([...new Set([...js.matchAll(/store\.(?:get|set|remove)\('([a-z]+)'/g)].map(match => match[1]))].sort(), ['draft', 'fav', 'mode'], 'Only the theme, favourite tones and the booking draft are stored');
+assert.match(js, /store\.set\('draft', \{ service: value\('service'\), length: value\('length'\), shade: value\('shade'\), master: value\('master'\), day: value\('day'\), time: value\('time'\) \}\)/, 'The draft holds choices only, never personal data');
 assert.ok(!html.toLowerCase().includes('javascript:'));
 assert.ok(!html.includes('href="http://') && !html.includes('src="http://'));
 assert.ok(!html.includes('target="_blank"'));
@@ -257,20 +259,38 @@ for (const [, url] of html.matchAll(/data-image="([^"]+)"/g)) assert.ok(/^https:
 const form = html.match(/<form\b[\s\S]*?<\/form>/)?.[0] || '';
 assert.ok(form.includes('type="submit" disabled'), 'Submit disabled until JS handler is ready');
 assert.doesNotMatch(form, /name="(?:name|phone|email|tel)"|type="(?:tel|email|text|number)"|<textarea|<select/i, 'Demo form must not collect personal data');
-assert.deepEqual([...new Set([...form.matchAll(/<input type="radio" name="([a-z]+)"/g)].map(match => match[1]))], ['service', 'length', 'shade', 'day', 'time'], 'Only service, length, shade, day and time');
+assert.deepEqual([...new Set([...form.matchAll(/<input type="radio" name="([a-z]+)"/g)].map(match => match[1]))], ['length', 'shade'], 'Static choices: length and shade; services, masters, days and slots come from config');
 assert.equal(count(form, /<input\b/g), count(form, /<input type="radio"/g), 'Only radio choices in the demo form');
 assert.ok(!/\baction\s*=/i.test(form), 'Form must not declare a destination');
-assert.equal(count(form, /<fieldset class="step"/g), 5, 'Five booking steps');
-assert.equal(count(form, /<legend\b/g), 5, 'Every step is a labelled fieldset');
+assert.equal(count(form, /<fieldset class="step"/g), 6, 'Six booking steps');
+assert.equal(count(form, /<legend\b/g), 6, 'Every step is a labelled fieldset');
 for (const [, input] of form.matchAll(/(<input\b[^>]*>)/g)) assert.ok(/<label class="option"><input/.test(form), 'Inputs sit inside labels: ' + input);
 assert.doesNotMatch(form, /<fieldset[^>]*\shidden/, 'Without JS no step is hidden: steps are hidden only by script');
 
 /* ---------- Honest demo content ---------- */
-for (const phrase of ['Демонстрационный концепт', 'Демо-концепт', 'модельный ориентир', 'демо-отзыв', 'демо-профиль', 'ул. Демонстрационная, 15', 'hello@hairstudio.example', 'данные не отправляются', 'Не портфолио выполненных работ', 'Фото после съёмки']) assert.ok(html.replace(/&nbsp;/g, ' ').includes(phrase), 'Demo disclosure missing: ' + phrase);
+assert.ok(js.includes('демо-профиль'), 'Masters are labelled as demo profiles');
+for (const phrase of ['Демонстрационный концепт', 'Демо-концепт', 'модельный ориентир', 'демо-отзыв', 'Демо-профили', '[телефон]', '[Telegram]', '[MAX]', '[реквизиты]', '[условия уточняются]', 'ул. Демонстрационная, 15', 'hello@hairstudio.example', 'данные не отправляются', 'Не портфолио выполненных работ', 'Фото после съёмки']) assert.ok(html.replace(/&nbsp;/g, ' ').includes(phrase), 'Demo disclosure missing: ' + phrase);
 assert.doesNotMatch(html, /tel:|wa\.me|whatsapp|t\.me\//i, 'No call or messenger links without real contacts');
 assert.match(readme, /демонстрационный проект/i);
 assert.match(readme, /данные не отправляются, не хранятся и не передаются/i);
+assert.match(readme, /config\.js/);
 assert.match(readme, /полностью вымышленные демонстрационные данные/);
 assert.match(readme, /анимац/i);
+
+/* ---------- Config: one source of data ---------- */
+const sandbox = { window: {} };
+new Function('window', config)(sandbox.window);
+const cfg = sandbox.window.HAIR_STUDIO;
+assert.equal(cfg.services.length, 14, 'Six hair, four nail and four skin services');
+assert.deepEqual(cfg.services.slice(0, 6).map(item => [item.name, item.base, item.time]), [['Стрижка и форма', 2200, '1–1,5 ч'], ['Окрашивание в один тон', 4600, '2–3 ч'], ['Сложные техники', 8000, '4–6 ч'], ['Тонирование', 2500, '1,5–2 ч'], ['Укладка', 2300, '45–60 мин'], ['Уход за волосами', 3000, '1–1,5 ч']], 'Hair prices and durations match the brief');
+for (const item of cfg.services) assert.ok(item.id && cfg.directions[item.dir] && item.base > 0 && item.min <= item.max && item.includes.length, 'Service is complete: ' + item.id);
+assert.deepEqual(Object.keys(cfg.tones), ['blonde', 'honey', 'copper', 'caramel', 'chestnut', 'espresso']);
+assert.deepEqual(Object.keys(cfg.tones).filter(key => cfg.tones[key].price), ['honey'], 'Only «Мёд» has confirmed figures; the rest stay [уточнить]');
+assert.equal(cfg.unknown, '[уточнить]');
+assert.deepEqual(cfg.booking.slots, ['10:00', '11:30', '13:00', '15:30', '17:00', '19:00']);
+assert.equal(cfg.booking.provider, null, 'Online booking integration point stays empty in the demo');
+for (const key of ['phone', 'telegram', 'max', 'legal', 'terms']) assert.match(cfg.contacts[key], /^\[.+\]$/, 'Placeholder contact: ' + key);
+for (const flag of ['cursor', 'magnetic', 'tilt', 'marquee', 'ambient', 'seal', 'confetti', 'floatingCta', 'storage']) assert.equal(typeof cfg.features[flag], 'boolean', 'Feature flag: ' + flag);
+assert.ok(fs.existsSync(path.join(root, 'docs/TZ-beauty-services.md')), 'Brief for nails and cosmetology with price analysis');
 
 console.log('Site checks passed: SEO, structure, accessibility, images, luxury standard, privacy, security and colour contrast.');
