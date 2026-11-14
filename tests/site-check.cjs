@@ -69,8 +69,10 @@ for(const tag of imageTags.filter(item=>!item.includes('class="hero-image"')&&/\
   assert.match(tag,/loading="lazy"/,'Below-the-fold images should be lazy-loaded');
 }
 
+
 // Accessibility structure regression checks.
-const formMarkup=html.match(/<form\\b[\\s\\S]*?<\\/form>/i)?.[0]||'';\nconst labelBlocks=[...html.matchAll(/<label\b[^>]*>[\s\S]*?<\/(?:label)>/gi)].map(match=>match[0]);
+const formMarkup=html.match(/<form\b[\s\S]*?<\/form>/i)?.[0]||'';
+const labelBlocks=[...html.matchAll(/<label\b[^>]*>[\s\S]*?<\/label>/gi)].map(match=>match[0]);
 const formControls=[...formMarkup.matchAll(/<(input|select|textarea)\b[^>]*>/gi)];
 for(const control of formControls){
   assert.ok(labelBlocks.some(label=>label.includes(control[0])),'Every form control must be contained by a label: '+control[0]);
