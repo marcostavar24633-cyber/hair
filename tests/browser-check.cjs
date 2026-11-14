@@ -191,6 +191,10 @@ async function main() {
     const menu = page.locator('#site-menu');
     await menuButton.click();
     assert.equal(await menuButton.getAttribute('aria-expanded'), 'true', 'Slide-out menu must open');
+    await page.waitForFunction(() => {
+      const bounds = document.querySelector('#site-menu').getBoundingClientRect();
+      return bounds.left >= -1 && bounds.right <= document.documentElement.clientWidth + 1;
+    }, null, { timeout: 2000 });
     const menuBounds = await menu.boundingBox();
     assert.ok(menuBounds && menuBounds.x >= -1 && menuBounds.x + menuBounds.width <= 391,
       'Open slide-out menu must fit within the mobile viewport: ' + JSON.stringify(menuBounds));
