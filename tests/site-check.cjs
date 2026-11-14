@@ -55,7 +55,7 @@ assert.match(html, /id="lightbox"/);
 assert.match(html, /<details>/);
 assert.doesNotMatch(html, /<form\b/i, 'The concept must not imply that a booking form sends enquiries');
 
-for (const token of ['menu-trigger', 'menu-branch', 'data-open-consultation', 'data-service', 'data-filter', 'lightbox', 'IntersectionObserver', 'prefers-reduced-motion', 'requestAnimationFrame']) {
+for (const token of ['menu-trigger', 'menu-branch', 'data-open-consultation', 'data-service', 'filter-chip', 'lightbox', 'IntersectionObserver', 'prefers-reduced-motion', 'requestAnimationFrame']) {
   assert.ok(js.includes(token), 'Expected interaction or accessibility feature missing: ' + token);
 }
 for (const token of ['fetch(', 'XMLHttpRequest', 'sendBeacon', 'localStorage', 'sessionStorage', 'document.cookie', 'innerHTML', 'outerHTML', 'document.write', 'eval(']) {
