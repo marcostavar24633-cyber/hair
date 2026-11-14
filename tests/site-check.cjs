@@ -35,3 +35,8 @@ for(const tag of responsiveImages){assert.match(tag,/\bsrcset="[^"]+480w[^"]+800
 
 assert.doesNotMatch(html,/>\s+srcset=/,'Duplicate responsive attributes must not appear outside img tags');
 assert.equal((html.match(/\bsrcset=/g)||[]).length,10,'Exactly ten responsive image srcsets expected');
+
+const portfolioTags=imageTags.filter(tag=>tag.includes('src="https://images.unsplash.com/photo-1560066984-138dadb4c035')||tag.includes('src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1')||tag.includes('src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e'));
+assert.ok(html.includes('sizes="(max-width: 720px) 88vw, (max-width: 1000px) 40vw, 40vw"'),'Featured portfolio card sizes should match its wide grid span');
+assert.ok(html.includes('sizes="(max-width: 720px) 44vw, (max-width: 1000px) 30vw, 30vw"'),'Regular portfolio card sizes should match grid columns');
+assert.ok(html.includes('sizes="(max-width: 720px) 88vw, 80vw"'),'Comparison images should use the content width, not full viewport width');
