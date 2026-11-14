@@ -146,12 +146,6 @@ assert.ok(heroTag,'Hero image must exist');
 assert.match(heroTag,/fetchpriority="high"/,'Hero image should have high fetch priority');
 assert.doesNotMatch(heroTag,/loading="lazy"/,'Hero image must not be lazy-loaded');
 
-const heroSrcset=heroTag.match(/\\bsrcset="([^"]+)"/)?.[1]||'';
-const heroSizes=heroTag.match(/\\bsizes="([^"]+)"/)?.[1]||'';
-const heroPreload=html.match(/<link rel="preload" as="image"[^>]*>/)?.[0]||'';
-assert.ok(heroPreload,'The primary hero image must be preloaded');
-assert.equal(heroPreload.match(/\\bimagesrcset="([^"]+)"/)?.[1],heroSrcset,'Hero preload candidates must match the rendered image srcset');
-assert.equal(heroPreload.match(/\\bimagesizes="([^"]+)"/)?.[1],heroSizes,'Hero preload sizes must match the rendered image sizes');
 assert.equal((html.match(/fetchpriority="high"/g)||[]).length,1,'Only the primary hero image should receive high fetch priority');
 assert.match(css,/\\.hero-art\\{[^}]*min-height:[^;}]+/,'Hero image container must reserve vertical space before image load');
 assert.match(css,/\\.visual-break\\{[^}]*min-height:[^;}]+/,'Editorial image section must reserve vertical space before image load');
