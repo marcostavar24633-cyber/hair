@@ -26,3 +26,5 @@ assert.ok(html.includes('class="hero-image"'));assert.ok(html.includes('fetchpri
 const canonical=html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];const ogUrl=html.match(/<meta property="og:url" content="([^"]+)"/)?.[1];const sitemapUrl=sitemap.split('<loc>')[1]?.split('</loc>')[0];assert.ok(canonical);assert.equal(ogUrl,canonical,'og:url must match canonical');assert.equal(sitemapUrl,canonical,'sitemap URL must match canonical');
 assert.ok(css.includes(':focus-visible'));assert.ok(css.includes(':focus-visible{outline-color:#59263f}'));assert.ok(css.includes('.lightbox :focus-visible{outline-color:#e6d6c9}'));assert.ok(css.includes('prefers-reduced-motion:reduce'));assert.ok(css.includes('max-width:330px'));assert.match(css,/@media\(max-width:390px\)\{\.concept-bar\{font-size:7px;letter-spacing:\.16em\}\.concept-bar span\{display:none\}\}/);assert.match(css,/@media\(max-width:720px\)\{[\s\S]*?\.filter-button\{min-height:44px\}/);
 
+
+assert.match(html,/og:site_name/);assert.match(html,/twitter:image:alt/);
