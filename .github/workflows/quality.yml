@@ -117,9 +117,11 @@ jobs:
           for attempt in $(seq 1 36); do
             if curl --fail --silent --show-error "$SITE_URL" -o /tmp/hair-index.html 2>/dev/null; then
               if grep -q 'HAIR STUDIO' /tmp/hair-index.html; then
+                curl --fail --silent --show-error "${SITE_URL}services.html" -o /tmp/hair-services.html
                 curl --fail --silent --show-error "${SITE_URL}robots.txt" -o /tmp/hair-robots.txt
                 curl --fail --silent --show-error "${SITE_URL}sitemap.xml" -o /tmp/hair-sitemap.xml
-                echo "Published page, robots.txt and sitemap.xml are reachable."
+                grep -q 'Каталог услуг' /tmp/hair-services.html
+                echo "Published home, services, robots.txt and sitemap.xml are reachable."
                 exit 0
               fi
             fi
@@ -154,6 +156,31 @@ jobs:
             --only-categories=performance,accessibility,best-practices,seo \
             --output=json --output=html \
             --output-path=artifacts/lighthouse-desktop --quiet
+
+      - name: Run Lighthouse services mobile audit
+        env:
+          SITE_URL: https://marcostavar24633-cyber.github.io/hair/services.html
+        run: |
+          CHROME_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
+          npx lighthouse "$SITE_URL" \
+            --chrome-path="$CHROME_PATH" \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --output=json --output=html \
+            --output-path=artifacts/lighthouse-services-mobile --quiet
+
+      - name: Run Lighthouse services desktop audit
+        env:
+          SITE_URL: https://marcostavar24633-cyber.github.io/hair/services.html
+        run: |
+          CHROME_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
+          npx lighthouse "$SITE_URL" \
+            --preset=desktop \
+            --chrome-path="$CHROME_PATH" \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --output=json --output=html \
+            --output-path=artifacts/lighthouse-services-desktop --quiet
 
       - name: Upload Lighthouse reports
         if: always()
