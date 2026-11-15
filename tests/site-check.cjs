@@ -163,6 +163,7 @@ assert.equal(attr(preload, 'imagesizes'), attr(hero, 'sizes'), 'Hero preload mus
 assert.equal(count(html, /fonts\.googleapis\.com\/css2\?/g), 1, 'One consolidated font request');
 assert.match(html, /fonts\.googleapis\.com\/css2\?family=Cormorant\+Garamond:ital,wght@[^"]*1,400[^"]*&family=Onest[^"]*display=optional/, 'Display font with italics plus Onest');
 assert.match(html, /<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>/);
+assert.equal((html.match(/<link rel="preload" as="font"[^>]*crossorigin>/g) || []).length, 3, 'Preload the three critical Cyrillic font files');
 assert.match(css, /--serif:"Cormorant Garamond",[^;]*Georgia/, 'Display font needs a system fallback');
 assert.match(css, /--sans:"Onest",system-ui/, 'Text font needs a system fallback');
 assert.doesNotMatch(css, /@import\s/i, 'No render-blocking CSS imports');
