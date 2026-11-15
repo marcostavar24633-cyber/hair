@@ -1053,4 +1053,5 @@
       if (document.hidden) stop(); else start();
     });
   }
+  $('.page-catalog')?.classList.add('is-content-ready');
 })();
