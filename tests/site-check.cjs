@@ -163,7 +163,14 @@ assert.equal(attr(preload, 'imagesizes'), attr(hero, 'sizes'), 'Hero preload mus
 assert.equal(count(html, /fonts\.googleapis\.com\/css2\?/g), 1, 'One consolidated font request');
 assert.match(html, /fonts\.googleapis\.com\/css2\?family=Cormorant\+Garamond:ital,wght@[^"]*1,400[^"]*&family=Onest[^"]*display=optional/, 'Display font with italics plus Onest');
 assert.match(html, /<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>/);
-assert.equal((html.match(/<link rel="preload" as="font"[^>]*crossorigin>/g) || []).length, 3, 'Preload the three critical Cyrillic font files');
+for (const document of [html, catalogHtml]) {
+  for (const font of [
+    'gNMKW3F-SZuj7xmf-HYoEoey.woff2',
+    'co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2',
+    'co3ZmX5slCNuHLi8bLeY9MK7whWMhyjYrEtImSqn7B6D.woff2'
+  ]) assert.ok(document.includes('href="https://fonts.gstatic.com/s/') && document.includes(font), 'Preload the exact production font subset: ' + font);
+  assert.equal((document.match(/<link rel="preload" as="font"[^>]*crossorigin>/g) || []).length, 3, 'Preload exactly three critical font files');
+}
 assert.match(css, /--serif:"Cormorant Garamond",[^;]*Georgia/, 'Display font needs a system fallback');
 assert.match(css, /--sans:"Onest",system-ui/, 'Text font needs a system fallback');
 assert.doesNotMatch(css, /@import\s/i, 'No render-blocking CSS imports');
