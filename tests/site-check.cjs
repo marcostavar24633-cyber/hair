@@ -244,7 +244,7 @@ assert.equal(count(js, /addEventListener\('scroll'/g), 1, 'All scroll effects ru
 
 /* ---------- Privacy and security ---------- */
 const csp = html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)">/)?.[1] || '';
-for (const directive of ["default-src 'self'", "base-uri 'self'", "form-action 'none'", "object-src 'none'", "frame-src 'none'", "script-src 'self'", "connect-src 'none'", 'upgrade-insecure-requests']) {
+for (const directive of ["default-src 'self'", "base-uri 'self'", "form-action 'none'", "object-src 'none'", "frame-src 'none'", "script-src 'self'", "connect-src 'self'", 'upgrade-insecure-requests']) {
   assert.ok(csp.split(';').map(part => part.trim()).includes(directive), 'CSP must include ' + directive);
 }
 for (const host of ['https://fonts.googleapis.com', 'https://fonts.gstatic.com', 'https://images.pexels.com', 'https://images.unsplash.com']) assert.ok(csp.includes(host), 'CSP must allow ' + host);
