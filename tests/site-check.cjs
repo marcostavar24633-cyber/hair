@@ -167,9 +167,13 @@ for (const document of [html, catalogHtml]) {
   for (const font of [
     'gNMKW3F-SZuj7xmf-HYoEoey.woff2',
     'co3bmX5slCNuHLi8bLeY9MK7whWMhyjYqXtKky2F7g.woff2',
-    'co3ZmX5slCNuHLi8bLeY9MK7whWMhyjYrEtImSqn7B6D.woff2'
+    'co3ZmX5slCNuHLi8bLeY9MK7whWMhyjYrEtImSqn7B6D.woff2',
+    'gNMKW3F-SZuj7xmb-HYoEoeyxMI.woff2',
+    'co3bmX5slCNuHLi8bLeY9MK7whWMhyjYrXtKky2F7i6C.woff2',
+    'co3ZmX5slCNuHLi8bLeY9MK7whWMhyjYrEtMmSqn7B6DxjY.woff2',
+    'gNMKW3F-SZuj7xmR-HYoEoeyxMI.woff2'
   ]) assert.ok(document.includes('href="https://fonts.gstatic.com/s/') && document.includes(font), 'Preload the exact production font subset: ' + font);
-  assert.equal((document.match(/<link rel="preload" as="font"[^>]*crossorigin>/g) || []).length, 3, 'Preload exactly three critical font files');
+  assert.equal((document.match(/<link rel="preload" as="font"[^>]*crossorigin>/g) || []).length, 7, 'Preload all critical Latin and Cyrillic font subsets');
 }
 assert.match(css, /--serif:"Cormorant Garamond",[^;]*Georgia/, 'Display font needs a system fallback');
 assert.match(css, /--sans:"Onest",system-ui/, 'Text font needs a system fallback');
