@@ -1014,19 +1014,43 @@
   window.addEventListener('resize', requestFrame, { passive: true });
   onFrame();
 
-  /* Marquee: steady drift, faster while the page scrolls */
+  /* Marquee: animate only while visible; pause off-screen and in background tabs. */
   if (marqueeTrack && FX.marquee && !reducedMotion) {
     let half = 0;
+    let visible = false;
+    let marqueeFrame = 0;
+    const measure = () => { half = marqueeTrack.scrollWidth / 2; };
     const tick = () => {
-      if (!half) half = marqueeTrack.scrollWidth / 2;
+      marqueeFrame = 0;
+      if (!visible || document.hidden) return;
+      if (!half) {
+        marqueeFrame = window.requestAnimationFrame(tick);
+        return;
+      }
       const y = window.scrollY;
       velocity += (Math.min(40, Math.abs(y - frameY)) - velocity) * 0.1;
       frameY = y;
       marqueeX -= 0.6 + velocity * 0.35;
-      if (half && -marqueeX >= half) marqueeX += half;
+      if (-marqueeX >= half) marqueeX += half;
       marqueeTrack.style.setProperty('--mx', marqueeX.toFixed(1) + 'px');
-      window.requestAnimationFrame(tick);
+      marqueeFrame = window.requestAnimationFrame(tick);
     };
-    window.requestAnimationFrame(tick);
+    const start = () => {
+      if (visible && !document.hidden && !marqueeFrame) marqueeFrame = window.requestAnimationFrame(tick);
+    };
+    const stop = () => {
+      if (marqueeFrame) window.cancelAnimationFrame(marqueeFrame);
+      marqueeFrame = 0;
+    };
+    const visibilityObserver = new IntersectionObserver(entries => {
+      visible = entries.some(entry => entry.isIntersecting);
+      if (visible) start(); else stop();
+    });
+    const sizeObserver = new ResizeObserver(measure);
+    visibilityObserver.observe(marqueeTrack);
+    sizeObserver.observe(marqueeTrack);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop(); else start();
+    });
   }
 })();
