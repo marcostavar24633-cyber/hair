@@ -57,6 +57,70 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+
+  performance-audit:
+    name: Lighthouse performance report
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Install Lighthouse and Chromium
+        run: |
+          npm install --no-save --no-package-lock lighthouse playwright
+          npx playwright install --with-deps chromium
+
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/hair-static-server.log 2>&1 &
+          echo $! >/tmp/hair-static-server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/hair-static-server.log
+          exit 1
+
+      - name: Run Lighthouse mobile audit
+        run: |
+          mkdir -p artifacts
+          CHROME_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
+          npx lighthouse http://127.0.0.1:4173/ \
+            --chrome-path="$CHROME_PATH" \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --output=json --output=html \
+            --output-path=artifacts/lighthouse-mobile --quiet
+
+      - name: Run Lighthouse desktop audit
+        run: |
+          CHROME_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
+          npx lighthouse http://127.0.0.1:4173/ \
+            --preset=desktop \
+            --chrome-path="$CHROME_PATH" \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --output=json --output=html \
+            --output-path=artifacts/lighthouse-desktop --quiet
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: hair-studio-lighthouse
+          path: artifacts/lighthouse-*
+          if-no-files-found: ignore
+          retention-days: 14
+
   build:
     name: Build GitHub Pages artifact
     if: github.event_name != 'pull_request'
