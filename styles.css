@@ -721,8 +721,6 @@ html:not(.js) .tab-panel[hidden]{display:block}
 
 /* ---------- catalogue page ---------- */
 .page-catalog{padding-top:var(--header-h)}
-/* The catalogue is assembled from config.js; reveal it only after its first render. */
-.js .page-catalog:not(.is-content-ready){visibility:hidden}
 .page-tabs{position:sticky;top:0;z-index:40;border-bottom:var(--hair) solid var(--rule);background:var(--veil);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
 .page-tabs .wrap{display:flex;gap:var(--sp-1);overflow-x:auto;scrollbar-width:none;padding-top:var(--sp-1);padding-bottom:var(--sp-1)}
 .page-tabs a{flex:none;display:inline-flex;align-items:center;min-height:40px;padding:0 var(--sp-2);border-radius:var(--r-pill);font-size:var(--t-sm);text-decoration:none;color:var(--fg-muted);transition:color var(--d-fast) var(--ease),background-color var(--d-fast) var(--ease)}

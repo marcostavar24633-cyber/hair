@@ -258,25 +258,12 @@
   const bookingHref = id => 'index.html?service=' + encodeURIComponent(id) + '#booking';
   const cards = new Map();
   serviceList.forEach((item, index) => {
-    const card = el('li', 'card');
-    card.id = 'service-' + item.id;
+    /* Cards are server-rendered in services.html; JavaScript only hydrates behavior. */
+    const card = document.getElementById('service-' + item.id);
+    if (!card) return;
     card.dataset.order = String(index);
-    const title = el('h3', '', item.name);
-    const meta = el('p', 'card-meta');
-    meta.append(el('span', 'card-price num', 'от ' + formatRub(item.base)), el('span', 'card-time num', item.time));
-    const actions = el('div', 'card-actions');
-    const book = el('a', 'text-link', 'Записаться');
-    book.href = bookingHref(item.id);
-    book.append(el('span', 'visually-hidden', ': ' + item.name.toLowerCase()));
-    const more = el('button', 'text-link', 'Подробнее');
-    more.type = 'button';
-    more.dataset.quick = item.id;
-    more.setAttribute('aria-haspopup', 'dialog');
-    more.setAttribute('aria-controls', 'quick-drawer');
-    more.append(el('span', 'visually-hidden', ': ' + item.name.toLowerCase()));
-    actions.append(book, more);
-    card.append(el('p', 'card-dir', directions[item.dir]), title, el('p', 'card-note', item.note), meta, actions);
-    catalog?.append(card);
+    const book = $('a.text-link', card);
+    if (book) book.href = bookingHref(item.id);
     cards.set(item.id, card);
   });
   function renderCatalog({ announce = true } = {}) {
@@ -1053,5 +1040,4 @@
       if (document.hidden) stop(); else start();
     });
   }
-  $('.page-catalog')?.classList.add('is-content-ready');
 })();
