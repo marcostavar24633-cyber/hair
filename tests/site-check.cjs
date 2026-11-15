@@ -161,7 +161,7 @@ const preload = html.match(/<link rel="preload" as="image"[^>]*>/)?.[0] || '';
 assert.equal(attr(preload, 'imagesrcset'), attr(hero, 'srcset'), 'Hero preload must match srcset');
 assert.equal(attr(preload, 'imagesizes'), attr(hero, 'sizes'), 'Hero preload must match sizes');
 assert.equal(count(html, /fonts\.googleapis\.com\/css2\?/g), 1, 'One consolidated font request');
-assert.match(html, /fonts\.googleapis\.com\/css2\?family=Cormorant\+Garamond:ital,wght@[^"]*1,400[^"]*&family=Onest[^"]*display=swap/, 'Display font with italics plus Onest');
+assert.match(html, /fonts\.googleapis\.com\/css2\?family=Cormorant\+Garamond:ital,wght@[^"]*1,400[^"]*&family=Onest[^"]*display=optional/, 'Display font with italics plus Onest');
 assert.match(html, /<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>/);
 assert.match(css, /--serif:"Cormorant Garamond",[^;]*Georgia/, 'Display font needs a system fallback');
 assert.match(css, /--sans:"Onest",system-ui/, 'Text font needs a system fallback');
