@@ -340,4 +340,7 @@ assert.deepEqual([...catalogHtml.matchAll(/<script\b[^>]*src="([^"]+)"/g)].map(m
 assert.doesNotMatch(catalogHtml.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<head>[\s\S]*?<\/head>/, '').replace(/<[^>]+>/g, ' '), forbidden);
 assert.match(catalogHtml, /модельный ориентир/);
 
+assert.match(css, /@media\\(max-width:600px\\)\\{[\\s\\S]*?\\.hero h1\\{font-size:clamp\\(2\\.55rem,11vw,3\\.4rem\\)/, 'Mobile hero heading scales with viewport width');
+assert.match(css, /@media\\(max-width:600px\\)\\{[\\s\\S]*?\\.hero-arch\\{width:min\\(100%,360px\\)\\}/, 'Mobile hero portrait uses the available content width');
+
 console.log('Site checks passed: SEO, structure, accessibility, images, luxury standard, privacy, security and colour contrast.');
