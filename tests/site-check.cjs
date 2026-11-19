@@ -261,6 +261,8 @@ for (const directive of ["default-src 'self'", "base-uri 'self'", "form-action '
 for (const host of ['https://fonts.googleapis.com', 'https://fonts.gstatic.com', 'https://images.pexels.com', 'https://images.unsplash.com']) assert.ok(csp.includes(host), 'CSP must allow ' + host);
 assert.doesNotMatch(csp, /unsafe-eval/);
 assert.match(html, /<meta name="referrer" content="strict-origin-when-cross-origin">/);
+assert.match(html, /class="icon-button theme-toggle"[^>]*aria-label="Включить светлую тему"/, 'Theme toggle starts with an action-oriented accessible label');
+assert.match(js, /setAttribute\('aria-label', mode === 'light' \? 'Включить тёмную тему' : 'Включить светлую тему'\)/, 'Theme toggle accessible label follows the next action');
 for (const sink of ['innerHTML', 'outerHTML', 'insertAdjacentHTML', 'document.write', 'eval(', 'new Function']) assert.ok(!(js + config).includes(sink), 'Unsafe sink: ' + sink);
 for (const channel of ['sessionStorage', 'document.cookie', 'indexedDB', 'fetch(', 'XMLHttpRequest', 'sendBeacon', 'WebSocket']) assert.ok(!(js + config).includes(channel), 'Demo must not send data or use other storage: ' + channel);
 assert.equal(count(js, /localStorage/g), 3, 'localStorage is touched only inside the store helper');
@@ -337,5 +339,8 @@ assert.match(catalogHtml, /Схематичная иллюстрация, не&n
 assert.deepEqual([...catalogHtml.matchAll(/<script\b[^>]*src="([^"]+)"/g)].map(match => match[1].split('?')[0]), ['config.js', 'script.js']);
 assert.doesNotMatch(catalogHtml.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<head>[\s\S]*?<\/head>/, '').replace(/<[^>]+>/g, ' '), forbidden);
 assert.match(catalogHtml, /модельный ориентир/);
+
+assert.ok(css.includes('.hero h1{font-size:clamp(2.55rem,11vw,3.4rem);line-height:.94;margin:var(--sp-2) 0}'), 'Mobile hero heading scales with viewport width');
+assert.ok(css.includes('.hero-arch{width:min(100%,360px)}'), 'Mobile hero portrait uses the available content width');
 
 console.log('Site checks passed: SEO, structure, accessibility, images, luxury standard, privacy, security and colour contrast.');

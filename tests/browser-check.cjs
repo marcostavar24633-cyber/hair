@@ -209,6 +209,20 @@ async function main() {
         assert.ok(titleHeight < lines.reduce((sum, value) => sum + value, 0) * 1.1, 'Hero title must sit on exactly three lines');
       }
       if (width === 390) {
+        const heroLayout = await page.evaluate(() => {
+          const wrap = document.querySelector('.hero .wrap');
+          const portrait = document.querySelector('.hero-arch');
+          const heading = document.querySelector('.hero h1');
+          return {
+            available: wrap.clientWidth - parseFloat(getComputedStyle(wrap).paddingLeft) - parseFloat(getComputedStyle(wrap).paddingRight),
+            portrait: portrait.getBoundingClientRect().width,
+            headingSize: parseFloat(getComputedStyle(heading).fontSize)
+          };
+        });
+        assert.ok(heroLayout.portrait >= Math.min(heroLayout.available, 360) - 2,
+          'Mobile hero portrait should use the available editorial column: ' + JSON.stringify(heroLayout));
+        assert.ok(heroLayout.headingSize <= 55,
+          'Mobile hero heading should scale down without becoming oversized: ' + JSON.stringify(heroLayout));
         const height = await page.evaluate(() => document.documentElement.scrollHeight);
         console.log('Page length at 390px: ' + height);
       }
@@ -575,14 +589,17 @@ async function main() {
     const pageBg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     assert.equal(await mode(), 'dark', 'Dark is the main theme');
     assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
+    assert.equal(await toggle.getAttribute('aria-label'), 'Включить светлую тему', 'Dark mode announces the action to switch to light');
     const darkBg = await pageBg();
     await toggle.click();
     assert.equal(await mode(), 'light', 'Toggle switches to the light theme');
     assert.equal(await toggle.getAttribute('aria-pressed'), 'true', 'Toggle reports its state');
+    assert.equal(await toggle.getAttribute('aria-label'), 'Включить тёмную тему', 'Light mode announces the action to switch to dark');
     assert.notEqual(await pageBg(), darkBg, 'Page background follows the theme');
     await auditAccessibilityState('light theme');
     await toggle.click();
     assert.equal(await mode(), 'dark', 'Toggle switches back to dark');
+    assert.equal(await toggle.getAttribute('aria-label'), 'Включить светлую тему', 'Returning to dark restores the next-action label');
     assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.btn')).borderTopLeftRadius), '999px', 'Buttons have rounded ends');
 
     /* ---------- One photo, one place ---------- */
