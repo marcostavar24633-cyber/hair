@@ -66,7 +66,7 @@
     }
     root.dataset.mode = mode;
     themeToggle?.setAttribute('aria-pressed', String(mode === 'light'));
-    themeToggle?.setAttribute('aria-label', 'Светлая тема');
+    themeToggle?.setAttribute('aria-label', mode === 'light' ? 'Включить тёмную тему' : 'Включить светлую тему');
     themeColor?.setAttribute('content', mode === 'light' ? '#f4efe7' : '#0d0b09');
     if (save) store.set('mode', mode);
   }
