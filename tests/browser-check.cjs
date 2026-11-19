@@ -575,14 +575,17 @@ async function main() {
     const pageBg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
     assert.equal(await mode(), 'dark', 'Dark is the main theme');
     assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
+    assert.equal(await toggle.getAttribute('aria-label'), 'Включить светлую тему', 'Dark mode announces the action to switch to light');
     const darkBg = await pageBg();
     await toggle.click();
     assert.equal(await mode(), 'light', 'Toggle switches to the light theme');
     assert.equal(await toggle.getAttribute('aria-pressed'), 'true', 'Toggle reports its state');
+    assert.equal(await toggle.getAttribute('aria-label'), 'Включить тёмную тему', 'Light mode announces the action to switch to dark');
     assert.notEqual(await pageBg(), darkBg, 'Page background follows the theme');
     await auditAccessibilityState('light theme');
     await toggle.click();
     assert.equal(await mode(), 'dark', 'Toggle switches back to dark');
+    assert.equal(await toggle.getAttribute('aria-label'), 'Включить светлую тему', 'Returning to dark restores the next-action label');
     assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.btn')).borderTopLeftRadius), '999px', 'Buttons have rounded ends');
 
     /* ---------- One photo, one place ---------- */
