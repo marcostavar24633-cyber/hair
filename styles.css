@@ -1072,3 +1072,14 @@ html:not(.js) .tab-panel[hidden]{display:block}
 @media(prefers-reduced-motion:reduce){
   .hero-copy,.hero h1 .line>span{animation:none!important}
 }
+
+/* The shared desktop reveal uses an arched clip-path; mobile full-bleed must stay edge-to-edge. */
+@media(max-width:760px){
+  .hero-arch,
+  .js .hero-arch,
+  .js .hero.is-ready .hero-arch{
+    clip-path:none!important;
+    border-radius:0!important;
+    transition:none;
+  }
+}
