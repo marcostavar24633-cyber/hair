@@ -209,6 +209,20 @@ async function main() {
         assert.ok(titleHeight < lines.reduce((sum, value) => sum + value, 0) * 1.1, 'Hero title must sit on exactly three lines');
       }
       if (width === 390) {
+        const heroLayout = await page.evaluate(() => {
+          const wrap = document.querySelector('.hero .wrap');
+          const portrait = document.querySelector('.hero-arch');
+          const heading = document.querySelector('.hero h1');
+          return {
+            available: wrap.clientWidth,
+            portrait: portrait.getBoundingClientRect().width,
+            headingSize: parseFloat(getComputedStyle(heading).fontSize)
+          };
+        });
+        assert.ok(heroLayout.portrait >= Math.min(heroLayout.available, 360) - 2,
+          'Mobile hero portrait should use the available editorial column: ' + JSON.stringify(heroLayout));
+        assert.ok(heroLayout.headingSize <= 55,
+          'Mobile hero heading should scale down without becoming oversized: ' + JSON.stringify(heroLayout));
         const height = await page.evaluate(() => document.documentElement.scrollHeight);
         console.log('Page length at 390px: ' + height);
       }
