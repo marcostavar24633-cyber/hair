@@ -261,6 +261,8 @@ for (const directive of ["default-src 'self'", "base-uri 'self'", "form-action '
 for (const host of ['https://fonts.googleapis.com', 'https://fonts.gstatic.com', 'https://images.pexels.com', 'https://images.unsplash.com']) assert.ok(csp.includes(host), 'CSP must allow ' + host);
 assert.doesNotMatch(csp, /unsafe-eval/);
 assert.match(html, /<meta name="referrer" content="strict-origin-when-cross-origin">/);
+assert.match(html, /class="icon-button theme-toggle"[^>]*aria-label="Включить светлую тему"/, 'Theme toggle starts with an action-oriented accessible label');
+assert.match(js, /setAttribute\('aria-label', mode === 'light' \? 'Включить тёмную тему' : 'Включить светлую тему'\)/, 'Theme toggle accessible label follows the next action');
 for (const sink of ['innerHTML', 'outerHTML', 'insertAdjacentHTML', 'document.write', 'eval(', 'new Function']) assert.ok(!(js + config).includes(sink), 'Unsafe sink: ' + sink);
 for (const channel of ['sessionStorage', 'document.cookie', 'indexedDB', 'fetch(', 'XMLHttpRequest', 'sendBeacon', 'WebSocket']) assert.ok(!(js + config).includes(channel), 'Demo must not send data or use other storage: ' + channel);
 assert.equal(count(js, /localStorage/g), 3, 'localStorage is touched only inside the store helper');
