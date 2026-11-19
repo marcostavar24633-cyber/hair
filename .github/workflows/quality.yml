@@ -33,8 +33,13 @@ jobs:
       - name: Install test-only dependencies
         run: npm install --no-save --no-package-lock playwright axe-core
 
-      - name: Install browser engines
-        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Install browser system dependencies
+        timeout-minutes: 10
+        run: npx playwright install-deps chromium firefox webkit
+
+      - name: Install browser binaries
+        timeout-minutes: 10
+        run: npx playwright install chromium firefox webkit
 
       - name: Run static quality checks
         run: node tests/site-check.cjs
