@@ -25,10 +25,19 @@
   /* dark luxury: espresso black + champagne gold */
   --night:#0d0b09;
   --gold:#d2b07a;
-  --veil-night:rgba(13,11,9,.94);
+  --veil-night:var(--mobile-scrim-bottom);
   --ink-glass:rgba(22,18,15,.62);
   /* manifesto: dimmed words are ink at this opacity (≥4.5:1 on ivory, checked by tests) */
   --word-dim:.64;
+  --mobile-scrim-top:var(--mobile-scrim-top);
+  --mobile-scrim-clear:var(--mobile-scrim-clear);
+  --mobile-scrim-mid:var(--mobile-scrim-mid);
+  --mobile-scrim-bottom:var(--mobile-scrim-bottom);
+  --mobile-scrim-side:var(--mobile-scrim-side);
+  --mobile-text-soft:var(--mobile-text-soft);
+  --mobile-text-muted:var(--mobile-text-muted);
+  --mobile-border:var(--mobile-border);
+  --mobile-border-soft:var(--mobile-border-soft);
 
   /* type: Cormorant Garamond (display, with italics) + Onest (text) */
   --serif:"Cormorant Garamond","Cormorant",Georgia,"Times New Roman",serif;
@@ -979,8 +988,8 @@ html:not(.js) .tab-panel[hidden]{display:block}
     position:absolute;
     inset:0;
     background:
-      linear-gradient(180deg,rgba(13,11,9,.18) 0%,rgba(13,11,9,.04) 30%,rgba(13,11,9,.42) 56%,rgba(13,11,9,.94) 100%),
-      linear-gradient(90deg,rgba(13,11,9,.2),transparent 68%);
+      linear-gradient(180deg,var(--mobile-scrim-top) 0%,var(--mobile-scrim-clear) 30%,var(--mobile-scrim-mid) 56%,var(--mobile-scrim-bottom) 100%),
+      linear-gradient(90deg,var(--mobile-scrim-side),transparent 68%);
     pointer-events:none;
   }
   .hero-copy{
@@ -994,7 +1003,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
     animation:mobile-hero-copy-in 900ms var(--ease) 180ms both;
   }
   .hero .eyebrow{
-    color:rgba(239,231,220,.78);
+    color:var(--mobile-text-soft);
     padding-right:120px;
     font-size:10px;
     letter-spacing:.17em;
@@ -1018,7 +1027,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
   .hero h1 .line:nth-child(3)>span{animation-delay:240ms}
   .hero-lead{
     max-width:34ch;
-    color:rgba(239,231,220,.82);
+    color:var(--mobile-text-muted);
     font-size:14px;
     line-height:1.55;
   }
@@ -1028,7 +1037,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
   }
   .hero .actions .btn{
     min-height:48px;
-    border-color:rgba(239,231,220,.72);
+    border-color:var(--mobile-border);
     color:var(--light-text);
     font-size:12px;
     padding:0 18px;
@@ -1038,7 +1047,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
     border-color:var(--gold);
     color:var(--night);
   }
-  .hero .actions .btn-line::before{background:rgba(239,231,220,.16)}
+  .hero .actions .btn-line::before{background:var(--mobile-border-soft)}
   .hero-swatches{
     position:absolute;
     z-index:4;
