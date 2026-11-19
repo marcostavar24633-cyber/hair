@@ -966,7 +966,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
     height:104%;
     max-height:none;
     aspect-ratio:auto;
-    border-radius:0;
+    border-radius:var(--r);
     background:var(--ink-2);
     overflow:hidden;
   }
@@ -1088,7 +1088,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
   .js .hero-arch,
   .js .hero.is-ready .hero-arch{
     clip-path:none!important;
-    border-radius:0!important;
+    border-radius:var(--r)!important;
     transition:none;
   }
 }
