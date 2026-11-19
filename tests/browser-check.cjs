@@ -214,7 +214,7 @@ async function main() {
           const portrait = document.querySelector('.hero-arch');
           const heading = document.querySelector('.hero h1');
           return {
-            available: wrap.clientWidth,
+            available: wrap.clientWidth - parseFloat(getComputedStyle(wrap).paddingLeft) - parseFloat(getComputedStyle(wrap).paddingRight),
             portrait: portrait.getBoundingClientRect().width,
             headingSize: parseFloat(getComputedStyle(heading).fontSize)
           };
