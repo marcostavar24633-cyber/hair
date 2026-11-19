@@ -958,7 +958,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
     max-height:none;
     aspect-ratio:auto;
     border-radius:0;
-    background:#211a15;
+    background:var(--ink-2);
     overflow:hidden;
   }
   .hero-arch img{
@@ -1009,7 +1009,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
     letter-spacing:-.045em;
     text-wrap:balance;
   }
-  .hero h1 em{color:#e0b88d}
+  .hero h1 em{color:var(--copper-bright)}
   .hero h1 .line{overflow:visible}
   .hero h1 .line>span{
     animation:mobile-hero-title-in 850ms var(--ease) both;
@@ -1034,9 +1034,9 @@ html:not(.js) .tab-panel[hidden]{display:block}
     padding:0 18px;
   }
   .hero .actions .btn-fill{
-    background:#d2b07a;
-    border-color:#d2b07a;
-    color:#17110b;
+    background:var(--gold);
+    border-color:var(--gold);
+    color:var(--night);
   }
   .hero .actions .btn-line::before{background:rgba(239,231,220,.16)}
   .hero-swatches{
@@ -1052,7 +1052,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
   }
   .hero-swatches .swatch{width:36px;height:36px}
   .hero-swatches .swatch::before{inset:11px}
-  .hero-swatches .swatch::after{inset:6px;border-color:#fff}
+  .hero-swatches .swatch::after{inset:6px;border-color:var(--light-text)}
   .hero-strand,.seal{display:none}
   .hero-grid>.theses{display:none}
   .hero-arch .hero-shine{opacity:.38}
