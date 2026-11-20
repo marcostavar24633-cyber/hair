@@ -1248,7 +1248,6 @@ html:not(.js) .tab-panel[hidden]{display:block}
 /* ---------- Living Color: the selected shade travels through the whole editorial story ---------- */
 :root{
   --color-flow-duration:38s;
-  --color-flow-ease:cubic-bezier(.22,.7,.18,1);
 }
 .marquee{
   position:relative;
@@ -1261,7 +1260,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
       color-mix(in srgb,var(--s1) 12%,transparent) 66%,
       transparent);
   background-size:220% 100%;
-  animation:living-color-flow var(--color-flow-duration) var(--color-flow-ease) infinite alternate;
+  animation:living-color-flow var(--color-flow-duration) var(--ease) infinite alternate;
   transition:border-color var(--d-base) var(--ease);
 }
 .marquee-track span::after{
