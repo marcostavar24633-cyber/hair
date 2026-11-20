@@ -254,7 +254,7 @@ html:not(.js) .site-header{position:sticky}
 .hero{padding:calc(var(--header-h) + var(--sp-5)) 0 var(--sp-5)}
 .hero-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gutter);row-gap:var(--sp-5);align-items:center}
 .hero-copy{grid-column:1 / span 7}
-.hero h1{margin:var(--sp-3) 0;font-size:var(--t-3xl);line-height:.98;text-wrap:nowrap}
+.hero h1{margin:0 0 var(--sp-3);font-size:var(--t-3xl);line-height:.98;text-wrap:nowrap}
 .hero h1 .line{display:block;overflow:hidden;padding-bottom:.06em}
 .hero h1 .line>span{display:block}
 .hero h1 em{color:var(--accent)}
