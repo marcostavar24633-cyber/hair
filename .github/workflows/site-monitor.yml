@@ -1,0 +1,55 @@
+name: HAIR STUDIO — uptime monitor
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hair-studio-uptime-monitor
+  cancel-in-progress: true
+
+jobs:
+  monitor:
+    name: Check published GitHub Pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check homepage
+        run: |
+          set -euo pipefail
+          URL="https://marcostavar24633-cyber.github.io/hair/"
+          curl --fail --silent --show-error --location --retry 3 --retry-delay 5 "$URL" -o /tmp/home.html
+          grep -qi "HAIR STUDIO" /tmp/home.html
+          echo "Homepage: HTTP OK; HAIR STUDIO marker found."
+
+      - name: Check services page
+        run: |
+          set -euo pipefail
+          URL="https://marcostavar24633-cyber.github.io/hair/services.html"
+          curl --fail --silent --show-error --location --retry 3 --retry-delay 5 "$URL" -o /tmp/services.html
+          grep -q "Каталог услуг" /tmp/services.html
+          echo "Services: HTTP OK; expected page content found."
+
+      - name: Check SEO files
+        run: |
+          set -euo pipefail
+          BASE="https://marcostavar24633-cyber.github.io/hair"
+          curl --fail --silent --show-error --location --retry 3 --retry-delay 5 "$BASE/robots.txt" -o /tmp/robots.txt
+          curl --fail --silent --show-error --location --retry 3 --retry-delay 5 "$BASE/sitemap.xml" -o /tmp/sitemap.xml
+          grep -q "Sitemap:" /tmp/robots.txt
+          grep -q "<urlset" /tmp/sitemap.xml
+          echo "robots.txt and sitemap.xml: HTTP OK; expected markers found."
+
+      - name: Publish monitoring summary
+        if: always()
+        run: |
+          {
+            echo "## HAIR STUDIO uptime check"
+            echo "- Target: https://marcostavar24633-cyber.github.io/hair/"
+            echo "- Checked: homepage, services, robots.txt, sitemap.xml"
+            echo "- Result: ${{ job.status }}"
+          } >> "$GITHUB_STEP_SUMMARY"
