@@ -1289,3 +1289,40 @@ html:not(.js) .tab-panel[hidden]{display:block}
   .js [data-reveal]{filter:none}
   .ref-media img{will-change:auto}
 }
+
+/* ---------- tactile button finish: warm halo + precise press feedback ---------- */
+/* Complements the existing fill-wipe; no button markup or actions are changed. */
+.btn{
+  transform:translateY(0);
+  box-shadow:0 0 0 0 color-mix(in srgb,var(--gold) 0%,transparent);
+  transition:
+    color var(--d-fast) var(--ease),
+    border-color var(--d-fast) var(--ease),
+    transform 180ms var(--ease),
+    box-shadow var(--d-base) var(--ease);
+}
+.btn:hover,
+.btn:focus-visible{
+  box-shadow:
+    0 0 0 1px color-mix(in srgb,var(--gold) 34%,transparent),
+    0 8px 26px color-mix(in srgb,var(--gold) 16%,transparent),
+    0 0 34px color-mix(in srgb,var(--copper-bright) 10%,transparent);
+}
+.btn:active{
+  transform:translateY(1px) scale(.985);
+  box-shadow:
+    0 2px 8px color-mix(in srgb,var(--gold) 12%,transparent),
+    inset 0 1px 3px color-mix(in srgb,var(--night) 18%,transparent);
+}
+.btn-fill:hover,
+.btn-fill:focus-visible{
+  box-shadow:
+    0 0 0 1px color-mix(in srgb,var(--gold) 45%,transparent),
+    0 9px 28px color-mix(in srgb,var(--gold) 22%,transparent),
+    0 0 38px color-mix(in srgb,var(--copper-bright) 12%,transparent);
+}
+.btn:focus-visible{outline-offset:4px}
+@media(prefers-reduced-motion:reduce){
+  .btn{transform:none;box-shadow:none;transition:none}
+  .btn:hover,.btn:focus-visible,.btn:active,.btn-fill:hover,.btn-fill:focus-visible{box-shadow:none}
+}
