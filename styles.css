@@ -1294,3 +1294,35 @@ html:not(.js) .tab-panel[hidden]{display:block}
 @media(prefers-reduced-motion:reduce){
   .manifesto-frame::before{animation:none;opacity:.55}
 }
+
+
+/* ---------- compact manifesto in an animated champagne frame ---------- */
+.manifesto{padding:clamp(2.5rem,7vw,6rem) 0}
+.manifesto-frame{
+  position:relative;isolation:isolate;overflow:hidden;max-width:min(100%,58rem);
+  margin-inline:auto;padding:clamp(1.4rem,4.5vw,3.2rem);
+  border-radius:var(--r-soft);background:var(--night);
+  box-shadow:0 1.5rem 4rem rgba(0,0,0,.18)
+}
+.manifesto-frame::before{
+  content:"";position:absolute;z-index:-1;inset:-75%;
+  background:conic-gradient(from 0deg,transparent 0 72%,var(--gold) 78%,rgba(224,165,125,.28) 82%,transparent 88% 100%);
+  animation:manifesto-frame-orbit 10s linear infinite
+}
+.manifesto-frame::after{
+  content:"";position:absolute;z-index:-1;inset:1px;
+  border-radius:calc(var(--r-soft) - 1px);
+  background:linear-gradient(135deg,rgba(210,176,122,.07),transparent 55%),var(--night)
+}
+.manifesto-text{
+  position:relative;z-index:1;max-width:27ch;margin:0 auto;
+  font-size:clamp(1.65rem,4.8vw,3.35rem);line-height:1.12;
+  letter-spacing:var(--track-tight);text-align:center;text-wrap:balance
+}
+@keyframes manifesto-frame-orbit{to{transform:rotate(1turn)}}
+@media(max-width:760px){
+  .manifesto{padding:clamp(1.8rem,7vw,3rem) 0}
+  .manifesto-frame{padding:1.35rem 1.1rem;border-radius:var(--r-soft)}
+  .manifesto-text{max-width:24ch;font-size:clamp(1.55rem,6.4vw,2.15rem);line-height:1.16}
+}
+@media(prefers-reduced-motion:reduce){.manifesto-frame::before{animation:none;opacity:.55}}
