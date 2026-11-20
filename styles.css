@@ -1092,3 +1092,85 @@ html:not(.js) .tab-panel[hidden]{display:block}
     transition:none;
   }
 }
+
+
+/* ---------- rounded editorial photo frames + soft gradient blending ---------- */
+:root{
+  --r-photo:20px;
+}
+
+/* Photos use calm rounded rectangles instead of decorative arches. */
+.hero-arch,
+.strands,
+.monogram,
+.ref-media,
+.ph-art,
+.ref-a .ref-media{
+  border-radius:var(--r-photo);
+}
+
+.hero-arch{
+  isolation:isolate;
+  box-shadow:0 24px 70px rgba(0,0,0,.22);
+}
+.js .hero-arch{
+  clip-path:inset(100% 0 0 0 round var(--r-photo));
+  transition:clip-path var(--d-hero) var(--ease);
+}
+.js .hero.is-ready .hero-arch{
+  clip-path:inset(0 0 0 0 round var(--r-photo));
+}
+
+.ref-media{
+  position:relative;
+  isolation:isolate;
+}
+.ref-media::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:linear-gradient(180deg,transparent 58%,rgba(13,11,9,.34) 100%);
+  opacity:.72;
+  transition:opacity var(--d-base) var(--ease);
+}
+.ref:hover .ref-media::after,
+.ref:focus-visible .ref-media::after{opacity:.42}
+
+.ph-art::before{
+  width:46%;
+  height:72%;
+  border:var(--hair) solid var(--rule-strong);
+  border-radius:var(--r-photo);
+  border-bottom:var(--hair) solid var(--rule-strong);
+}
+
+@media(min-width:761px){
+  .hero-arch::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:linear-gradient(180deg,transparent 62%,rgba(13,11,9,.28) 100%);
+  }
+}
+
+@media(max-width:760px){
+  /* Keep the cinematic hero full-height while giving its photo a visible rounded frame. */
+  .hero-visual{inset:0}
+  .hero-arch{
+    inset:12px;
+    width:auto;
+    height:auto;
+    border-radius:var(--r-photo);
+  }
+  .hero-arch img{border-radius:var(--r-photo)}
+  .hero-arch::after{
+    border-radius:var(--r-photo);
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .js .hero-arch{clip-path:none}
+}
