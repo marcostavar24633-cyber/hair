@@ -1087,8 +1087,8 @@ html:not(.js) .tab-panel[hidden]{display:block}
   .hero-arch,
   .js .hero-arch,
   .js .hero.is-ready .hero-arch{
-    clip-path:none!important;
-    border-radius:var(--r)!important;
+    clip-path:none;
+    border-radius:var(--r);
     transition:none;
   }
 }
