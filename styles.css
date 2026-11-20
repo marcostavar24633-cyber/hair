@@ -1280,7 +1280,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
 .benefit-title{font-family:var(--serif);font-size:clamp(1.25rem,2vw,1.75rem);line-height:1.08;color:var(--light-text)}
 .benefit-plus{
   width:1.8rem;height:1.8rem;border:1px solid var(--line-light-strong);
-  border-radius:50%;position:relative;transition:transform var(--d-base) var(--ease),background var(--d-base) var(--ease),border-color var(--d-base) var(--ease)
+  border-radius:var(--r-round);position:relative;transition:transform var(--d-base) var(--ease),background var(--d-base) var(--ease),border-color var(--d-base) var(--ease)
 }
 .benefit-plus::before,.benefit-plus::after{
   content:"";position:absolute;left:50%;top:50%;width:.62rem;height:1px;
