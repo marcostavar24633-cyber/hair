@@ -1095,10 +1095,6 @@ html:not(.js) .tab-panel[hidden]{display:block}
 
 
 /* ---------- rounded editorial photo frames + soft gradient blending ---------- */
-:root{
-  --r-photo:20px;
-}
-
 /* Photos use calm rounded rectangles instead of decorative arches. */
 .hero-arch,
 .strands,
@@ -1106,19 +1102,17 @@ html:not(.js) .tab-panel[hidden]{display:block}
 .ref-media,
 .ph-art,
 .ref-a .ref-media{
-  border-radius:var(--r-photo);
+  border-radius:var(--r-soft);
 }
 
 .hero-arch{
   isolation:isolate;
-  box-shadow:0 24px 70px rgba(0,0,0,.22);
+  box-shadow:0 24px 70px color-mix(in srgb,var(--night) 22%,transparent);
 }
-.js .hero-arch{
-  clip-path:inset(100% 0 0 0 round var(--r-photo));
-  transition:clip-path var(--d-hero) var(--ease);
-}
+/* Desktop hero image stays visible even if the reveal observer is delayed. */
+.js .hero-arch,
 .js .hero.is-ready .hero-arch{
-  clip-path:inset(0 0 0 0 round var(--r-photo));
+  clip-path:inset(0 round var(--r-soft));
 }
 
 .ref-media{
@@ -1131,7 +1125,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
   inset:0;
   z-index:1;
   pointer-events:none;
-  background:linear-gradient(180deg,transparent 58%,rgba(13,11,9,.34) 100%);
+  background:linear-gradient(180deg,transparent 58%,var(--night) 100%);
   opacity:.72;
   transition:opacity var(--d-base) var(--ease);
 }
@@ -1142,7 +1136,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
   width:46%;
   height:72%;
   border:var(--hair) solid var(--rule-strong);
-  border-radius:var(--r-photo);
+  border-radius:var(--r-soft);
   border-bottom:var(--hair) solid var(--rule-strong);
 }
 
@@ -1152,7 +1146,7 @@ html:not(.js) .tab-panel[hidden]{display:block}
     position:absolute;
     inset:0;
     pointer-events:none;
-    background:linear-gradient(180deg,transparent 62%,rgba(13,11,9,.28) 100%);
+    background:linear-gradient(180deg,transparent 62%,var(--night) 100%);
   }
 }
 
@@ -1163,11 +1157,11 @@ html:not(.js) .tab-panel[hidden]{display:block}
     inset:12px;
     width:auto;
     height:auto;
-    border-radius:var(--r-photo);
+    border-radius:var(--r-soft);
   }
-  .hero-arch img{border-radius:var(--r-photo)}
+  .hero-arch img{border-radius:var(--r-soft)}
   .hero-arch::after{
-    border-radius:var(--r-photo);
+    border-radius:var(--r-soft);
   }
 }
 
