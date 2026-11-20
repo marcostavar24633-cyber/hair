@@ -1243,3 +1243,91 @@ html:not(.js) .tab-panel[hidden]{display:block}
 @media(prefers-reduced-motion:reduce){
   .hero-arch img{animation:none!important}
 }
+
+
+/* ---------- Living Color: the selected shade travels through the whole editorial story ---------- */
+:root{
+  --color-flow-duration:38s;
+}
+.marquee{
+  position:relative;
+  isolation:isolate;
+  border-color:color-mix(in srgb,var(--s2) 28%,var(--rule));
+  background:
+    linear-gradient(105deg,
+      color-mix(in srgb,var(--s3) 18%,transparent),
+      transparent 28%,
+      color-mix(in srgb,var(--s1) 12%,transparent) 66%,
+      transparent);
+  background-size:220% 100%;
+  animation:living-color-flow var(--color-flow-duration) var(--ease) infinite alternate;
+  transition:border-color var(--d-base) var(--ease);
+}
+.marquee-track span::after{
+  background:linear-gradient(135deg,var(--s1),var(--s2) 58%,var(--s3));
+  box-shadow:0 0 18px color-mix(in srgb,var(--s1) 42%,transparent);
+  transition:background var(--d-base) var(--ease),box-shadow var(--d-base) var(--ease);
+}
+.services,.works,.team,.principles,.reviews-section,.booking{
+  position:relative;
+  isolation:isolate;
+}
+.services::before,.works::before,.team::before,.principles::before,.reviews-section::before,.booking::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:8% -2vw;
+  pointer-events:none;
+  opacity:.48;
+  background:
+    radial-gradient(ellipse at 12% 34%,color-mix(in srgb,var(--s3) 24%,transparent),transparent 48%),
+    radial-gradient(ellipse at 88% 66%,color-mix(in srgb,var(--s1) 15%,transparent),transparent 43%);
+  background-size:145% 145%;
+  animation:living-color-drift var(--drift) var(--ease) infinite alternate;
+  transition:opacity var(--d-base) var(--ease);
+}
+.works::before,.reviews-section::before{
+  opacity:.34;
+  background:
+    radial-gradient(ellipse at 78% 28%,color-mix(in srgb,var(--s2) 24%,transparent),transparent 48%),
+    radial-gradient(ellipse at 18% 78%,color-mix(in srgb,var(--s1) 12%,transparent),transparent 42%);
+}
+.atlas{
+  background:
+    radial-gradient(ellipse at 14% 18%,color-mix(in srgb,var(--s1) 16%,transparent),transparent 42%),
+    radial-gradient(ellipse at 88% 78%,color-mix(in srgb,var(--s2) 22%,transparent),transparent 48%),
+    color-mix(in srgb,var(--s3) 26%,var(--surface-alt));
+  background-size:160% 160%,160% 160%,auto;
+  animation:living-color-atlas var(--color-flow-duration) var(--ease) infinite alternate;
+  transition:background-color var(--d-base) var(--ease);
+}
+.hero-tint,.hero-shine{
+  transition:background-color var(--d-base) var(--ease),opacity var(--d-base) var(--ease),filter var(--d-base) var(--ease);
+}
+.hero-tint{filter:saturate(1.18)}
+[data-tone] .hero-tint{background:linear-gradient(125deg,var(--s1),var(--s2) 48%,var(--s3))}
+@keyframes living-color-flow{
+  from{background-position:0% 50%}
+  to{background-position:100% 50%}
+}
+@keyframes living-color-drift{
+  from{transform:translate3d(-1.5%,0,0) scale(.98);background-position:0% 30%}
+  to{transform:translate3d(1.5%,1%,0) scale(1.02);background-position:100% 70%}
+}
+@keyframes living-color-atlas{
+  from{background-position:0% 0%,100% 100%,0 0}
+  to{background-position:100% 50%,0% 40%,0 0}
+}
+@media(max-width:760px){
+  .services::before,.works::before,.team::before,.principles::before,.reviews-section::before,.booking::before{
+    inset:5% -5vw;
+    opacity:.32;
+    animation-duration:calc(var(--color-flow-duration) * 1.25);
+  }
+  .marquee{background-size:300% 100%}
+}
+@media(prefers-reduced-motion:reduce){
+  .marquee,.services::before,.works::before,.team::before,.principles::before,.reviews-section::before,.booking::before,.atlas{
+    animation:none!important;
+  }
+}
