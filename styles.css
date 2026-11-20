@@ -1243,3 +1243,49 @@ html:not(.js) .tab-panel[hidden]{display:block}
 @media(prefers-reduced-motion:reduce){
   .hero-arch img{animation:none!important}
 }
+
+/* ---------- editorial finishing: light leak, depth and softer reveals ---------- */
+/* Additive overlays only: the Living Color atmosphere and existing hero motion remain intact. */
+.ambient::after{
+  content:"";
+  position:absolute;
+  inset:-35%;
+  pointer-events:none;
+  opacity:.22;
+  background:linear-gradient(118deg,transparent 34%,color-mix(in srgb,var(--s1) 13%,transparent) 47%,color-mix(in srgb,var(--accent) 9%,transparent) 51%,transparent 64%);
+  transform:translate3d(-12%,0,0) rotate(-8deg);
+  animation:editorial-light-leak 42s var(--ease) infinite alternate;
+}
+@keyframes editorial-light-leak{
+  from{transform:translate3d(-12%,0,0) rotate(-8deg)}
+  to{transform:translate3d(12%,2%,0) rotate(8deg)}
+}
+
+/* Gallery photographs gain a restrained sense of depth without changing their crop. */
+.ref-media img{
+  transition:transform var(--d-hero) var(--ease),filter var(--d-base) var(--ease);
+  will-change:transform;
+}
+.ref:hover .ref-media img,
+.ref:focus-visible .ref-media img{
+  transform:scale(1.035);
+  filter:saturate(1.06);
+}
+
+/* Reveal text with a subtle focus transition, keeping the existing stagger timing. */
+.js [data-reveal]{
+  filter:blur(4px);
+}
+.js [data-reveal].is-in{
+  filter:blur(0);
+}
+@media(max-width:760px){
+  .ambient::after{opacity:.12}
+  .ref:hover .ref-media img,
+  .ref:focus-visible .ref-media img{transform:none;filter:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .ambient::after{animation:none!important}
+  .js [data-reveal]{filter:none}
+  .ref-media img{will-change:auto}
+}
