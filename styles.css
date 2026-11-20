@@ -1168,3 +1168,78 @@ html:not(.js) .tab-panel[hidden]{display:block}
 @media(prefers-reduced-motion:reduce){
   .js .hero-arch{clip-path:none}
 }
+
+
+/* ---------- refined mobile cinematic composition ---------- */
+@media(max-width:760px){
+  .hero{
+    min-height: min(90svh, 760px);
+    min-height: min(90dvh, 760px);
+    overflow:visible;
+  }
+  .hero-grid{
+    min-height: min(90svh, 760px);
+    min-height: min(90dvh, 760px);
+    padding-top:calc(var(--header-h) + 22px);
+    padding-bottom:max(24px,env(safe-area-inset-bottom));
+  }
+  .hero-copy{
+    padding-top:clamp(42px, 8vh, 92px);
+  }
+  .hero h1{
+    font-size:clamp(2.65rem, 10.6vw, 4.25rem);
+    line-height:.9;
+    margin:12px 0 14px;
+  }
+  .hero-lead{font-size:13px;line-height:1.45}
+  .hero .actions{margin-top:16px;gap:8px 12px}
+  .hero .actions .btn{min-height:44px;padding-inline:14px;font-size:11px}
+  .hero-arch{
+    inset:10px 12px 0;
+    width:auto;
+    height:auto;
+    border-radius:var(--r-soft);
+    overflow:hidden;
+  }
+  .hero-arch img{
+    border-radius:var(--r-soft);
+    animation:hero-image-drift 26s var(--ease) infinite alternate;
+    transform-origin:52% 42%;
+  }
+  /* The image dissolves into the next section instead of ending at a hard edge. */
+  .hero::after{
+    content:"";
+    position:absolute;
+    z-index:1;
+    left:0;right:0;bottom:-1px;
+    height:clamp(150px, 25vh, 230px);
+    pointer-events:none;
+    background:linear-gradient(180deg,transparent 0%,color-mix(in srgb,var(--night) 42%,transparent) 38%,var(--night) 100%);
+  }
+  .hero-copy{z-index:2}
+  .hero-swatches{z-index:4}
+  .hero-arch::after{
+    background:
+      linear-gradient(180deg,var(--mobile-scrim-top) 0%,var(--mobile-scrim-clear) 26%,var(--mobile-scrim-mid) 54%,var(--mobile-scrim-bottom) 84%,transparent 100%),
+      linear-gradient(90deg,var(--mobile-scrim-side),transparent 68%);
+  }
+}
+@keyframes hero-image-drift{
+  from{transform:translate3d(0,calc(var(--parallax,0px) + var(--py,0px)),0) scale(1.12)}
+  to{transform:translate3d(-1.2%,calc(var(--parallax,0px) + var(--py,0px) - 1%),0) scale(1.2)}
+}
+
+/* Consistent soft rectangular crops for every editorial photograph. */
+.hero-arch,.ref-media,.strands,.master-photo,.atlas-photo,.team-photo,.service-photo,.ph-art{
+  border-radius:var(--r-soft);
+  overflow:hidden;
+}
+.ref-media img,.strands img,.master-photo img,.atlas-photo img,.team-photo img,.service-photo img,.ph-art img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:var(--r-soft);
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-arch img{animation:none!important}
+}
