@@ -1243,3 +1243,69 @@ html:not(.js) .tab-panel[hidden]{display:block}
 @media(prefers-reduced-motion:reduce){
   .hero-arch img{animation:none!important}
 }
+
+
+/* ---------- layered espresso & champagne benefit cards ---------- */
+.benefits{padding:clamp(1.2rem,3vw,2.5rem) 0 clamp(3rem,7vw,6rem)}
+.benefit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(.65rem,1.5vw,1.15rem);align-items:start}
+.benefit-card{
+  --benefit-surface:var(--night);
+  --benefit-edge:var(--line-light);
+  position:relative;isolation:isolate;overflow:hidden;align-self:start;
+  border:1px solid var(--benefit-edge);border-radius:var(--r-soft);
+  background:linear-gradient(145deg,var(--ink-2),var(--benefit-surface) 72%);
+  box-shadow:0 1rem 2.5rem var(--scrim);
+  transition:border-color var(--d-base) var(--ease),background var(--d-base) var(--ease),transform var(--d-base) var(--ease),box-shadow var(--d-base) var(--ease)
+}
+.benefit-card:nth-child(2){--benefit-surface:var(--ink-2);--benefit-edge:var(--line-light-strong);background:linear-gradient(145deg,var(--ink-3),var(--ink-2) 76%)}
+.benefit-card:nth-child(3){--benefit-surface:var(--ink-3);--benefit-edge:var(--line-light);background:linear-gradient(145deg,var(--night),var(--ink-3) 78%)}
+.benefit-card::before{
+  content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,var(--grain),transparent 42%,var(--scrim));
+  opacity:.7;transition:opacity var(--d-base) var(--ease)
+}
+.benefit-card:hover,.benefit-card[open]{
+  border-color:var(--gold);
+  box-shadow:0 1.2rem 3rem var(--scrim),0 0 1.6rem var(--grain);
+  transform:translateY(-3px)
+}
+.benefit-card:hover::before,.benefit-card[open]::before{opacity:1}
+.benefit-card summary{
+  min-height:7.2rem;display:grid;grid-template-columns:auto 1fr auto;
+  align-items:center;gap:.85rem;padding:1.2rem 1.15rem;
+  list-style:none;cursor:pointer
+}
+.benefit-card summary::-webkit-details-marker{display:none}
+.benefit-number{font-size:.72rem;letter-spacing:.16em;color:var(--gold);opacity:.95}
+.benefit-title{font-family:var(--serif);font-size:clamp(1.25rem,2vw,1.75rem);line-height:1.08;color:var(--light-text)}
+.benefit-plus{
+  width:1.8rem;height:1.8rem;border:1px solid var(--line-light-strong);
+  border-radius:var(--r-round);position:relative;transition:transform var(--d-base) var(--ease),background var(--d-base) var(--ease),border-color var(--d-base) var(--ease)
+}
+.benefit-plus::before,.benefit-plus::after{
+  content:"";position:absolute;left:50%;top:50%;width:.62rem;height:1px;
+  background:var(--gold);transform:translate(-50%,-50%)
+}
+.benefit-plus::after{transform:translate(-50%,-50%) rotate(90deg)}
+.benefit-card[open] .benefit-plus{transform:rotate(135deg);background:var(--grain);border-color:var(--gold)}
+.benefit-content{display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--d-base) var(--ease)}
+.benefit-content>div{overflow:hidden;min-height:0}
+.benefit-content p{
+  margin:0;padding:0 1.15rem 1.25rem 2.9rem;
+  color:var(--light-muted);font-size:var(--t-sm);line-height:1.75;
+  opacity:0;transform:translateY(10px);
+  transition:opacity var(--d-base) var(--ease),transform var(--d-base) var(--ease)
+}
+.benefit-card[open] .benefit-content{grid-template-rows:1fr}
+.benefit-card[open] .benefit-content p{opacity:1;transform:translateY(0);transition-delay:var(--stagger)}
+.benefit-card summary:focus-visible{outline:2px solid var(--gold);outline-offset:-4px;border-radius:var(--r-soft)}
+@media(max-width:760px){
+  .benefit-grid{grid-template-columns:1fr;gap:.65rem}
+  .benefit-card summary{min-height:5.2rem;padding:1rem 1.05rem}
+  .benefit-title{font-size:1.55rem}
+  .benefit-content p{padding:0 1.05rem 1.1rem 2.65rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .benefit-card,.benefit-card::before,.benefit-plus,.benefit-content,.benefit-content p{transition:none!important}
+  .benefit-card:hover,.benefit-card[open]{transform:none}
+}
